@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Sisters.WudiLib.Responses
 {
-    internal struct Response<T>
+    internal struct HttpApiResponse<T>
     {
         public const int RetcodeOK = 0;
 

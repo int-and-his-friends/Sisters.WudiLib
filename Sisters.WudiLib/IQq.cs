@@ -5,7 +5,10 @@ using System.Text;
 
 namespace Sisters.WudiLib
 {
-    public interface IQq
+    /// <summary>
+    /// 表示QQ功能的接口
+    /// </summary>
+    internal interface IQq
     {
         /// <summary>
         /// 在派生类中实现时，向目标QQ发送消息。
