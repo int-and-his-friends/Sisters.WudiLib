@@ -21,7 +21,7 @@ namespace Sisters.WudiLib
         {
             if (data is null) throw new ArgumentNullException(nameof(data), "data不能为null");
             string json = JsonConvert.SerializeObject(data);
-            using (HttpContent content = new StringContent(json))
+            using (HttpContent content = new StringContent(json, Encoding.UTF8, "application/json"))
             using (var http = new HttpClient())
             {
                 using (var response = (await http.PostAsync(url, content)).EnsureSuccessStatusCode())
