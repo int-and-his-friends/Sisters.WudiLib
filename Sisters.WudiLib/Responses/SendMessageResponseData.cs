@@ -5,8 +5,19 @@ using System.Text;
 
 namespace Sisters.WudiLib.Responses
 {
-    public class SendMessageResponseData
+    /// <summary>
+    /// 发送消息后返回的数据
+    /// </summary>
+    public abstract class SendMessageResponseData
     {
+        internal SendMessageResponseData()
+        {
+
+        }
+
+        /// <summary>
+        /// 消息 ID
+        /// </summary>
         [JsonProperty("message_id")]
         public long MessageId { get; internal set; }
     }
