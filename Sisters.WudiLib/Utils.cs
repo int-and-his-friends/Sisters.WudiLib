@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Sisters.WudiLib
 {
-    partial class CoolQHttpApi
+    internal static class Utils
     {
         /// <summary>
         /// 通过 POST 请求访问API
@@ -17,7 +17,7 @@ namespace Sisters.WudiLib
         /// <param name="url">API请求地址</param>
         /// <param name="data">请求参数</param>
         /// <returns>从 HTTP API 返回的数据</returns>
-        private async Task<T> PostAsync<T>(string url, object data)
+        public static async Task<T> PostAsync<T>(string url, object data)
         {
             if (data is null) throw new ArgumentNullException(nameof(data), "data不能为null");
             string json = JsonConvert.SerializeObject(data);
@@ -40,7 +40,7 @@ namespace Sisters.WudiLib
         /// <param name="url">API请求地址</param>
         /// <param name="data">请求参数</param>
         /// <returns>从 HTTP API 返回的数据</returns>
-        private T Post<T>(string url, object data)
+        public static T Post<T>(string url, object data)
         {
             try
             {

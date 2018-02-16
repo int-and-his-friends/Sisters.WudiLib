@@ -30,7 +30,7 @@ namespace Sisters.WudiLib
                 message,
                 auto_escape = true,
             };
-            var result = Post<SendPrivateMessageResponseData>(PrivateUrl, data);
+            var result = Utils.Post<SendPrivateMessageResponseData>(PrivateUrl, data);
             return result;
         }
     }
