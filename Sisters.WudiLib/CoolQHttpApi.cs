@@ -77,11 +77,11 @@ namespace Sisters.WudiLib
         }
 
         /// <summary>
-        /// 群组踢人
+        /// 群组踢人。
         /// </summary>
-        /// <param name="groupId">群号</param>
-        /// <param name="userId">要踢的 QQ 号</param>
-        /// <returns></returns>
+        /// <param name="groupId">群号。</param>
+        /// <param name="userId">要踢的 QQ 号。</param>
+        /// <returns>是否成功。注意：酷 Q 未处理错误，所以无论是否成功都会返回<c>true</c>。</returns>
         public bool KickGroupMember(long groupId, long userId)
         {
             var data = new
@@ -89,8 +89,8 @@ namespace Sisters.WudiLib
                 group_id = groupId,
                 user_id = userId,
             };
-            var result = Utils.Post<object>(KickGroupMemberUrl, data);
-            return result != null;
+            var success = Utils.Post<object>(KickGroupMemberUrl, data, out _);
+            return success;
         }
     }
 }

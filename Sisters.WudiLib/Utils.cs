@@ -10,14 +10,7 @@ namespace Sisters.WudiLib
 {
     internal static class Utils
     {
-        /// <summary>
-        /// 通过 POST 请求访问API
-        /// </summary>
-        /// <typeparam name="T">返回的数据类型</typeparam>
-        /// <param name="url">API请求地址</param>
-        /// <param name="data">请求参数</param>
-        /// <returns>从 HTTP API 返回的数据</returns>
-        public static async Task<T> PostAsync<T>(string url, object data)
+        private static async Task<HttpApiResponse<T>> PostApiAsync<T>(string url, object data)
         {
             if (data is null) throw new ArgumentNullException(nameof(data), "data不能为null");
             string json = JsonConvert.SerializeObject(data);
@@ -28,13 +21,26 @@ namespace Sisters.WudiLib
                 {
                     string responseContent = await response.Content.ReadAsStringAsync();
                     var result = JsonConvert.DeserializeObject<HttpApiResponse<T>>(responseContent);
-                    return result.Retcode == HttpApiResponse<T>.RetcodeOK ? result.Data : default(T);
+                    return result;
                 }
             }
         }
 
         /// <summary>
-        /// 通过 POST 请求访问API
+        /// 通过 POST 请求访问API，返回数据
+        /// </summary>
+        /// <typeparam name="T">返回的数据类型</typeparam>
+        /// <param name="url">API请求地址</param>
+        /// <param name="data">请求参数</param>
+        /// <returns>从 HTTP API 返回的数据</returns>
+        public static async Task<T> PostAsync<T>(string url, object data)
+        {
+            var response = await PostApiAsync<T>(url, data);
+            return response.Retcode == HttpApiResponse.RetcodeOK ? response.Data : default(T);
+        }
+
+        /// <summary>
+        /// 通过 POST 请求访问API，返回数据
         /// </summary>
         /// <typeparam name="T">返回的数据类型</typeparam>
         /// <param name="url">API请求地址</param>
@@ -45,6 +51,28 @@ namespace Sisters.WudiLib
             try
             {
                 return PostAsync<T>(url, data).Result;
+            }
+            catch (AggregateException e)
+            {
+                throw e.InnerException;
+            }
+        }
+
+        /// <summary>
+        /// 通过 POST 请求访问API，返回是否成功
+        /// </summary>
+        /// <typeparam name="T">返回的数据类型</typeparam>
+        /// <param name="url">API请求地址</param>
+        /// <param name="data">请求参数</param>
+        /// <param name="responseData">从 HTTP API 返回的数据</param>
+        /// <returns>调用 API 是否成功</returns>
+        public static bool Post<T>(string url, object data, out T responseData)
+        {
+            try
+            {
+                var response = PostApiAsync<T>(url, data).Result;
+                responseData = response.Data;
+                return response.Retcode == HttpApiResponse.RetcodeOK;
             }
             catch (AggregateException e)
             {

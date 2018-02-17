@@ -9,10 +9,16 @@ namespace Sisters.WudiLibTest
         {
             var httpApi = new CoolQHttpApi();
             httpApi.ApiAddress = "http://127.0.0.1:5700/";
-            httpApi.SendPrivateMessage(962549599, "hello");
-            httpApi.SendGroupMessage(72318078, "hello");
+            var privateResponse = httpApi.SendPrivateMessage(962549599, "hello");
+            Console.WriteLine(privateResponse.MessageId);
+            var groupResponse = httpApi.SendGroupMessage(72318078, "hello");
+            Console.WriteLine(groupResponse.MessageId);
             //605617685
-            httpApi.KickGroupMember(605617685, 962549599);
+            var success1 = httpApi.KickGroupMember(605617685, 962549599);
+            var success2 = httpApi.KickGroupMember(72318078, 962549599);
+            Console.WriteLine(success1);
+            Console.WriteLine(success2);
+            Console.ReadKey();
         }
     }
 }
