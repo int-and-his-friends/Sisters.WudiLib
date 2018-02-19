@@ -92,5 +92,27 @@ namespace Sisters.WudiLib
             var success = Utils.Post<object>(KickGroupMemberUrl, data, out _);
             return success;
         }
+
+        /// <summary>
+        /// 撤回消息（需要Pro）
+        /// </summary>
+        /// <param name="message">消息返回值</param>
+        /// <returns></returns>
+        public bool RecallMessage(SendMessageResponseData message)
+        {
+            return RecallMessage(message.MessageId);
+        }
+
+        /// <summary>
+        /// 撤回消息（需要Pro）
+        /// </summary>
+        /// <param name="messageId">消息返回值</param>
+        /// <returns></returns>
+        public bool RecallMessage(long messageId)
+        {
+            var data = new { message_id = (int)messageId };
+            var success = Utils.Post<object>(RecallUrl, data, out _);
+            return success;
+        }
     }
 }
