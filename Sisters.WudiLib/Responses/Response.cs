@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Sisters.WudiLib.Responses
 {
-    internal struct HttpApiResponse<T>
+    internal class HttpApiResponse<T>
     {
         [JsonProperty("data")]
         public T Data { get; set; }
@@ -15,7 +15,7 @@ namespace Sisters.WudiLib.Responses
         public string Status { get; set; }
     }
 
-    internal struct HttpApiResponse
+    internal static class HttpApiResponse
     {
         public const int RetcodeOK = 0;
     }
