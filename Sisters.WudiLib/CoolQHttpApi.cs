@@ -114,5 +114,18 @@ namespace Sisters.WudiLib
             var success = Utils.Post<object>(RecallUrl, data, out _);
             return success;
         }
+
+        /// <summary>
+        /// 获取登录信息
+        /// </summary>
+        /// <returns></returns>
+        public LoginInfo GetLoginInfo()
+        {
+            var data = new object();
+            var result = Utils.Post<LoginInfo>(LoginInfoUrl, data);
+            return result;
+        }
+
+
     }
 }
