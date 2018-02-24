@@ -10,7 +10,7 @@ namespace Sisters.WudiLib
     /// <summary>
     /// 通过酷Q HTTP API实现QQ功能。
     /// </summary>
-    public partial class CoolQHttpApi : IQq
+    public partial class CoolQHttpApi
     {
         private string apiAddress;
 
@@ -29,7 +29,7 @@ namespace Sisters.WudiLib
         /// <param name="userId">对方 QQ 号</param>
         /// <param name="message">要发送的内容（文本）</param>
         /// <returns></returns>
-        public SendPrivateMessageResponseData SendPrivateMessage(long userId, string message)
+        public async Task<SendPrivateMessageResponseData> SendPrivateMessageAsync(long userId, string message)
         {
             var data = new
             {
@@ -37,7 +37,7 @@ namespace Sisters.WudiLib
                 message,
                 auto_escape = true,
             };
-            var result = Utils.Post<SendPrivateMessageResponseData>(PrivateUrl, data);
+            var result = await Utils.PostAsync<SendPrivateMessageResponseData>(PrivateUrl, data);
             return result;
         }
 
@@ -47,7 +47,7 @@ namespace Sisters.WudiLib
         /// <param name="groupId">群号</param>
         /// <param name="message">要发送的内容（文本）</param>
         /// <returns></returns>
-        public SendGroupMessageResponseData SendGroupMessage(long groupId, string message)
+        public async Task<SendGroupMessageResponseData> SendGroupMessageAsync(long groupId, string message)
         {
             var data = new
             {
@@ -55,7 +55,7 @@ namespace Sisters.WudiLib
                 message,
                 auto_escape = true,
             };
-            var result = Utils.Post<SendGroupMessageResponseData>(GroupUrl, data);
+            var result = await Utils.PostAsync<SendGroupMessageResponseData>(GroupUrl, data);
             return result;
         }
 
@@ -65,7 +65,7 @@ namespace Sisters.WudiLib
         /// <param name="discussId">讨论组 ID</param>
         /// <param name="message">要发送的内容（文本）</param>
         /// <returns></returns>
-        public SendDiscussMessageResponseData SendDiscussMessage(long discussId, string message)
+        public async Task<SendDiscussMessageResponseData> SendDiscussMessageAsync(long discussId, string message)
         {
             var data = new
             {
@@ -73,7 +73,7 @@ namespace Sisters.WudiLib
                 message,
                 auto_escape = true,
             };
-            var result = Utils.Post<SendDiscussMessageResponseData>(DiscussUrl, data);
+            var result = await Utils.PostAsync<SendDiscussMessageResponseData>(DiscussUrl, data);
             return result;
         }
 
@@ -83,14 +83,14 @@ namespace Sisters.WudiLib
         /// <param name="groupId">群号。</param>
         /// <param name="userId">要踢的 QQ 号。</param>
         /// <returns>是否成功。注意：酷 Q 未处理错误，所以无论是否成功都会返回<c>true</c>。</returns>
-        public bool KickGroupMember(long groupId, long userId)
+        public async Task<bool> KickGroupMemberAsync(long groupId, long userId)
         {
             var data = new
             {
                 group_id = groupId,
                 user_id = userId,
             };
-            var success = Utils.Post<object>(KickGroupMemberUrl, data, out _);
+            var success = await Utils.PostAsync(KickGroupMemberUrl, data);
             return success;
         }
 
@@ -99,9 +99,9 @@ namespace Sisters.WudiLib
         /// </summary>
         /// <param name="message">消息返回值</param>
         /// <returns></returns>
-        public bool RecallMessage(SendMessageResponseData message)
+        public async Task<bool> RecallMessageAsync(SendMessageResponseData message)
         {
-            return RecallMessage(message.MessageId);
+            return await RecallMessageAsync(message.MessageId);
         }
 
         /// <summary>
@@ -109,10 +109,10 @@ namespace Sisters.WudiLib
         /// </summary>
         /// <param name="messageId">消息返回值</param>
         /// <returns></returns>
-        public bool RecallMessage(long messageId)
+        public async Task<bool> RecallMessageAsync(long messageId)
         {
             var data = new { message_id = (int)messageId };
-            var success = Utils.Post<object>(RecallUrl, data, out _);
+            var success = await Utils.PostAsync(RecallUrl, data);
             return success;
         }
 
@@ -120,21 +120,28 @@ namespace Sisters.WudiLib
         /// 获取登录信息
         /// </summary>
         /// <returns></returns>
-        public LoginInfo GetLoginInfo()
+        public async Task<LoginInfo> GetLoginInfoAsync()
         {
             var data = new object();
-            var result = Utils.Post<LoginInfo>(LoginInfoUrl, data);
+            var result = await Utils.PostAsync<LoginInfo>(LoginInfoUrl, data);
             return result;
         }
 
-        public Task<GroupMemberInfo> GetGroupMemberInfoAsync(long group, long qq)
+        /// <summary>
+        /// 获取群成员信息。
+        /// </summary>
+        /// <param name="group">群号。</param>
+        /// <param name="qq">QQ 号（不可以是登录号）。</param>
+        /// <returns>获取到的成员信息。</returns>
+        public async Task<GroupMemberInfo> GetGroupMemberInfoAsync(long group, long qq)
         {
             var data = new
             {
                 group_id = group,
                 user_id = qq,
             };
-            return Utils.PostAsync<GroupMemberInfo>(GroupMemberInfoUrl, data);
+            var result = await Utils.PostAsync<GroupMemberInfo>(GroupMemberInfoUrl, data);
+            return result;
         }
     }
 }

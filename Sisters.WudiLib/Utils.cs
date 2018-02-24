@@ -58,6 +58,19 @@ namespace Sisters.WudiLib
             }
         }
 
+        public static async Task<bool> PostAsync(string url, object data)
+        {
+            try
+            {
+                var response = await PostApiAsync<object>(url, data);
+                return response.Retcode == HttpApiResponse.RetcodeOK;
+            }
+            catch (AggregateException e)
+            {
+                throw e.InnerException;
+            }
+        }
+
         /// <summary>
         /// 通过 POST 请求访问API，返回是否成功（Retcode 为 0）
         /// </summary>
