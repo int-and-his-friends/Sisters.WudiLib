@@ -1,6 +1,8 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 
@@ -9,16 +11,42 @@ namespace Sisters.WudiLib.Responses
     public sealed class GroupMemberInfo
     {
         [JsonProperty("group_id")]
-        public long GroupId { get; set; }
+        public long GroupId { get; internal set; }
         [JsonProperty("user_id")]
-        public long UserId { get; set; }
+        public long UserId { get; internal set; }
         [JsonProperty("nickname")]
-        public string QqNickname { get; set; }
+        public string Nickname { get; internal set; }
         [JsonProperty("card")]
-        public string InGroupName { get; set; }
+        public string InGroupName { get; internal set; }
+
+        // sex
+
+        [JsonProperty("age")]
+        public int Age { get; internal set; }
+
+        public string Area { get; internal set; }
+
+        [JsonProperty("join_time"), JsonConverter(typeof(UnixDateTimeConverter))]
+        public DateTimeOffset JoinTime { get; internal set; }
+
+        [JsonProperty("last_sent_time"), JsonConverter(typeof(UnixDateTimeConverter))]
+        public DateTimeOffset LastSendTime { get; internal set; }
+
+        // level （？）
 
         [JsonProperty("role"), JsonConverter(typeof(AuthorityConverter))]
-        public GroupMemberAuthority Authority { get; set; }
+        public GroupMemberAuthority Authority { get; internal set; }
+
+        // unfriendly
+
+        [JsonProperty("title")]
+        public string Title { get; internal set; }
+
+        // title_expire_time
+
+        [JsonProperty("card_changeable")]
+        public bool IsCardChangeable { get; internal set; }
+
         /*
         public int age { get; set; }
         public string area { get; set; }
@@ -62,27 +90,35 @@ namespace Sisters.WudiLib.Responses
                 return list.GetValueOrDefault(reader.Value.ToString(), GroupMemberAuthority.Unknown);
             }
 
-            public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer) => throw new NotImplementedException();
-        }
-
-        private class EnumConverter<T> : JsonConverter where T : IDictionaryProvider
-        {
-            public override bool CanConvert(Type objectType) => throw new NotImplementedException();
-            public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+            public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
             {
-                typeof(IDictionaryProvider).GetCustomAttributes<>
+                var result = from e in list
+                             where e.Value == value as GroupMemberAuthority?
+                             select e.Key;
+                if (!result.Any()) writer.WriteNull();
+                else writer.WriteValue(result.First());
             }
-
-            public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer) => throw new NotImplementedException();
         }
 
-        private interface IDictionaryProvider
-        {
-            object Default { get; }
+        //private class EnumConverter<T> : JsonConverter where T : IDictionaryProvider
+        //{
+        //    public override bool CanConvert(Type objectType) => throw new NotImplementedException();
+        //    public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        //    {
+        //        if (reader.TokenType != JsonToken.String)
+        //            return T.Default;
+        //    }
 
-            IReadOnlyDictionary<string, object> Values { get; }
+        //    public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer) => throw new NotImplementedException();
+        //}
+
+        //private interface IDictionaryProvider
+        //{
+        //    object Default { get; }
+
+        //    IReadOnlyDictionary<string, object> Values { get; }
 
 
-        }
+        //}
     }
 }
