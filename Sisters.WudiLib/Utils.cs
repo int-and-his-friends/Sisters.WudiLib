@@ -59,7 +59,7 @@ namespace Sisters.WudiLib
         }
 
         /// <summary>
-        /// 通过 POST 请求访问API，返回是否成功
+        /// 通过 POST 请求访问API，返回是否成功（Retcode 为 0）
         /// </summary>
         /// <typeparam name="T">返回的数据类型</typeparam>
         /// <param name="url">API请求地址</param>

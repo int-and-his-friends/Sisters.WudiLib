@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Sisters.WudiLib.Responses;
 
@@ -126,6 +127,14 @@ namespace Sisters.WudiLib
             return result;
         }
 
-
+        public Task<GroupMemberInfo> GetGroupMemberInfoAsync(long group, long qq)
+        {
+            var data = new
+            {
+                group_id = group,
+                user_id = qq,
+            };
+            return Utils.PostAsync<GroupMemberInfo>(GroupMemberInfoUrl, data);
+        }
     }
 }
