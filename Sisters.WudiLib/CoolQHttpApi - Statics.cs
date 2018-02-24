@@ -13,6 +13,7 @@ namespace Sisters.WudiLib
         private static readonly string RecallPath = "/delete_msg";
         private static readonly string LoginInfoPath = "/get_login_info";
         private static readonly string GroupMemberInfoPath = "/get_group_member_info";
+        private static readonly string GroupMemberListPath = "/get_group_member_list";
 
         private string PrivateUrl => apiAddress + PrivatePath;
         private string GroupUrl => apiAddress + GroupPath;
@@ -21,5 +22,6 @@ namespace Sisters.WudiLib
         private string RecallUrl => apiAddress + RecallPath;
         private string LoginInfoUrl => apiAddress + LoginInfoPath;
         private string GroupMemberInfoUrl => apiAddress + GroupMemberInfoPath;
+        private string GroupMemberListUrl => apiAddress + GroupMemberListPath;
     }
 }

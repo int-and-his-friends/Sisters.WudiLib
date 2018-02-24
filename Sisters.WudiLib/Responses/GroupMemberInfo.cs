@@ -24,6 +24,7 @@ namespace Sisters.WudiLib.Responses
         [JsonProperty("age")]
         public int Age { get; internal set; }
 
+        [JsonProperty("area")]
         public string Area { get; internal set; }
 
         [JsonProperty("join_time"), JsonConverter(typeof(UnixDateTimeConverter))]

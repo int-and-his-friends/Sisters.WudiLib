@@ -139,8 +139,24 @@ namespace Sisters.WudiLib
             {
                 group_id = group,
                 user_id = qq,
+                no_cache = true,
             };
             var result = await Utils.PostAsync<GroupMemberInfo>(GroupMemberInfoUrl, data);
+            return result;
+        }
+
+        /// <summary>
+        /// 获取群成员列表。
+        /// </summary>
+        /// <param name="group">群号。</param>
+        /// <returns>响应内容为数组，每个元素的内容和上面的 GetGroupMemberInfoAsync() 方法相同，但对于同一个群组的同一个成员，获取列表时和获取单独的成员信息时，某些字段可能有所不同，例如 area、title 等字段在获取列表时无法获得，具体应以单独的成员信息为准。</returns>
+        public async Task<GroupMemberInfo[]> GetGroupMemberListAsync(long group)
+        {
+            var data = new
+            {
+                group_id = group,
+            };
+            var result = await Utils.PostAsync<GroupMemberInfo[]>(GroupMemberListUrl, data);
             return result;
         }
     }

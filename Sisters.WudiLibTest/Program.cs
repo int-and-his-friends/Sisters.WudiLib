@@ -1,5 +1,6 @@
 ﻿using Sisters.WudiLib;
 using System;
+using System.Linq;
 
 namespace Sisters.WudiLibTest
 {
@@ -9,9 +10,9 @@ namespace Sisters.WudiLibTest
         {
             var httpApi = new CoolQHttpApi();
             httpApi.ApiAddress = "http://127.0.0.1:5700/";
-            var privateResponse = httpApi.SendPrivateMessage(962549599, "hello");
+            var privateResponse = httpApi.SendPrivateMessageAsync(962549599, "hello").Result;
             Console.WriteLine(privateResponse.MessageId);
-            var groupResponse = httpApi.SendGroupMessage(72318078, "hello");
+            var groupResponse = httpApi.SendGroupMessageAsync(72318078, "hello").Result;
             Console.WriteLine(groupResponse.MessageId);
             //605617685
             #region kick test
@@ -22,10 +23,40 @@ namespace Sisters.WudiLibTest
             #endregion
             Console.WriteLine("--------------");
             #region recall test
-            var delete1 = httpApi.RecallMessage(privateResponse);
-            var delete2 = httpApi.RecallMessage(groupResponse);
+            var delete1 = httpApi.RecallMessageAsync(privateResponse).Result;
+            var delete2 = httpApi.RecallMessageAsync(groupResponse).Result;
             Console.WriteLine(delete1);
             Console.WriteLine(delete2);
+            #endregion
+
+            #region group member info test
+            Console.Write("group num:");
+            long group = long.Parse(Console.ReadLine().Trim());
+            Console.Write("qq id:");
+            long qqid = long.Parse(Console.ReadLine().Trim());
+            var member = httpApi.GetGroupMemberInfoAsync(group, qqid).Result;
+            Console.WriteLine(member.Age);
+            Console.WriteLine(member.Area);
+            Console.WriteLine(member.Authority.ToString());
+            Console.WriteLine(member.GroupId);
+            Console.WriteLine(member.InGroupName);
+            Console.WriteLine(member.IsCardChangeable);
+            Console.WriteLine(member.JoinTime);
+            Console.WriteLine(member.LastSendTime);
+            Console.WriteLine(member.Nickname);
+            Console.WriteLine(member.Title);
+            Console.WriteLine(member.UserId);
+
+            var memberList = httpApi.GetGroupMemberListAsync(605617685).Result;
+            var query = from m in memberList
+                        where m.Age > 19
+                        select new { m.InGroupName, m.Nickname, m.Area };
+            foreach (var item in query)
+            {
+                Console.WriteLine(item.InGroupName);
+                Console.WriteLine(item.Nickname);
+                Console.WriteLine(item.Area);
+            }
             #endregion
             Console.ReadKey();
         }
