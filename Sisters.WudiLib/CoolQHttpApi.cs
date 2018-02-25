@@ -41,6 +41,17 @@ namespace Sisters.WudiLib
             return result;
         }
 
+        public async Task<SendPrivateMessageResponseData> SendPrivateMessageAsync(long qq, Message message)
+        {
+            var data = new
+            {
+                user_id = qq,
+                message = message.Sections,
+            };
+            var result = await Utils.PostAsync<SendPrivateMessageResponseData>(PrivateUrl, data);
+            return result;
+        }
+
         /// <summary>
         /// 发送群消息
         /// </summary>

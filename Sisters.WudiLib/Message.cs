@@ -15,7 +15,10 @@ namespace Sisters.WudiLib
 
         internal ICollection<Section> Sections { get; } = new LinkedList<Section>();
 
-        private readonly bool canConnect = true;
+        /// <summary>
+        /// 指示此 <see cref="Message"/> 是否可以与其他 <see cref="Message"/> 连接
+        /// </summary>
+        private readonly bool canJoin = true;
 
         /// <summary>
         /// 构造新的消息实例
@@ -43,8 +46,11 @@ namespace Sisters.WudiLib
         /// <summary>
         /// 消息段
         /// </summary>
-        internal class Section// : IEquatable<Section>
+        internal class Section : IEquatable<Section>
         {
+            /// <summary>
+            /// 仅支持大小写字母、数字、短横线（-）、下划线（_）及点号（.）。
+            /// </summary>
             [JsonProperty("type")]
             private readonly string type;
 
@@ -52,10 +58,26 @@ namespace Sisters.WudiLib
             internal string Type => type;
 
             [JsonProperty("data")]
-            private readonly Dictionary<string, string> data = new Dictionary<string, string>();
+            private readonly SortedDictionary<string, string> data = new SortedDictionary<string, string>();
 
             [JsonIgnore]
             internal IReadOnlyDictionary<string, string> Data => data;
+
+            [JsonIgnore]
+            private string Raw
+            {
+                get
+                {
+                    if (Type == "text") return Data["text"].BeforeSend();
+                    var sb = new StringBuilder($"[CQ:{Type}");
+                    foreach (var param in Data)
+                    {
+                        sb.Append($",{param.Key}={param.Value.BeforeSend()}");
+                    }
+                    sb.Append("]");
+                    return sb.ToString();
+                }
+            }
 
             private Section(string type) => this.type = type;
 
@@ -94,32 +116,41 @@ namespace Sisters.WudiLib
                 return section;
             }
 
-            //public override bool Equals(object obj) => this.Equals(obj as Section);
-            //public bool Equals(Section other) => other != null && this.type == other.type && EqualityComparer<Dictionary<string, string>>.Default.Equals(this.data, other.data);
+            public override bool Equals(object obj) => this.Equals(obj as Section);
+            public bool Equals(Section other)
+            {
+                if (other == null) return false;
+                if (this.Type != other.Type) return false;
+                if (this.Data.Count != other.Data.Count) return false;
+                foreach (var param in this.Data)
+                {
+                    string key = param.Key;
+                    if (other.Data.TryGetValue(key, out string otherValue))
+                        if (param.Value == otherValue) continue;
+                    return false;
+                }
+                return true;
+            }
 
-            //public override int GetHashCode()
-            //{
-            //    var hashCode = -628614918;
-            //    hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(this.type);
-            //    hashCode = hashCode * -1521134295 + EqualityComparer<Dictionary<string, string>>.Default.GetHashCode(this.data);
-            //    return hashCode;
-            //}
+            public override int GetHashCode()
+            {
+                var hashCode = -628614918;
+                hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(this.type);
+                foreach (var param in Data)
+                {
+                    hashCode = hashCode * -1521134295 + EqualityComparer<KeyValuePair<string, string>>.Default.GetHashCode(param);
+                }
+                //hashCode = hashCode * -1521134295 + EqualityComparer<Dictionary<string, string>>.Default.GetHashCode(this.data);
+                return hashCode;
+            }
 
-            //public static bool operator ==(Section left, Section right)
-            //{
-            //    if (left.Type != right.Type) return false;
-            //    if (left.Data.Count != right.Data.Count) return false;
-            //    foreach (var item in left.Data)
-            //    {
-            //        string key = item.Key;
-            //        if (right.Data.TryGetValue(key, out string rightValue))
-            //            if (item.Value == rightValue) continue;
-            //        return false;
-            //    }
-            //    return true;
-            //}
+            public static bool operator ==(Section left, Section right)
+            {
+                if (left == null) return right == null;
+                return left.Equals(right);
+            }
 
-            //public static bool operator !=(Section left, Section right) => !(left == right);
+            public static bool operator !=(Section left, Section right) => !(left == right);
         }
     }
 }

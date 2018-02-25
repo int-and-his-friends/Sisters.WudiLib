@@ -92,5 +92,11 @@ namespace Sisters.WudiLib
                 throw e.InnerException;
             }
         }
+
+        internal static string BeforeSend(this string before)
+            => before.Replace("&", "&amp;").Replace("[", "&#91;").Replace("]", "&#93;").Replace(",", "&#44;");
+
+        internal static string AfterReceive(this string received)
+            => received.Replace("&#44;", ",").Replace("&#91;", "[").Replace("&#93;", "]").Replace("&amp;", "&");
     }
 }
