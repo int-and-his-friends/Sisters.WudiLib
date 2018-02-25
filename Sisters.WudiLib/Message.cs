@@ -11,28 +11,38 @@ namespace Sisters.WudiLib
     /// </summary>
     public class Message
     {
-        private readonly ICollection<Section> sections = new LinkedList<Section>();
+        private readonly ICollection<Section> sections;
 
         internal ICollection<Section> Sections { get; } = new LinkedList<Section>();
+
+        private readonly bool canConnect = true;
 
         /// <summary>
         /// 构造新的消息实例
         /// </summary>
-        public Message() { }
+        public Message() => sections = new LinkedList<Section>();
+
+        private Message(IEnumerable<Section> sections) => sections = new LinkedList<Section>(sections);
 
         /// <summary>
         /// 从文本构造新的消息实例
         /// </summary>
         /// <param name="text"></param>
-        public Message(string text) => Sections.Add(Section.Text(text));
+        public Message(string text) : this() => Sections.Add(Section.Text(text));
 
-        private Message(Message message1, Message message2)
-        {
-            sections = new LinkedList<Section>(message1.Sections.Union(message2.Sections));
-        }
+        private Message(Message message1, Message message2) : this(message1.Sections.Union(message2.Sections)) { }
+
+        private Message(Section section) : this() => sections.Add(section);
+
+        public Message At(long qq) => new Message(Section.At(qq));
+
+        public Message AtAll() => new Message(Section.AtAll());
 
         public static Message operator +(Message left, Message right) => new Message(left, right);
 
+        /// <summary>
+        /// 消息段
+        /// </summary>
         internal class Section// : IEquatable<Section>
         {
             [JsonProperty("type")]
@@ -49,10 +59,38 @@ namespace Sisters.WudiLib
 
             private Section(string type) => this.type = type;
 
+            /// <summary>
+            /// 构造文本消息段
+            /// </summary>
+            /// <param name="text"></param>
+            /// <returns></returns>
             internal static Section Text(string text)
             {
                 var section = new Section("text");
                 section.data.Add("text", text);
+                return section;
+            }
+
+            /// <summary>
+            /// 构造 At 消息段
+            /// </summary>
+            /// <param name="qq"></param>
+            /// <returns></returns>
+            internal static Section At(long qq)
+            {
+                var section = new Section("at");
+                section.data.Add("qq", qq.ToString());
+                return section;
+            }
+
+            /// <summary>
+            /// 构造 At 全体成员消息段
+            /// </summary>
+            /// <returns></returns>
+            internal static Section AtAll()
+            {
+                var section = new Section("at");
+                section.data.Add("qq", "all");
                 return section;
             }
 
