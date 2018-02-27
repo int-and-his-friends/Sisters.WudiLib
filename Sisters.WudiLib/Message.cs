@@ -58,7 +58,7 @@ namespace Sisters.WudiLib
             internal string Type => type;
 
             [JsonProperty("data")]
-            private readonly SortedDictionary<string, string> data = new SortedDictionary<string, string>();
+            private readonly IReadOnlyDictionary<string, string> data;
 
             [JsonIgnore]
             internal IReadOnlyDictionary<string, string> Data => data;
@@ -79,7 +79,13 @@ namespace Sisters.WudiLib
                 }
             }
 
-            private Section(string type) => this.type = type;
+            private Section(string type, params (string key, string value)[] p)
+            {
+                this.type = type;
+                var data = new SortedDictionary<string, string>();
+                Array.ForEach(p, pa => data.Add(pa.key, pa.value));
+                this.data = data;
+            }
 
             /// <summary>
             /// 构造文本消息段
@@ -88,8 +94,7 @@ namespace Sisters.WudiLib
             /// <returns></returns>
             internal static Section Text(string text)
             {
-                var section = new Section("text");
-                section.data.Add("text", text);
+                var section = new Section("text", ("text", text));
                 return section;
             }
 
@@ -100,8 +105,7 @@ namespace Sisters.WudiLib
             /// <returns></returns>
             internal static Section At(long qq)
             {
-                var section = new Section("at");
-                section.data.Add("qq", qq.ToString());
+                var section = new Section("at", ("qq", qq.ToString()));
                 return section;
             }
 
@@ -111,8 +115,7 @@ namespace Sisters.WudiLib
             /// <returns></returns>
             internal static Section AtAll()
             {
-                var section = new Section("at");
-                section.data.Add("qq", "all");
+                var section = new Section("at", ("qq", "all"));
                 return section;
             }
 
