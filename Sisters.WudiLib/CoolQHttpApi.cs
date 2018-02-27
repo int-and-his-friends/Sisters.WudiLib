@@ -70,6 +70,17 @@ namespace Sisters.WudiLib
             return result;
         }
 
+        public async Task<SendGroupMessageResponseData> SendGroupMessageAsync(long groupId, Message message)
+        {
+            var data = new
+            {
+                group_id = groupId,
+                message = message.Sections,
+            };
+            var result = await Utils.PostAsync<SendGroupMessageResponseData>(GroupUrl, data);
+            return result;
+        }
+
         /// <summary>
         /// 发送讨论组消息
         /// </summary>

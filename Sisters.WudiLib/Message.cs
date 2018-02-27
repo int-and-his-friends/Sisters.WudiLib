@@ -13,7 +13,7 @@ namespace Sisters.WudiLib
     {
         private readonly ICollection<Section> sections;
 
-        internal ICollection<Section> Sections { get; } = new LinkedList<Section>();
+        internal ICollection<Section> Sections => sections;
 
         /// <summary>
         /// 指示此 <see cref="Message"/> 是否可以与其他 <see cref="Message"/> 连接
@@ -25,21 +25,21 @@ namespace Sisters.WudiLib
         /// </summary>
         public Message() => sections = new LinkedList<Section>();
 
-        private Message(IEnumerable<Section> sections) => sections = new LinkedList<Section>(sections);
+        private Message(IEnumerable<Section> sections) => this.sections = new LinkedList<Section>(sections);
 
         /// <summary>
         /// 从文本构造新的消息实例
         /// </summary>
         /// <param name="text"></param>
-        public Message(string text) : this() => Sections.Add(Section.Text(text));
+        public Message(string text) : this() => sections.Add(Section.Text(text));
 
         private Message(Message message1, Message message2) : this(message1.Sections.Union(message2.Sections)) { }
 
         private Message(Section section) : this() => sections.Add(section);
 
-        public Message At(long qq) => new Message(Section.At(qq));
+        public static Message At(long qq) => new Message(Section.At(qq));
 
-        public Message AtAll() => new Message(Section.AtAll());
+        public static Message AtAll() => new Message(Section.AtAll());
 
         public static Message operator +(Message left, Message right) => new Message(left, right);
 
@@ -146,7 +146,7 @@ namespace Sisters.WudiLib
 
             public static bool operator ==(Section left, Section right)
             {
-                if (left == null) return right == null;
+                if (left is null) return right is null;
                 return left.Equals(right);
             }
 
