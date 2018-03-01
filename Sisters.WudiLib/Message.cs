@@ -16,41 +16,85 @@ namespace Sisters.WudiLib
         internal ICollection<Section> Sections => sections;
 
         /// <summary>
-        /// 指示此 <see cref="Message"/> 是否可以与其他 <see cref="Message"/> 连接
+        /// 指示此 <see cref="Message"/> 是否可以与其他 <see cref="Message"/> 连接。
         /// </summary>
         private readonly bool canJoin = true;
 
         /// <summary>
-        /// 构造新的消息实例
+        /// 构造新的消息实例。
         /// </summary>
         public Message() => sections = new LinkedList<Section>();
 
+        /// <summary>
+        /// 从 <see cref="IEnumerable{Section}"/> 创建消息。
+        /// </summary>
+        /// <param name="sections"></param>
         private Message(IEnumerable<Section> sections) => this.sections = new LinkedList<Section>(sections);
 
         /// <summary>
-        /// 从文本构造新的消息实例
+        /// 从文本构造新的消息实例。
         /// </summary>
-        /// <param name="text"></param>
+        /// <param name="text">消息内容文本。</param>
         public Message(string text) : this() => sections.Add(Section.Text(text));
 
+        /// <summary>
+        /// 从两个 <see cref="Message"/> 实例创建消息。
+        /// </summary>
+        /// <param name="message1">在前面的消息。</param>
+        /// <param name="message2">在后面的消息。</param>
         private Message(Message message1, Message message2) : this(message1.Sections.Union(message2.Sections)) { }
 
+        /// <summary>
+        /// 从 <see cref="Section"/> 实例创建消息。
+        /// </summary>
+        /// <param name="section">包含的消息段。</param>
         private Message(Section section) : this() => sections.Add(section);
 
+        /// <summary>
+        /// 构造 At 群、讨论组成员消息。
+        /// </summary>
+        /// <param name="qq">要 At 的 QQ 号。</param>
+        /// <returns>构造的消息。</returns>
         public static Message At(long qq) => new Message(Section.At(qq));
 
+        /// <summary>
+        /// 构造 At 群、讨论组全体成员的消息。
+        /// </summary>
+        /// <returns>构造的消息。</returns>
         public static Message AtAll() => new Message(Section.AtAll());
 
+        /// <summary>
+        /// 构造包含本地图片的消息。
+        /// </summary>
+        /// <param name="file">本地图片的路径。</param>
+        /// <returns>构造的消息。</returns>
         public static Message LocalImage(string file) => new Message(Section.LocalImage(file));
 
+        /// <summary>
+        /// 构造一条消息，包含来自网络的图片。
+        /// </summary>
+        /// <param name="url">网络图片 URL。</param>
+        /// <returns>构造的消息。</returns>
         public static Message NetImage(string url) => new Message(Section.NetImage(url));
 
+        /// <summary>
+        /// 构造一条消息，包含来自网络的图片。可以指定是否不使用缓存。
+        /// </summary>
+        /// <param name="url">网络图片 URL。</param>
+        /// <param name="noCache">是否不使用缓存（默认使用）。</param>
+        /// <returns>构造的消息。</returns>
         public static Message NetImage(string url, bool noCache) => new Message(Section.NetImage(url, noCache));
 
+        /// <summary>
+        /// 使用 <c>+</c> 连接两条消息。
+        /// </summary>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <returns></returns>
         public static Message operator +(Message left, Message right) => new Message(left, right);
 
         /// <summary>
-        /// 消息段
+        /// 消息段。
         /// </summary>
         internal class Section : IEquatable<Section>
         {
@@ -94,29 +138,45 @@ namespace Sisters.WudiLib
             }
 
             /// <summary>
-            /// 构造文本消息段
+            /// 构造文本消息段。
             /// </summary>
             /// <param name="text"></param>
             /// <returns></returns>
             internal static Section Text(string text) => new Section("text", ("text", text));
 
             /// <summary>
-            /// 构造 At 消息段
+            /// 构造 At 消息段。
             /// </summary>
             /// <param name="qq"></param>
             /// <returns></returns>
             internal static Section At(long qq) => new Section("at", ("qq", qq.ToString()));
 
             /// <summary>
-            /// 构造 At 全体成员消息段
+            /// 构造 At 全体成员消息段。
             /// </summary>
             /// <returns></returns>
             internal static Section AtAll() => new Section("at", ("qq", "all"));
 
+            /// <summary>
+            /// 构造本地图片消息段。
+            /// </summary>
+            /// <param name="file"></param>
+            /// <returns></returns>
             internal static Section LocalImage(string file) => new Section("image", ("file", "file://" + file));
 
+            /// <summary>
+            /// 构造网络图片消息段。
+            /// </summary>
+            /// <param name="url"></param>
+            /// <returns></returns>
             internal static Section NetImage(string url) => new Section("image", ("file", url));
 
+            /// <summary>
+            /// 构造网络图片消息段。可以指定是否使用缓存。
+            /// </summary>
+            /// <param name="url"></param>
+            /// <param name="noCache">是否使用缓存。</param>
+            /// <returns></returns>
             internal static Section NetImage(string url, bool noCache)
             {
                 if (!noCache) return NetImage(url);
