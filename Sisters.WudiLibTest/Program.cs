@@ -10,8 +10,8 @@ namespace Sisters.WudiLibTest
         {
             var httpApi = new CoolQHttpApi();
             httpApi.ApiAddress = "http://127.0.0.1:5700/";
-            var privateResponse = httpApi.SendPrivateMessageAsync(962549599, "hello").Result;
-            Console.WriteLine(privateResponse.MessageId);
+            //var privateResponse = httpApi.SendPrivateMessageAsync(962549599, "hello").Result;
+            //Console.WriteLine(privateResponse.MessageId);
             var groupResponse = httpApi.SendGroupMessageAsync(72318078, "hello").Result;
             Console.WriteLine(groupResponse.MessageId);
             //605617685
@@ -65,6 +65,17 @@ namespace Sisters.WudiLibTest
             httpApi.SendGroupMessageAsync(72318078, message).Wait();
             #endregion
 
+            #region Image Test
+            var imgMessage = Message.LocalImage(@"C:\Users\Administrator\Desktop\Rinima.jpg");
+            var netMessage = Message.NetImage(@"https://files.yande.re/image/ca815083c96a99a44ff72e70c6957c14/yande.re%20437737%20dennou_shoujo_youtuber_shiro%20heels%20pantyhose%20shiro_%28dennou_shoujo_youtuber_shiro%29%20shouju_ling.jpg");
+            httpApi.SendGroupMessageAsync(72318078, imgMessage).Wait();
+            httpApi.SendGroupMessageAsync(72318078, netMessage).Wait();
+            httpApi.SendGroupMessageAsync(72318078, imgMessage + netMessage).Wait();
+            message += netMessage;
+            httpApi.SendGroupMessageAsync(72318078, message).Wait();
+            #endregion
+
+            Console.WriteLine("end");
             Console.ReadKey();
         }
     }

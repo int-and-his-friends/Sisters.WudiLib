@@ -41,6 +41,12 @@ namespace Sisters.WudiLib
 
         public static Message AtAll() => new Message(Section.AtAll());
 
+        public static Message LocalImage(string file) => new Message(Section.LocalImage(file));
+
+        public static Message NetImage(string url) => new Message(Section.NetImage(url));
+
+        public static Message NetImage(string url, bool noCache) => new Message(Section.NetImage(url, noCache));
+
         public static Message operator +(Message left, Message right) => new Message(left, right);
 
         /// <summary>
@@ -92,31 +98,29 @@ namespace Sisters.WudiLib
             /// </summary>
             /// <param name="text"></param>
             /// <returns></returns>
-            internal static Section Text(string text)
-            {
-                var section = new Section("text", ("text", text));
-                return section;
-            }
+            internal static Section Text(string text) => new Section("text", ("text", text));
 
             /// <summary>
             /// 构造 At 消息段
             /// </summary>
             /// <param name="qq"></param>
             /// <returns></returns>
-            internal static Section At(long qq)
-            {
-                var section = new Section("at", ("qq", qq.ToString()));
-                return section;
-            }
+            internal static Section At(long qq) => new Section("at", ("qq", qq.ToString()));
 
             /// <summary>
             /// 构造 At 全体成员消息段
             /// </summary>
             /// <returns></returns>
-            internal static Section AtAll()
+            internal static Section AtAll() => new Section("at", ("qq", "all"));
+
+            internal static Section LocalImage(string file) => new Section("image", ("file", "file://" + file));
+
+            internal static Section NetImage(string url) => new Section("image", ("file", url));
+
+            internal static Section NetImage(string url, bool noCache)
             {
-                var section = new Section("at", ("qq", "all"));
-                return section;
+                if (!noCache) return NetImage(url);
+                return new Section("image", ("cache", "0"), ("file", url));
             }
 
             public override bool Equals(object obj) => this.Equals(obj as Section);
