@@ -16,7 +16,7 @@ namespace Sisters.WudiLib
         /// </summary>
         /// <param name="context">请求上下文</param>
         /// <returns>是否处理请求</returns>
-        string OnRequest(HttpListenerContext context);
+        bool OnRequest(HttpListenerContext context);
 
         /// <summary>
         /// 当收到上报事件时的回调
