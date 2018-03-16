@@ -10,10 +10,11 @@ namespace Sisters.WudiLibTest
         {
             var httpApi = new CoolQHttpApi();
             httpApi.ApiAddress = "http://127.0.0.1:5700/";
+
             //var privateResponse = httpApi.SendPrivateMessageAsync(962549599, "hello").Result;
             //Console.WriteLine(privateResponse.MessageId);
-            var groupResponse = httpApi.SendGroupMessageAsync(72318078, "hello").Result;
-            Console.WriteLine(groupResponse.MessageId);
+            //var groupResponse = httpApi.SendGroupMessageAsync(72318078, "hello").Result;
+            //Console.WriteLine(groupResponse.MessageId);
             //605617685
             #region kick test
             //var success1 = httpApi.KickGroupMember(605617685, 962549599);
@@ -60,23 +61,60 @@ namespace Sisters.WudiLibTest
             #endregion
 
             #region Message Class Test
-            var message = new Message("this is at test,: ");
-            message += Message.At(962549599);
-            httpApi.SendGroupMessageAsync(72318078, message).Wait();
+            //var message = new Message("this is at test,: ");
+            //message += Message.At(962549599);
+            //httpApi.SendGroupMessageAsync(72318078, message).Wait();
             #endregion
 
             #region Image Test
-            var imgMessage = Message.LocalImage(@"C:\Users\Administrator\Desktop\Rinima.jpg");
-            var netMessage = Message.NetImage(@"https://files.yande.re/image/ca815083c96a99a44ff72e70c6957c14/yande.re%20437737%20dennou_shoujo_youtuber_shiro%20heels%20pantyhose%20shiro_%28dennou_shoujo_youtuber_shiro%29%20shouju_ling.jpg");
-            httpApi.SendGroupMessageAsync(72318078, imgMessage).Wait();
-            httpApi.SendGroupMessageAsync(72318078, netMessage).Wait();
-            httpApi.SendGroupMessageAsync(72318078, imgMessage + netMessage).Wait();
-            message += netMessage;
-            httpApi.SendGroupMessageAsync(72318078, message).Wait();
+            //var imgMessage = Message.LocalImage(@"C:\Users\Administrator\Desktop\Rinima.jpg");
+            //var netMessage = Message.NetImage(@"https://files.yande.re/image/ca815083c96a99a44ff72e70c6957c14/yande.re%20437737%20dennou_shoujo_youtuber_shiro%20heels%20pantyhose%20shiro_%28dennou_shoujo_youtuber_shiro%29%20shouju_ling.jpg");
+            //httpApi.SendGroupMessageAsync(72318078, imgMessage).Wait();
+            //httpApi.SendGroupMessageAsync(72318078, netMessage).Wait();
+            //httpApi.SendGroupMessageAsync(72318078, imgMessage + netMessage).Wait();
+            //message += netMessage;
+            //httpApi.SendGroupMessageAsync(72318078, message).Wait();
             #endregion
+
+            Console.WriteLine("input listening port");
+            string port = Console.ReadLine();
+
+            PostListener listener = new PostListener();
+            listener.ApiClient = httpApi;
+            listener.PostAddress = $"http://127.0.0.1:{port}/";
+            listener.StartListen();
+            listener.FriendRequestEvent += Friend;
+            listener.FriendRequestEvent += PostListener.ApproveAllFriendRequests;
+            listener.GroupInviteEvent += Group;
+            listener.GroupInviteEvent += PostListener.ApproveAllGroupRequests;
+            listener.GroupRequestEvent += Group;
+            listener.GroupRequestEvent += PostListener.ApproveAllGroupRequests;
 
             Console.WriteLine("end");
             Console.ReadKey();
+        }
+
+        private static GroupRequestResponse Group(CoolQHttpApi api, GroupRequest request)
+        {
+            Console.WriteLine("Group");
+            Console.WriteLine(request.Time);
+            Console.WriteLine(request.SelfId);
+            Console.WriteLine(request.GroupId);
+            Console.WriteLine(request.UserId);
+            Console.WriteLine(request.Message);
+            Console.WriteLine(request.Flag);
+            return null;
+        }
+
+        private static FriendRequestResponse Friend(CoolQHttpApi api, FriendRequest request)
+        {
+            Console.WriteLine("Friend");
+            Console.WriteLine(request.Time);
+            Console.WriteLine(request.SelfId);
+            Console.WriteLine(request.UserId);
+            Console.WriteLine(request.Message);
+            Console.WriteLine(request.Flag);
+            return null;
         }
     }
 }

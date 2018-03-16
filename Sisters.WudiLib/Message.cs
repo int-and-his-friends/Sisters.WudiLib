@@ -29,7 +29,11 @@ namespace Sisters.WudiLib
         /// 从 <see cref="IEnumerable{Section}"/> 创建消息。
         /// </summary>
         /// <param name="sections"></param>
-        private Message(IEnumerable<Section> sections) => this.sections = new LinkedList<Section>(sections);
+        internal Message(IEnumerable<Section> sections, bool canJoin = true)
+        {
+            this.sections = new LinkedList<Section>(sections);
+            this.canJoin = canJoin;
+        }
 
         /// <summary>
         /// 从文本构造新的消息实例。
@@ -42,13 +46,23 @@ namespace Sisters.WudiLib
         /// </summary>
         /// <param name="message1">在前面的消息。</param>
         /// <param name="message2">在后面的消息。</param>
-        private Message(Message message1, Message message2) : this(message1.Sections.Union(message2.Sections)) { }
+        private Message(Message message1, Message message2) : this(message1.Sections.Union(message2.Sections))
+        {
+            if (!message1.canJoin || !message2.canJoin)
+            {
+                throw new InvalidOperationException("有一个或多个消息不能被连接。");
+            }
+        }
 
         /// <summary>
         /// 从 <see cref="Section"/> 实例创建消息。
         /// </summary>
         /// <param name="section">包含的消息段。</param>
-        private Message(Section section) : this() => sections.Add(section);
+        private Message(Section section, bool canJoin = true) : this()
+        {
+            sections.Add(section);
+            this.canJoin = canJoin;
+        }
 
         /// <summary>
         /// 构造 At 群、讨论组成员消息。
@@ -84,6 +98,8 @@ namespace Sisters.WudiLib
         /// <param name="noCache">是否不使用缓存（默认使用）。</param>
         /// <returns>构造的消息。</returns>
         public static Message NetImage(string url, bool noCache) => new Message(Section.NetImage(url, noCache));
+
+        public static Message Shake() => new Message(Section.Shake(), false);
 
         /// <summary>
         /// 使用 <c>+</c> 连接两条消息。
@@ -182,6 +198,8 @@ namespace Sisters.WudiLib
                 if (!noCache) return NetImage(url);
                 return new Section("image", ("cache", "0"), ("file", url));
             }
+
+            internal static Section Shake() => new Section("shake");
 
             public override bool Equals(object obj) => this.Equals(obj as Section);
             public bool Equals(Section other)

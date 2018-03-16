@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
+﻿using System.Threading.Tasks;
 using Sisters.WudiLib.Responses;
 
 namespace Sisters.WudiLib
