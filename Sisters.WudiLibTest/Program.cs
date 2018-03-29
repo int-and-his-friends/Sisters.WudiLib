@@ -1,4 +1,5 @@
 ﻿using Sisters.WudiLib;
+using Sisters.WudiLib.Posts;
 using System;
 using System.Linq;
 
@@ -8,7 +9,7 @@ namespace Sisters.WudiLibTest
     {
         static void Main(string[] args)
         {
-            var httpApi = new CoolQHttpApi();
+            var httpApi = new HttpApiClient();
             httpApi.ApiAddress = "http://127.0.0.1:5700/";
 
             //var privateResponse = httpApi.SendPrivateMessageAsync(962549599, "hello").Result;
@@ -76,25 +77,30 @@ namespace Sisters.WudiLibTest
             //httpApi.SendGroupMessageAsync(72318078, message).Wait();
             #endregion
 
-            Console.WriteLine("input listening port");
-            string port = Console.ReadLine();
-
-            PostListener listener = new PostListener();
-            listener.ApiClient = httpApi;
-            listener.PostAddress = $"http://127.0.0.1:{port}/";
-            listener.StartListen();
-            listener.FriendRequestEvent += Friend;
-            listener.FriendRequestEvent += PostListener.ApproveAllFriendRequests;
-            listener.GroupInviteEvent += Group;
-            listener.GroupInviteEvent += PostListener.ApproveAllGroupRequests;
-            listener.GroupRequestEvent += Group;
-            listener.GroupRequestEvent += PostListener.ApproveAllGroupRequests;
+            ListeningTest(httpApi);
 
             Console.WriteLine("end");
             Console.ReadKey();
         }
 
-        private static GroupRequestResponse Group(CoolQHttpApi api, GroupRequest request)
+        private static void ListeningTest(HttpApiClient httpApi)
+        {
+            Console.WriteLine("input listening port");
+            string port = Console.ReadLine();
+
+            ApiPostListener listener = new ApiPostListener();
+            listener.ApiClient = httpApi;
+            listener.PostAddress = $"http://127.0.0.1:{port}/";
+            listener.StartListen();
+            listener.FriendRequestEvent += Friend;
+            listener.FriendRequestEvent += ApiPostListener.ApproveAllFriendRequests;
+            listener.GroupInviteEvent += Group;
+            listener.GroupInviteEvent += ApiPostListener.ApproveAllGroupRequests;
+            listener.GroupRequestEvent += Group;
+            listener.GroupRequestEvent += ApiPostListener.ApproveAllGroupRequests;
+        }
+
+        private static GroupRequestResponse Group(HttpApiClient api, GroupRequest request)
         {
             Console.WriteLine("Group");
             Console.WriteLine(request.Time);
@@ -106,7 +112,7 @@ namespace Sisters.WudiLibTest
             return null;
         }
 
-        private static FriendRequestResponse Friend(CoolQHttpApi api, FriendRequest request)
+        private static FriendRequestResponse Friend(HttpApiClient api, FriendRequest request)
         {
             Console.WriteLine("Friend");
             Console.WriteLine(request.Time);

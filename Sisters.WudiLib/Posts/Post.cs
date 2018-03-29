@@ -2,7 +2,7 @@
 using Newtonsoft.Json.Converters;
 using System;
 
-namespace Sisters.WudiLib
+namespace Sisters.WudiLib.Posts
 {
     public class Post
     {

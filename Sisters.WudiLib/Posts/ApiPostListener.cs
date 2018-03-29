@@ -5,12 +5,12 @@ using System.IO;
 using System.Net;
 using System.Threading.Tasks;
 
-namespace Sisters.WudiLib
+namespace Sisters.WudiLib.Posts
 {
-    public class PostListener
+    public class ApiPostListener
     {
         #region
-        public CoolQHttpApi ApiClient { get; set; }
+        public HttpApiClient ApiClient { get; set; }
 
         /// <summary>
         /// 获取或设置 HTTP API 的上报地址。如果已经开始监听，则设置无效。
@@ -18,9 +18,7 @@ namespace Sisters.WudiLib
         public string PostAddress { get; set; }
 
         private readonly object listenerLock = new object();
-
-        private bool isListening = false;
-
+        
         private HttpListener listener = new HttpListener();
 
         private Task listenTask;
@@ -55,10 +53,10 @@ namespace Sisters.WudiLib
                 using (var streamReader = new StreamReader(inStream))
                     requestContent = streamReader.ReadToEnd();
 
-                responseObject = ProcessPost(requestContent);
-
                 using (var response = context.Response)
                 {
+                    responseObject = ProcessPost(requestContent, response);
+
                     response.ContentType = "application/json";
                     if (responseObject != null)
                     {
@@ -76,7 +74,7 @@ namespace Sisters.WudiLib
         #endregion
 
         #region ProcessPost
-        private object ProcessPost(string content)
+        private object ProcessPost(string content, HttpListenerResponse response)
         {
             if (string.IsNullOrEmpty(content)) return null;
 
@@ -184,10 +182,10 @@ namespace Sisters.WudiLib
         #endregion
 
         #region DefaultHandlers
-        public static GroupRequestResponse ApproveAllGroupRequests(CoolQHttpApi api, GroupRequest groupRequest)
+        public static GroupRequestResponse ApproveAllGroupRequests(HttpApiClient api, GroupRequest groupRequest)
             => new GroupRequestResponse { Approve = true };
 
-        public static FriendRequestResponse ApproveAllFriendRequests(CoolQHttpApi api, FriendRequest friendRequest)
+        public static FriendRequestResponse ApproveAllFriendRequests(HttpApiClient api, FriendRequest friendRequest)
             => new FriendRequestResponse { Approve = true };
         #endregion
     }

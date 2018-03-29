@@ -1,13 +1,42 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
 using Sisters.WudiLib.Responses;
 
 namespace Sisters.WudiLib
 {
+    partial class HttpApiClient
+    {
+        private static readonly string PrivatePath = "/send_private_msg";
+        private static readonly string GroupPath = "/send_group_msg";
+        private static readonly string DiscussPath = "/send_discuss_msg";
+        private static readonly string KickGroupMemberPath = "/set_group_kick";
+        private static readonly string RecallPath = "/delete_msg";
+        private static readonly string LoginInfoPath = "/get_login_info";
+        private static readonly string GroupMemberInfoPath = "/get_group_member_info";
+        private static readonly string GroupMemberListPath = "/get_group_member_list";
+        private static readonly string CleanPath = "/clean_data_dir";
+
+        private string PrivateUrl => apiAddress + PrivatePath;
+        private string GroupUrl => apiAddress + GroupPath;
+        private string DiscussUrl => apiAddress + DiscussPath;
+        private string KickGroupMemberUrl => apiAddress + KickGroupMemberPath;
+        private string RecallUrl => apiAddress + RecallPath;
+        private string LoginInfoUrl => apiAddress + LoginInfoPath;
+        private string GroupMemberInfoUrl => apiAddress + GroupMemberInfoPath;
+        private string GroupMemberListUrl => apiAddress + GroupMemberListPath;
+        private string CleanUrl => apiAddress + CleanPath;
+    }
+
     /// <summary>
     /// 通过酷Q HTTP API实现QQ功能。
     /// </summary>
-    public partial class CoolQHttpApi
+    public partial class HttpApiClient
     {
+        private int _isReadyToCleanData;
+
+        public bool IsCleaningData => _isReadyToCleanData != 0;
+
         private string apiAddress;
 
         /// <summary>
@@ -17,6 +46,27 @@ namespace Sisters.WudiLib
         {
             get => apiAddress;
             set => apiAddress = value.TrimEnd('/');
+        }
+
+        public bool StartClean(int intervalMinutes)
+        {
+            if (Interlocked.CompareExchange(ref _isReadyToCleanData, 1, 0) == 0)
+            {
+                Task.Run(async () =>
+                {
+                    while (true)
+                    {
+                        try
+                        {
+                            await this.CleanImageData();
+                        }
+                        catch (Exception) { }
+                        await Task.Delay(60000 * intervalMinutes);
+                    }
+                });
+                return true;
+            }
+            return false;
         }
 
         /// <summary>
@@ -42,7 +92,7 @@ namespace Sisters.WudiLib
             var data = new
             {
                 user_id = qq,
-                message = message.Sections,
+                message = message.Serializing,
             };
             var result = await Utils.PostAsync<SendPrivateMessageResponseData>(PrivateUrl, data);
             return result;
@@ -71,7 +121,7 @@ namespace Sisters.WudiLib
             var data = new
             {
                 group_id = groupId,
-                message = message.Sections,
+                message = message.Serializing,
             };
             var result = await Utils.PostAsync<SendGroupMessageResponseData>(GroupUrl, data);
             return result;
@@ -177,5 +227,12 @@ namespace Sisters.WudiLib
             var result = await Utils.PostAsync<GroupMemberInfo[]>(GroupMemberListUrl, data);
             return result;
         }
+
+        /// <summary>
+        /// 清理数据目录中的图片。
+        /// </summary>
+        /// <returns></returns>
+        public async Task CleanImageData()
+            => await Utils.PostAsync(CleanUrl, new { data_dir = "image" });
     }
 }

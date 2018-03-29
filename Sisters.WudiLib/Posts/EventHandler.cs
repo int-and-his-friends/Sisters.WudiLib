@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace Sisters.WudiLib
+namespace Sisters.WudiLib.Posts
 {
     public abstract class Response
     {
@@ -26,7 +26,9 @@ namespace Sisters.WudiLib
         public string Remark { get; set; }
     }
 
-    public delegate GroupRequestResponse GroupRequestEventHandler(CoolQHttpApi api, GroupRequest request);
+    public delegate GroupRequestResponse GroupRequestEventHandler(HttpApiClient api, GroupRequest request);
 
-    public delegate FriendRequestResponse FriendRequestEventHandler(CoolQHttpApi api, FriendRequest request);
+    public delegate FriendRequestResponse FriendRequestEventHandler(HttpApiClient api, FriendRequest request);
+
+    public delegate bool PostResponser<in T>(T arg);
 }
