@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 using Sisters.WudiLib.Responses;
 
 namespace Sisters.WudiLib
@@ -10,6 +11,7 @@ namespace Sisters.WudiLib
         private static readonly string PrivatePath = "/send_private_msg";
         private static readonly string GroupPath = "/send_group_msg";
         private static readonly string DiscussPath = "/send_discuss_msg";
+        private static readonly string MessagePath = "/send_msg";
         private static readonly string KickGroupMemberPath = "/set_group_kick";
         private static readonly string RecallPath = "/delete_msg";
         private static readonly string LoginInfoPath = "/get_login_info";
@@ -20,6 +22,7 @@ namespace Sisters.WudiLib
         private string PrivateUrl => apiAddress + PrivatePath;
         private string GroupUrl => apiAddress + GroupPath;
         private string DiscussUrl => apiAddress + DiscussPath;
+        private string MessageUrl => apiAddress + MessagePath;
         private string KickGroupMemberUrl => apiAddress + KickGroupMemberPath;
         private string RecallUrl => apiAddress + RecallPath;
         private string LoginInfoUrl => apiAddress + LoginInfoPath;
@@ -142,6 +145,29 @@ namespace Sisters.WudiLib
                 auto_escape = true,
             };
             var result = await Utils.PostAsync<SendDiscussMessageResponseData>(DiscussUrl, data);
+            return result;
+        }
+
+        /// <summary>
+        /// 发送消息。
+        /// </summary>
+        /// <param name="source">收到上报时的参数。</param>
+        /// <param name="message">要发送的消息。</param>
+        /// <returns></returns>
+        public async Task<SendMessageResponseData> SendMessageAsync(Posts.Message source, Message message)
+        {
+            var data = JObject.FromObject(source);
+            data["message"] = JToken.FromObject(message.Serializing);
+            var result = await Utils.PostAsync<SendMessageResponseData>(MessageUrl, data);
+            return result;
+        }
+
+        public async Task<SendMessageResponseData> SendMessageAsync(Posts.Message source, string message)
+        {
+            var data = JObject.FromObject(source);
+            data["message"] = JToken.FromObject(message);
+            data["auto_escape"] = true;
+            var result = await Utils.PostAsync<SendMessageResponseData>(MessageUrl, data);
             return result;
         }
 

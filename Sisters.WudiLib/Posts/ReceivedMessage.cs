@@ -9,7 +9,7 @@ namespace Sisters.WudiLib.Posts
 {
     public class ReceivedMessage : WudiLib.Message
     {
-        private const string NotImplementedMessage = "暂时不支持数组格式的上报数据。";
+        //private const string NotImplementedMessage = "暂时不支持数组格式的上报数据。";
         bool _isString = false;
         string _message;
 
@@ -28,9 +28,9 @@ namespace Sisters.WudiLib.Posts
                 _message = s;
                 return;
             }
-            if (!(o is IEnumerable<JObject> jObjectArray))
+            if (!(o is JArray jObjectArray))
                 throw new InvalidOperationException("用于构造消息的对象即不是字符，也不是数组。可能是上报数据有错误。");
-            var sections = jObjectArray.Select(jo => new Section(jo));
+            var sections = jObjectArray.Select(jo => new Section((JObject)jo));
             _sections = sections.ToList();
         }
 
@@ -47,7 +47,7 @@ namespace Sisters.WudiLib.Posts
                 string sendingRaw = Regex.Replace(
                     _message,
                     $@"\[CQ:{Section.ImageType},file=.+?,url=(.+?)\]",
-                    m => $"[CQ:{Section.ImageType},file={m.Groups[0].Value}]"
+                    m => $"[CQ:{Section.ImageType},file={m.Groups[1].Value}]"
                 );
                 return new RawMessage(sendingRaw);
             }

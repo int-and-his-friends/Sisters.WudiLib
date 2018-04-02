@@ -6,5 +6,7 @@ namespace Sisters.WudiLib.Posts
 
     public delegate FriendRequestResponse FriendRequestEventHandler(HttpApiClient api, FriendRequest request);
 
-    public delegate bool PostResponser<in T>(T arg);
+    public delegate void MessageEventHandler(HttpApiClient api, Message message);
+
+    public delegate bool PostResponser<in T>(T arg) where T : Response;
 }

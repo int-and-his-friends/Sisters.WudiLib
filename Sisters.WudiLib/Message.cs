@@ -22,7 +22,7 @@ namespace Sisters.WudiLib
         protected SectionMessage() => sections = new LinkedList<Section>();
 
         protected SectionMessage(IEnumerable<Section> sections)
-            => sections = new LinkedList<Section>(sections);
+            => this.sections = new LinkedList<Section>(sections);
 
         protected readonly ICollection<Section> sections;
 
@@ -77,7 +77,7 @@ namespace Sisters.WudiLib
             /// </summary>
             /// <exception cref="InvalidOperationException"></exception>
             /// <param name="jObject"></param>
-            internal Section(Newtonsoft.Json.Linq.JObject jObject)
+            internal Section(Newtonsoft.Json.Linq.JToken jObject)
             {
                 try
                 {

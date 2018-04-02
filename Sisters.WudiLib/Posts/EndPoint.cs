@@ -22,6 +22,22 @@ namespace Sisters.WudiLib.Posts
                 return type.ToLowerInvariant();
             }
         }
+
+        internal EndPoint FromMessage(Message message)
+        {
+            switch (message)
+            {
+                case PrivateMessage p:
+                    return new PrivateEndPoint(p.UserId);
+                case GroupMessage g:
+                    return new GroupEndPoint(g.GroupId);
+                case DiscussMessage d:
+                    return new DiscussEndPoint(d.DiscussId);
+                default:
+                    break;
+            }
+            return null;
+        }
     }
 
     public class PrivateEndPoint : EndPoint

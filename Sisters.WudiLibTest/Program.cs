@@ -98,6 +98,7 @@ namespace Sisters.WudiLibTest
             listener.GroupInviteEvent += ApiPostListener.ApproveAllGroupRequests;
             listener.GroupRequestEvent += Group;
             listener.GroupRequestEvent += ApiPostListener.ApproveAllGroupRequests;
+            listener.MessageEvent += ApiPostListener.RepeatAsync;
         }
 
         private static GroupRequestResponse Group(HttpApiClient api, GroupRequest request)

@@ -8,7 +8,7 @@ namespace Sisters.WudiLib.Responses
     /// <summary>
     /// 发送消息后返回的数据
     /// </summary>
-    public abstract class SendMessageResponseData
+    public class SendMessageResponseData
     {
         internal SendMessageResponseData()
         {

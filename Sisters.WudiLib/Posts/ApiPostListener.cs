@@ -46,6 +46,10 @@ namespace Sisters.WudiLib.Posts
             {
                 var context = listener.GetContext();
                 var request = context.Request;
+
+                if (request.ContentType != "application/json; charset=UTF-8")
+                    continue;
+
                 object responseObject;
                 string requestContent;
 
@@ -91,6 +95,7 @@ namespace Sisters.WudiLib.Posts
                 case Post.RequestType:
                     return ProcessRequest(content);
             }
+            // log needed
             return null;
         }
 
@@ -99,8 +104,35 @@ namespace Sisters.WudiLib.Posts
             switch (groupMessage.MessageType)
             {
                 case Message.PrivateType:
-
+                    MessageEvent?.Invoke(ApiClient, JsonConvert.DeserializeObject<PrivateMessage>(content));
+                    break;
+                case Message.GroupType:
+                    ProcessGroupMessage(content, groupMessage);
+                    break;
+                case Message.DiscussType:
+                    MessageEvent?.Invoke(ApiClient, JsonConvert.DeserializeObject<DiscussMessage>(content));
+                    break;
                 default:
+                    // log needed
+                    break;
+            }
+        }
+
+        private void ProcessGroupMessage(string content, GroupMessage groupMessage)
+        {
+            switch (groupMessage.SubType)
+            {
+                case GroupMessage.NormalType:
+                    MessageEvent?.Invoke(ApiClient, groupMessage);
+                    break;
+                case GroupMessage.AnonymousType:
+                    MessageEvent?.Invoke(ApiClient, JsonConvert.DeserializeObject<AnonymousMessage>(content));
+                    break;
+                case GroupMessage.NoticeType:
+                    // 
+                    break;
+                default:
+                    // log needed
                     break;
             }
         }
@@ -193,12 +225,19 @@ namespace Sisters.WudiLib.Posts
         }
         #endregion
 
+        #region Message
+        public event MessageEventHandler MessageEvent;
+        #endregion
+
         #region DefaultHandlers
         public static GroupRequestResponse ApproveAllGroupRequests(HttpApiClient api, GroupRequest groupRequest)
             => new GroupRequestResponse { Approve = true };
 
         public static FriendRequestResponse ApproveAllFriendRequests(HttpApiClient api, FriendRequest friendRequest)
             => new FriendRequestResponse { Approve = true };
+
+        public static async void RepeatAsync(HttpApiClient api, Message message)
+            => await api?.SendMessageAsync(message, message.Content);
         #endregion
     }
 }

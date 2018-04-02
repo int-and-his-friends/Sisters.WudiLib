@@ -62,6 +62,6 @@ namespace Sisters.WudiLib.Posts
     public class DiscussMessage : Message
     {
         [JsonProperty("discuss_id")]
-        protected long DiscussId { get; private set; }
+        internal long DiscussId { get; private set; }
     }
 }
