@@ -18,7 +18,7 @@ namespace Sisters.WudiLib.Posts
         public string PostAddress { get; set; }
 
         private readonly object listenerLock = new object();
-        
+
         private HttpListener listener = new HttpListener();
 
         private Task listenTask;
@@ -78,12 +78,13 @@ namespace Sisters.WudiLib.Posts
         {
             if (string.IsNullOrEmpty(content)) return null;
 
-            Post post = JsonConvert.DeserializeObject<Post>(content);
+            GroupMessage post = JsonConvert.DeserializeObject<GroupMessage>(content);
             if (post == null) return null;
 
             switch (post.PostType)
             {
                 case Post.MessageType:
+                    ProcessMessage(content, post);
                     return null;
                 case Post.EventType:
                     return null;
@@ -91,6 +92,17 @@ namespace Sisters.WudiLib.Posts
                     return ProcessRequest(content);
             }
             return null;
+        }
+
+        private void ProcessMessage(string content, GroupMessage groupMessage)
+        {
+            switch (groupMessage.MessageType)
+            {
+                case Message.PrivateType:
+
+                default:
+                    break;
+            }
         }
 
         private object ProcessRequest(string content)

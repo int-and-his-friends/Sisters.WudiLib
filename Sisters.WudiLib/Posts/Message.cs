@@ -56,7 +56,7 @@ namespace Sisters.WudiLib.Posts
         [JsonProperty("anonymous")]
         internal string Anoymous { get; private set; }
         [JsonProperty("anonymous_flag")]
-        internal string AnonymousFlag { get; set; }
+        internal string AnonymousFlag { get; private set; }
     }
 
     public class DiscussMessage : Message
