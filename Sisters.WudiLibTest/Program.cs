@@ -99,6 +99,16 @@ namespace Sisters.WudiLibTest
             listener.GroupRequestEvent += Group;
             listener.GroupRequestEvent += ApiPostListener.ApproveAllGroupRequests;
             listener.MessageEvent += ApiPostListener.RepeatAsync;
+            listener.MessageEvent += PrintRaw;
+            listener.GroupNoticeEvent += ApiPostListener.RepeatAsync;
+            listener.AnonymousMessageEvent += ApiPostListener.RepeatAsync;
+            listener.AnonymousMessageEvent += PrintRaw;
+            //listener.MessageEvent += ApiPostListener.Say("good");
+        }
+
+        private static void PrintRaw(HttpApiClient api, WudiLib.Posts.Message message)
+        {
+            Console.WriteLine(message.Content.Raw);
         }
 
         private static GroupRequestResponse Group(HttpApiClient api, GroupRequest request)

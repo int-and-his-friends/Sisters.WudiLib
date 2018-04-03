@@ -36,6 +36,8 @@ namespace Sisters.WudiLib.Posts
 
         internal override object Serializing => this.Forward().Serializing;
 
+        public override string Raw => _isString ? _message : GetRaw(_sections);
+
         /// <summary>
         /// 转发：转换成可以发送的格式。
         /// </summary>

@@ -126,10 +126,13 @@ namespace Sisters.WudiLib.Posts
                     MessageEvent?.Invoke(ApiClient, groupMessage);
                     break;
                 case GroupMessage.AnonymousType:
-                    MessageEvent?.Invoke(ApiClient, JsonConvert.DeserializeObject<AnonymousMessage>(content));
+                    AnonymousMessageEvent?.Invoke(
+                        ApiClient,
+                        JsonConvert.DeserializeObject<AnonymousMessage>(content)
+                    );
                     break;
                 case GroupMessage.NoticeType:
-                    // 
+                    GroupNoticeEvent?.Invoke(ApiClient, groupMessage);
                     break;
                 default:
                     // log needed
@@ -227,6 +230,10 @@ namespace Sisters.WudiLib.Posts
 
         #region Message
         public event MessageEventHandler MessageEvent;
+
+        public event AnonymousMessageEventHanlder AnonymousMessageEvent;
+
+        public event GroupNoticeEventHandler GroupNoticeEvent;
         #endregion
 
         #region DefaultHandlers
@@ -238,6 +245,12 @@ namespace Sisters.WudiLib.Posts
 
         public static async void RepeatAsync(HttpApiClient api, Message message)
             => await api?.SendMessageAsync(message, message.Content);
+
+        public static MessageEventHandler Say(string something)
+            => async (api, message) => await api?.SendMessageAsync(message, something);
+
+        //public static void Print(HttpApiClient api, GroupMessage notice)
+        //    => Console.WriteLine(notice.Content);
         #endregion
     }
 }

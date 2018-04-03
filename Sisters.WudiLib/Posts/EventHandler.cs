@@ -8,5 +8,9 @@ namespace Sisters.WudiLib.Posts
 
     public delegate void MessageEventHandler(HttpApiClient api, Message message);
 
+    public delegate void AnonymousMessageEventHanlder(HttpApiClient api, AnonymousMessage message);
+
+    public delegate void GroupNoticeEventHandler(HttpApiClient api, GroupMessage notice);
+
     public delegate bool PostResponser<in T>(T arg) where T : Response;
 }

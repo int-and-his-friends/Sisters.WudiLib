@@ -51,7 +51,7 @@ namespace Sisters.WudiLib.Posts
         public string SubType { get; private set; }
     }
 
-    internal class AnonymousMessage : GroupMessage
+    public class AnonymousMessage : GroupMessage
     {
         [JsonProperty("anonymous")]
         internal string Anoymous { get; private set; }

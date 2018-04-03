@@ -15,6 +15,8 @@ namespace Sisters.WudiLib
         /// 返回发送时要序列化的对象。
         /// </summary>
         internal abstract object Serializing { get; }
+
+        public abstract string Raw { get; }
     }
 
     public abstract class SectionMessage : Message
@@ -26,13 +28,18 @@ namespace Sisters.WudiLib
 
         protected readonly ICollection<Section> sections;
 
+        public override string Raw => GetRaw(sections);
+
+        internal static string GetRaw(IEnumerable<Section> sections)
+            => string.Join(string.Empty, sections.Select(section => section.Raw));
+
         /// <summary>
         /// 消息段。
         /// </summary>
         protected internal class Section : IEquatable<Section>
         {
             public const string ImageType = "image";
-            
+
             /// <summary>
             /// 仅支持大小写字母、数字、短横线（-）、下划线（_）及点号（.）。
             /// </summary>
@@ -49,7 +56,7 @@ namespace Sisters.WudiLib
             internal IReadOnlyDictionary<string, string> Data => _data;
 
             [JsonIgnore]
-            private string Raw
+            internal string Raw
             {
                 get
                 {

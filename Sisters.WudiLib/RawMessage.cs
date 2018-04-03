@@ -8,6 +8,8 @@ namespace Sisters.WudiLib
 
         public RawMessage(string raw) => _raw = raw ?? throw new ArgumentNullException(nameof(raw));
 
+        public override string Raw => _raw;
+
         internal override object Serializing => _raw;
 
         public static RawMessage operator +(RawMessage left, RawMessage right)
