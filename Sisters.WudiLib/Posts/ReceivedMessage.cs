@@ -46,25 +46,27 @@ namespace Sisters.WudiLib.Posts
         {
             if (_isString)
             {
-                string sendingRaw = Regex.Replace(
-                    _message,
-                    $@"\[CQ:{Section.ImageType},file=.+?,url=(.+?)\]",
-                    m => $"[CQ:{Section.ImageType},file={m.Groups[1].Value}]"
-                );
-                return new RawMessage(sendingRaw);
+                //string sendingRaw = Regex.Replace(
+                //    _message,
+                //    $@"\[CQ:{Section.ImageType},file=.+?,url=(.+?)\]",
+                //    m => $"[CQ:{Section.ImageType},file={m.Groups[1].Value}]"
+                //);
+                //return new RawMessage(sendingRaw);
+                return new RawMessage(_message);
             }
-            return new SendingMessage(_sections.Select(section =>
-            {
-                if (section.Type != Section.ImageType) return section;
-                try
-                {
-                    return Section.NetImage(section.Data["url"]);
-                }
-                catch (KeyNotFoundException)
-                {
-                    return section;
-                }
-            }), true);
+            //return new SendingMessage(_sections.Select(section =>
+            //{
+            //    if (section.Type != Section.ImageType) return section;
+            //    try
+            //    {
+            //        return Section.NetImage(section.Data["url"]);
+            //    }
+            //    catch (KeyNotFoundException)
+            //    {
+            //        return section;
+            //    }
+            //}), true);
+            return new SendingMessage(_sections);
         }
     }
 }
