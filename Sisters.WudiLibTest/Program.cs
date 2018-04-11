@@ -91,6 +91,7 @@ namespace Sisters.WudiLibTest
             ApiPostListener listener = new ApiPostListener();
             listener.ApiClient = httpApi;
             listener.PostAddress = $"http://127.0.0.1:{port}/";
+            listener.ForwardTo = "http://[::1]:10202";
             listener.StartListen();
             listener.FriendRequestEvent += Friend;
             listener.FriendRequestEvent += ApiPostListener.ApproveAllFriendRequests;
@@ -98,12 +99,21 @@ namespace Sisters.WudiLibTest
             listener.GroupInviteEvent += ApiPostListener.ApproveAllGroupRequests;
             listener.GroupRequestEvent += Group;
             listener.GroupRequestEvent += ApiPostListener.ApproveAllGroupRequests;
-            listener.MessageEvent += ApiPostListener.RepeatAsync;
+            //listener.MessageEvent += ApiPostListener.RepeatAsync;
             listener.MessageEvent += PrintRaw;
             listener.GroupNoticeEvent += ApiPostListener.RepeatAsync;
             listener.AnonymousMessageEvent += ApiPostListener.RepeatAsync;
             listener.AnonymousMessageEvent += PrintRaw;
             //listener.MessageEvent += ApiPostListener.Say("good");
+
+            var listener2 = new ApiPostListener();
+            listener2.PostAddress = "http://[::1]:10202";
+            listener2.StartListen();
+            listener2.MessageEvent += (api, message) =>
+            {
+                Console.WriteLine(message.Time);
+                Console.WriteLine(message.Content.Raw);
+            };
         }
 
         private static void PrintRaw(HttpApiClient api, WudiLib.Posts.Message message)

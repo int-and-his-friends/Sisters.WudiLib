@@ -13,16 +13,23 @@ namespace Sisters.WudiLib
         private static async Task<HttpApiResponse<T>> PostApiAsync<T>(string url, object data)
         {
             if (data is null) throw new ArgumentNullException(nameof(data), "data不能为null");
-            string json = JsonConvert.SerializeObject(data);
-            using (HttpContent content = new StringContent(json, Encoding.UTF8, "application/json"))
-            using (var http = new HttpClient())
+            try
             {
-                using (var response = (await http.PostAsync(url, content)).EnsureSuccessStatusCode())
+                string json = JsonConvert.SerializeObject(data);
+                using (HttpContent content = new StringContent(json, Encoding.UTF8, "application/json"))
+                using (var http = new HttpClient())
                 {
-                    string responseContent = await response.Content.ReadAsStringAsync();
-                    var result = JsonConvert.DeserializeObject<HttpApiResponse<T>>(responseContent);
-                    return result;
+                    using (var response = (await http.PostAsync(url, content)).EnsureSuccessStatusCode())
+                    {
+                        string responseContent = await response.Content.ReadAsStringAsync();
+                        var result = JsonConvert.DeserializeObject<HttpApiResponse<T>>(responseContent);
+                        return result;
+                    }
                 }
+            }
+            catch (Exception e)
+            {
+                throw new ApiAccessException("访问 API 时出现错误。", e);
             }
         }
 

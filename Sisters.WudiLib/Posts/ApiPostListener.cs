@@ -4,18 +4,42 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Threading.Tasks;
+using http = System.Net.Http;
 
 namespace Sisters.WudiLib.Posts
 {
     public class ApiPostListener
     {
         #region
+        /// <summary>
+        /// 获取或设置 HTTP API 客户端实例，将在发生事件时传给事件处理器。
+        /// </summary>
         public HttpApiClient ApiClient { get; set; }
 
+        private string _postAddress;
         /// <summary>
         /// 获取或设置 HTTP API 的上报地址。如果已经开始监听，则设置无效。
         /// </summary>
-        public string PostAddress { get; set; }
+        public string PostAddress
+        {
+            get => _postAddress;
+            set
+            {
+                string address = value;
+                if (!address.EndsWith("/")) address += "/";
+                _postAddress = address;
+            }
+        }
+
+        private string _forwardTo;
+        /// <summary>
+        /// 获取或设置转发地址。
+        /// </summary>
+        public string ForwardTo
+        {
+            get => _forwardTo;
+            set => System.Threading.Interlocked.Exchange(ref _forwardTo, value);
+        }
 
         private readonly object listenerLock = new object();
 
@@ -24,7 +48,7 @@ namespace Sisters.WudiLib.Posts
         private Task listenTask;
 
         /// <summary>
-        /// 获取当前是否监听 HTTP API 的上报数据。如果状态设置失败，此属性不会改变。
+        /// 获取当前是否监听 HTTP API 的上报数据。
         /// </summary>
         public bool IsListening => listener.IsListening;
 
@@ -47,7 +71,10 @@ namespace Sisters.WudiLib.Posts
                 var context = listener.GetContext();
                 var request = context.Request;
 
-                if (request.ContentType != "application/json; charset=UTF-8")
+                //if (request.ContentType != "application/json; charset=UTF-8")
+                //    continue;
+
+                if (!request.ContentType.StartsWith("application/json"))
                     continue;
 
                 object responseObject;
@@ -57,6 +84,10 @@ namespace Sisters.WudiLib.Posts
                 using (var streamReader = new StreamReader(inStream))
                     requestContent = streamReader.ReadToEnd();
 
+                // 转发
+                Forward(requestContent);
+
+                // 响应
                 using (var response = context.Response)
                 {
                     responseObject = ProcessPost(requestContent, response);
@@ -74,6 +105,27 @@ namespace Sisters.WudiLib.Posts
                 }
             }
 
+        }
+
+        private void Forward(string content)
+        {
+            string to = ForwardTo;
+            if (string.IsNullOrEmpty(to)) return;
+            Task.Run(async () =>
+            {
+                try
+                {
+                    using (var client = new http::HttpClient())
+                    {
+                        var stringContent = new http::StringContent(content, System.Text.Encoding.UTF8, "application/json");
+                        await client.PostAsync(to, stringContent);
+                    }
+                }
+                catch (Exception)
+                {
+                    // TODO: Log
+                }
+            });
         }
         #endregion
 
@@ -171,6 +223,9 @@ namespace Sisters.WudiLib.Posts
         #region GroupRequest
         private readonly ICollection<GroupRequestEventHandler> groupRequestEventHandlers = new LinkedList<GroupRequestEventHandler>();
 
+        /// <summary>
+        /// 收到加群请求事件。
+        /// </summary>
         public event GroupRequestEventHandler GroupRequestEvent
         {
             add { groupRequestEventHandlers.Add(value); }
@@ -191,6 +246,9 @@ namespace Sisters.WudiLib.Posts
         #region GroupInvite
         private readonly ICollection<GroupRequestEventHandler> groupInviteEventHandlers = new LinkedList<GroupRequestEventHandler>();
 
+        /// <summary>
+        /// 收到加群邀请事件。
+        /// </summary>
         public event GroupRequestEventHandler GroupInviteEvent
         {
             add { groupInviteEventHandlers.Add(value); }
@@ -211,6 +269,9 @@ namespace Sisters.WudiLib.Posts
         #region FriendRequest
         private readonly ICollection<FriendRequestEventHandler> friendRequestEventHandlers = new LinkedList<FriendRequestEventHandler>();
 
+        /// <summary>
+        /// 收到好友请求事件。
+        /// </summary>
         public event FriendRequestEventHandler FriendRequestEvent
         {
             add { friendRequestEventHandlers.Add(value); }
@@ -229,23 +290,54 @@ namespace Sisters.WudiLib.Posts
         #endregion
 
         #region Message
+        /// <summary>
+        /// 收到消息事件。包括私聊、群聊和讨论组消息，但不包括匿名的群消息。
+        /// </summary>
         public event MessageEventHandler MessageEvent;
 
+        /// <summary>
+        /// 收到匿名群消息事件。
+        /// </summary>
         public event AnonymousMessageEventHanlder AnonymousMessageEvent;
 
+        /// <summary>
+        /// 群聊信息事件。例如禁言等。
+        /// </summary>
         public event GroupNoticeEventHandler GroupNoticeEvent;
         #endregion
 
         #region DefaultHandlers
+        /// <summary>
+        /// 同意全部群组请求（请求、邀请）的事件处理器。
+        /// </summary>
+        /// <param name="api"></param>
+        /// <param name="groupRequest"></param>
+        /// <returns></returns>
         public static GroupRequestResponse ApproveAllGroupRequests(HttpApiClient api, GroupRequest groupRequest)
             => new GroupRequestResponse { Approve = true };
 
+        /// <summary>
+        /// 同意全部好友请求的事件处理器。
+        /// </summary>
+        /// <param name="api"></param>
+        /// <param name="friendRequest"></param>
+        /// <returns></returns>
         public static FriendRequestResponse ApproveAllFriendRequests(HttpApiClient api, FriendRequest friendRequest)
             => new FriendRequestResponse { Approve = true };
 
+        /// <summary>
+        /// 复读的事件处理器。并没有什么卵用。
+        /// </summary>
+        /// <param name="api"></param>
+        /// <param name="message"></param>
         public static async void RepeatAsync(HttpApiClient api, Message message)
             => await api?.SendMessageAsync(message, message.Content);
 
+        /// <summary>
+        /// 当收到消息时，在同一处发送指定内容消息的事件处理器。并没有什么卵用。
+        /// </summary>
+        /// <param name="something"></param>
+        /// <returns></returns>
         public static MessageEventHandler Say(string something)
             => async (api, message) => await api?.SendMessageAsync(message, something);
 
