@@ -39,6 +39,7 @@ namespace Sisters.WudiLib
         protected internal class Section : IEquatable<Section>
         {
             public const string ImageType = "image";
+            public const string RecordType = "record";
 
             /// <summary>
             /// 仅支持大小写字母、数字、短横线（-）、下划线（_）及点号（.）。
@@ -143,6 +144,14 @@ namespace Sisters.WudiLib
             {
                 if (!noCache) return NetImage(url);
                 return new Section(ImageType, ("cache", "0"), ("file", url));
+            }
+
+            internal static Section NetRecord(string url) => new Section(RecordType, ("file", url));
+
+            internal static Section NetRecord(string url, bool noCache)
+            {
+                if (!noCache) return NetRecord(url);
+                return new Section(RecordType, ("cache", "0"), ("file", url));
             }
 
             internal static Section Shake() => new Section("shake");
@@ -277,6 +286,10 @@ namespace Sisters.WudiLib
         /// <returns>构造的消息。</returns>
         public static SendingMessage NetImage(string url, bool noCache) => new SendingMessage(Section.NetImage(url, noCache));
 
+        public static SendingMessage NetRecord(string url, bool noCache) => new SendingMessage(Section.NetRecord(url, noCache), false);
+
+        public static SendingMessage NetRecord(string url) => new SendingMessage(Section.NetRecord(url), false);
+
         public static SendingMessage Shake() => new SendingMessage(Section.Shake(), false);
 
         /// <summary>
@@ -284,6 +297,7 @@ namespace Sisters.WudiLib
         /// </summary>
         /// <param name="left"></param>
         /// <param name="right"></param>
+        /// <exception cref="InvalidOperationException">一个或多个消息不可连接。</exception>
         /// <returns></returns>
         public static SendingMessage operator +(SendingMessage left, SendingMessage right) => new SendingMessage(left, right);
     }

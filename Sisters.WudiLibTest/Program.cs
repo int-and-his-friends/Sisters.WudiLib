@@ -77,10 +77,18 @@ namespace Sisters.WudiLibTest
             //httpApi.SendGroupMessageAsync(72318078, message).Wait();
             #endregion
 
-            ListeningTest(httpApi);
+            RecordTestAsync(httpApi);
+
+            //ListeningTest(httpApi);
 
             Console.WriteLine("end");
             Console.ReadKey();
+        }
+
+        private static async void RecordTestAsync(HttpApiClient httpApi)
+        {
+            var record = SendingMessage.NetRecord("https://b.ppy.sh/preview/758101.mp3");
+            await httpApi.SendPrivateMessageAsync(962549599, record);
         }
 
         private static void ListeningTest(HttpApiClient httpApi)
