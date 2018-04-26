@@ -5,16 +5,16 @@ namespace Sisters.WudiLib.Posts
     /// <summary>
     /// 表示要将消息发送至的地点的类。
     /// </summary>
-    public abstract class EndPoint
+    public abstract class Endpoint
     {
-        internal EndPoint() { }
+        internal Endpoint() { }
 
         [JsonProperty("message_type")]
         internal string MessageType
         {
             get
             {
-                const string suffix = nameof(EndPoint);
+                const string suffix = nameof(Endpoint);
                 //if (this is PrivateEndPoint) return Message.PrivateType;
                 string type = this.GetType().Name;
                 if (type.EndsWith(suffix))
@@ -23,16 +23,16 @@ namespace Sisters.WudiLib.Posts
             }
         }
 
-        internal EndPoint FromMessage(Message message)
+        internal Endpoint FromMessage(Message message)
         {
             switch (message)
             {
                 case PrivateMessage p:
-                    return new PrivateEndPoint(p.UserId);
+                    return new PrivateEndpoint(p.UserId);
                 case GroupMessage g:
-                    return new GroupEndPoint(g.GroupId);
+                    return new GroupEndpoint(g.GroupId);
                 case DiscussMessage d:
-                    return new DiscussEndPoint(d.DiscussId);
+                    return new DiscussEndpoint(d.DiscussId);
                 default:
                     break;
             }
@@ -40,25 +40,25 @@ namespace Sisters.WudiLib.Posts
         }
     }
 
-    public class PrivateEndPoint : EndPoint
+    public class PrivateEndpoint : Endpoint
     {
-        internal PrivateEndPoint(long user) => this.UserId = user;
+        internal PrivateEndpoint(long user) => this.UserId = user;
 
         [JsonProperty("user_id")]
         public long UserId { get; internal set; }
     }
 
-    public class GroupEndPoint : EndPoint
+    public class GroupEndpoint : Endpoint
     {
-        internal GroupEndPoint(long group) => this.GroupId = group;
+        internal GroupEndpoint(long group) => this.GroupId = group;
 
         [JsonProperty("group_id")]
         public long GroupId { get; private set; }
     }
 
-    public class DiscussEndPoint : EndPoint
+    public class DiscussEndpoint : Endpoint
     {
-        internal DiscussEndPoint(long discuss) => this.DiscussId = discuss;
+        internal DiscussEndpoint(long discuss) => this.DiscussId = discuss;
 
         [JsonProperty("discuss_id")]
         public long DiscussId { get; private set; }

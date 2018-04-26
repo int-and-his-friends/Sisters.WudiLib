@@ -4,7 +4,8 @@ using System;
 
 namespace Sisters.WudiLib.Posts
 {
-    public class Post
+    [JsonObject(MemberSerialization.OptIn)]
+    public abstract class Post
     {
         internal const string MessageType = "message";
         internal const string EventType = "event";
@@ -20,8 +21,11 @@ namespace Sisters.WudiLib.Posts
         public DateTimeOffset Time { get; private set; }
         [JsonProperty("self_id")]
         public int SelfId { get; private set; }
+
+        public abstract Endpoint Endpoint { get; }
     }
 
+    [JsonObject(MemberSerialization.OptIn)]
     public abstract class Request : Post
     {
         internal const string FriendType = "friend";
@@ -41,11 +45,15 @@ namespace Sisters.WudiLib.Posts
 
     }
 
+    [JsonObject(MemberSerialization.OptIn)]
     public class FriendRequest : Request
     {
         internal FriendRequest() { }
+
+        public override Endpoint Endpoint => new PrivateEndpoint(UserId);
     }
 
+    [JsonObject(MemberSerialization.OptIn)]
     public class GroupRequest : FriendRequest // 为了减少反序列化次数，提高性能，继承关系去TMD（然而我也不知道反序列化要多久）。
     {
         internal const string AddType = "add";
@@ -58,5 +66,7 @@ namespace Sisters.WudiLib.Posts
 
         [JsonProperty("group_id")]
         public int GroupId { get; private set; }
+
+        public override Endpoint Endpoint => throw new NotImplementedException();
     }
 }

@@ -3,6 +3,7 @@ using System;
 
 namespace Sisters.WudiLib.Posts
 {
+    [JsonObject(MemberSerialization.OptIn)]
     public abstract class Message : Post
     {
         internal const string PrivateType = "private";
@@ -26,8 +27,11 @@ namespace Sisters.WudiLib.Posts
         public ReceivedMessage Content => messageLazy.Value;
         //[JsonProperty("font")]
         //public int Font { get; private set; }
+
+        public override abstract Endpoint Endpoint { get; }
     }
 
+    [JsonObject(MemberSerialization.OptIn)]
     public class GroupMessage : Message
     {
         internal const string NormalType = "normal";
@@ -38,8 +42,11 @@ namespace Sisters.WudiLib.Posts
         internal string SubType { get; private set; }
         [JsonProperty("group_id")]
         public long GroupId { get; private set; }
+
+        public override Endpoint Endpoint => new GroupEndpoint(GroupId);
     }
 
+    [JsonObject(MemberSerialization.OptIn)]
     public class PrivateMessage : Message
     {
         public const string FriendType = "friend";
@@ -49,8 +56,11 @@ namespace Sisters.WudiLib.Posts
 
         [JsonProperty("sub_type")]
         public string SubType { get; private set; }
+
+        public override Endpoint Endpoint => new PrivateEndpoint(UserId);
     }
 
+    [JsonObject(MemberSerialization.OptIn)]
     public class AnonymousMessage : GroupMessage
     {
         [JsonProperty("anonymous")]
@@ -59,9 +69,12 @@ namespace Sisters.WudiLib.Posts
         internal string AnonymousFlag { get; private set; }
     }
 
+    [JsonObject(MemberSerialization.OptIn)]
     public class DiscussMessage : Message
     {
         [JsonProperty("discuss_id")]
         internal long DiscussId { get; private set; }
+
+        public override Endpoint Endpoint => new DiscussEndpoint(DiscussId);
     }
 }
