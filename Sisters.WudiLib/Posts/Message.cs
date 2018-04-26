@@ -29,6 +29,7 @@ namespace Sisters.WudiLib.Posts
         //public int Font { get; private set; }
 
         public override abstract Endpoint Endpoint { get; }
+        public virtual MessageSource Source => new MessageSource(UserId);
     }
 
     [JsonObject(MemberSerialization.OptIn)]
@@ -64,9 +65,11 @@ namespace Sisters.WudiLib.Posts
     public class AnonymousMessage : GroupMessage
     {
         [JsonProperty("anonymous")]
-        internal string Anoymous { get; private set; }
+        internal string Anonymous { get; private set; }
         [JsonProperty("anonymous_flag")]
         internal string AnonymousFlag { get; private set; }
+
+        public override MessageSource Source => new MessageSource(UserId, AnonymousFlag, Anonymous, true);
     }
 
     [JsonObject(MemberSerialization.OptIn)]

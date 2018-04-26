@@ -1,36 +1,28 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Sisters.WudiLib.Posts
+﻿namespace Sisters.WudiLib.Posts
 {
     /// <summary>
-    /// 表示消息发送人。
+    /// 表示消息发送人。可能是普通来源或匿名来源。
     /// </summary>
     public class MessageSource
     {
-        protected MessageSource()
+        internal MessageSource(long userId, string anonymousFlag = null, string anonymous = null, bool isAnonymous = false)
         {
-
+            _userId = userId;
+            _isAnonymous = isAnonymous;
+            _anonymous = anonymous;
+            _anonymousFlag = anonymousFlag;
         }
 
-        public long UserId { get; protected set; }
+        private readonly bool _isAnonymous;
+        public bool IsAnonymous => _isAnonymous;
 
-    }
+        private readonly string _anonymous;
+        public string Anonymous => _anonymous;
 
-    public class PrivateMessageSource : MessageSource
-    {
-        internal PrivateMessageSource(long userId) => this.UserId = userId;
-    }
+        private readonly string _anonymousFlag;
+        public string AnonymousFlag => _anonymousFlag;
 
-    public class GroupMessageSource : MessageSource
-    {
-        public long GroupId { get; protected set; }
-
-        internal GroupMessageSource(GroupMessage groupMessage)
-        {
-            this.UserId = groupMessage.UserId;
-            this.GroupId = groupMessage.GroupId;
-        }
+        private readonly long _userId;
+        public long UserId => _userId;
     }
 }
