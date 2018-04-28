@@ -9,6 +9,8 @@ namespace Sisters.WudiLib.Posts
 {
     public class ReceivedMessage : WudiLib.Message
     {
+        private const string CqCodePattern = @"\[CQ:([\w\-\.]+?)(?:,([\w\-\.]+?)=(.+?))\]";
+
         //private const string NotImplementedMessage = "暂时不支持数组格式的上报数据。";
         bool _isString = false;
         string _message;
@@ -32,6 +34,18 @@ namespace Sisters.WudiLib.Posts
                 throw new InvalidOperationException("用于构造消息的对象即不是字符，也不是数组。可能是上报数据有错误。");
             var sections = jObjectArray.Select(jo => new Section((JObject)jo));
             _sections = sections.ToList();
+        }
+
+        public bool IsPlaintext
+        {
+            get
+            {
+                if (_isString)
+                {
+                    return !Regex.IsMatch(_message, CqCodePattern);
+                }
+                return _sections.All(s => s.Type == "text");
+            }
         }
 
         internal override object Serializing => this.Forward().Serializing;
