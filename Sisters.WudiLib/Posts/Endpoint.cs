@@ -40,7 +40,7 @@ namespace Sisters.WudiLib.Posts
         }
     }
 
-    public class PrivateEndpoint : Endpoint
+    public sealed class PrivateEndpoint : Endpoint
     {
         internal PrivateEndpoint(long user) => this.UserId = user;
 
@@ -48,7 +48,7 @@ namespace Sisters.WudiLib.Posts
         public long UserId { get; internal set; }
     }
 
-    public class GroupEndpoint : Endpoint
+    public sealed class GroupEndpoint : Endpoint
     {
         internal GroupEndpoint(long group) => this.GroupId = group;
 
@@ -56,7 +56,7 @@ namespace Sisters.WudiLib.Posts
         public long GroupId { get; private set; }
     }
 
-    public class DiscussEndpoint : Endpoint
+    public sealed class DiscussEndpoint : Endpoint
     {
         internal DiscussEndpoint(long discuss) => this.DiscussId = discuss;
 
