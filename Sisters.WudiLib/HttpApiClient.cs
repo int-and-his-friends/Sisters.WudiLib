@@ -154,17 +154,17 @@ namespace Sisters.WudiLib
         /// <param name="source">收到上报时的参数。</param>
         /// <param name="message">要发送的消息。</param>
         /// <returns></returns>
-        public async Task<SendMessageResponseData> SendMessageAsync(Posts.Message source, Message message)
+        public async Task<SendMessageResponseData> SendMessageAsync(Posts.Endpoint endpoint, Message message)
         {
-            var data = JObject.FromObject(source);
+            var data = JObject.FromObject(endpoint);
             data["message"] = JToken.FromObject(message.Serializing);
             var result = await Utils.PostAsync<SendMessageResponseData>(MessageUrl, data);
             return result;
         }
 
-        public async Task<SendMessageResponseData> SendMessageAsync(Posts.Message source, string message)
+        public async Task<SendMessageResponseData> SendMessageAsync(Posts.Endpoint endpoint, string message)
         {
-            var data = JObject.FromObject(source);
+            var data = JObject.FromObject(endpoint);
             data["message"] = JToken.FromObject(message);
             data["auto_escape"] = true;
             var result = await Utils.PostAsync<SendMessageResponseData>(MessageUrl, data);
