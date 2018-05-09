@@ -143,6 +143,7 @@ namespace Sisters.WudiLib.Posts
                     ProcessMessage(content, post);
                     return null;
                 case Post.EventType:
+                    // TODO
                     return null;
                 case Post.RequestType:
                     return ProcessRequest(content);
@@ -331,7 +332,7 @@ namespace Sisters.WudiLib.Posts
         /// <param name="api"></param>
         /// <param name="message"></param>
         public static async void RepeatAsync(HttpApiClient api, Message message)
-            => await api?.SendMessageAsync(message, message.Content);
+            => await api?.SendMessageAsync(message.Endpoint, message.Content);
 
         /// <summary>
         /// 当收到消息时，在同一处发送指定内容消息的事件处理器。并没有什么卵用。
@@ -339,7 +340,7 @@ namespace Sisters.WudiLib.Posts
         /// <param name="something"></param>
         /// <returns></returns>
         public static MessageEventHandler Say(string something)
-            => async (api, message) => await api?.SendMessageAsync(message, something);
+            => async (api, message) => await api?.SendMessageAsync(message.Endpoint, something);
 
         //public static void Print(HttpApiClient api, GroupMessage notice)
         //    => Console.WriteLine(notice.Content);
