@@ -148,6 +148,17 @@ namespace Sisters.WudiLib
             return result;
         }
 
+        public async Task<SendDiscussMessageResponseData> SendDiscussMessageAsync(long discussId, Message message)
+        {
+            var data = new
+            {
+                discuss_id = discussId,
+                message = message.Serializing,
+            };
+            var result = await Utils.PostAsync<SendDiscussMessageResponseData>(DiscussUrl, data);
+            return result;
+        }
+
         /// <summary>
         /// 发送消息。
         /// </summary>
