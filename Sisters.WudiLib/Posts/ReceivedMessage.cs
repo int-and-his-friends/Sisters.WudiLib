@@ -15,7 +15,7 @@ namespace Sisters.WudiLib.Posts
         bool _isString = false;
         string _message;
 
-        readonly ICollection<Section> _sections;
+        readonly IList<Section> _sections;
 
         /// <summary>
         /// 
@@ -51,6 +51,18 @@ namespace Sisters.WudiLib.Posts
         internal override object Serializing => this.Forward().Serializing;
 
         public override string Raw => _isString ? _message : GetRaw(_sections);
+
+        public string Text
+        {
+            get
+            {
+                if (_isString)
+                {
+                    return Regex.Replace(_message, CqCodePattern, string.Empty).AfterReceive();
+                }
+                return string.Join(string.Empty, _sections.Where(s => s.Type == Section.TextType).Select(s => s.Data[Section.TextParamName]));
+            }
+        }
 
         /// <summary>
         /// 转发：转换成可以发送的格式。
