@@ -60,7 +60,7 @@ namespace Sisters.WudiLib.Posts
                 {
                     return Regex.Replace(_message, CqCodePattern, string.Empty).AfterReceive();
                 }
-                return string.Join(string.Empty, _sections.Where(s => s.Type == Section.TextType).Select(s => s.Data[Section.TextParamName]));
+                return string.Concat(_sections.Where(s => s.Type == Section.TextType).Select(s => s.Data[Section.TextParamName]));
             }
         }
 
