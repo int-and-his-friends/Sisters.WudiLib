@@ -100,10 +100,21 @@ namespace Sisters.WudiLib
             }
         }
 
-        internal static string BeforeSend(this string before)
-            => before.Replace("&", "&amp;").Replace("[", "&#91;").Replace("]", "&#93;").Replace(",", "&#44;");
+        internal static string BeforeSend(this string before, bool codeArg = true)
+        {
+            var result = before
+                .Replace("&", "&amp;", StringComparison.Ordinal)
+                .Replace("[", "&#91;", StringComparison.Ordinal)
+                .Replace("]", "&#93;", StringComparison.Ordinal);
+            if (codeArg) result = result.Replace(",", "&#44;", StringComparison.Ordinal);
+            return result;
+        }
 
         internal static string AfterReceive(this string received)
-            => received.Replace("&#44;", ",").Replace("&#91;", "[").Replace("&#93;", "]").Replace("&amp;", "&");
+            => received
+            .Replace("&#44;", ",", StringComparison.Ordinal)
+            .Replace("&#91;", "[", StringComparison.Ordinal)
+            .Replace("&#93;", "]", StringComparison.Ordinal)
+            .Replace("&amp;", "&", StringComparison.Ordinal);
     }
 }
