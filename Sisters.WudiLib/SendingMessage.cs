@@ -21,7 +21,7 @@ namespace Sisters.WudiLib
         internal IList<Section> Sections => sections;
 
         internal override object Serializing => sections;
-        
+
         /// <summary>
         /// 指示此 <see cref="SendingMessage"/> 是否可以与其他 <see cref="SendingMessage"/> 连接。
         /// </summary>
@@ -105,6 +105,32 @@ namespace Sisters.WudiLib
         public static SendingMessage NetRecord(string url, bool noCache) => new SendingMessage(Section.NetRecord(url, noCache));
 
         public static SendingMessage NetRecord(string url) => new SendingMessage(Section.NetRecord(url));
+
+        /// <summary>
+        /// 构造一条消息，包含音乐自定义分享，该分享指定了分享链接、音频链接、标题、简介和封面图片链接。
+        /// </summary>
+        /// <param name="introductionUrl">分享链接，即点击分享后进入的音乐页面（如歌曲介绍页）。</param>
+        /// <param name="audioUrl">音频链接（如mp3链接）。</param>
+        /// <param name="title">音乐的标题，建议12字以内。</param>
+        /// <param name="profile">音乐的简介，建议30字以内。该参数可被忽略。</param>
+        /// <param name="imageUrl">音乐的封面图片链接。若参数为空或被忽略，则显示默认图片。</param>
+        /// <exception cref="ArgumentException"><c>introductionUrl</c>或<c>audioUrl</c>或<c>title</c>为空。</exception>
+        /// <exception cref="ArgumentNullException"><c>introductionUrl</c>或<c>audioUrl</c>或<c>title</c>为<c>null</c>。</exception>
+        /// <returns>包含该音乐自定义分享的消息。</returns>
+        public static SendingMessage MusicCustom(string introductionUrl, string audioUrl, string title, string profile, string imageUrl)
+            => new SendingMessage(Section.MusicCustom(introductionUrl, audioUrl, title, profile, imageUrl));
+
+        /// <summary>
+        /// 构造一条消息，包含音乐自定义分享，该分享指定了分享链接、音频链接和标题。
+        /// </summary>
+        /// <param name="introductionUrl">分享链接，即点击分享后进入的音乐页面（如歌曲介绍页）。</param>
+        /// <param name="audioUrl">音频链接（如mp3链接）。</param>
+        /// <param name="title">音乐的标题，建议12字以内。</param>
+        /// <exception cref="ArgumentException"><c>introductionUrl</c>或<c>audioUrl</c>或<c>title</c>为空。</exception>
+        /// <exception cref="ArgumentNullException"><c>introductionUrl</c>或<c>audioUrl</c>或<c>title</c>为<c>null</c>。</exception>
+        /// <returns>包含该音乐自定义分享的消息。</returns>
+        public static SendingMessage MusicCustom(string introductionUrl, string audioUrl, string title)
+            => new SendingMessage(Section.MusicCustom(introductionUrl, audioUrl, title, null, null));
 
         public static SendingMessage Shake() => new SendingMessage(Section.Shake());
 

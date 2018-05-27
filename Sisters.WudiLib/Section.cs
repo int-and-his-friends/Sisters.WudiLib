@@ -17,6 +17,7 @@ namespace Sisters.WudiLib
             public const string TextType = "text";
             public const string ImageType = "image";
             public const string RecordType = "record";
+            public const string MusicType = "music";
             public const string AtType = "at";
 
             /// <summary>
@@ -160,6 +161,38 @@ namespace Sisters.WudiLib
             {
                 if (!noCache) return NetRecord(url);
                 return new Section(RecordType, ("cache", "0"), ("file", url));
+            }
+
+            /// <summary>
+            /// 构造音乐自定义分享消息段。
+            /// </summary>
+            /// <param name="introductionUrl">分享链接，即点击分享后进入的音乐页面（如歌曲介绍页）。</param>
+            /// <param name="audioUrl">音频链接（如mp3链接）。</param>
+            /// <param name="title">音乐的标题，建议12字以内。</param>
+            /// <param name="profile">音乐的简介，建议30字以内。该参数可被忽略。</param>
+            /// <param name="imageUrl">音乐的封面图片链接。若参数为空或被忽略，则显示默认图片。</param>
+            /// <exception cref="ArgumentException"><c>introductionUrl</c>或<c>audioUrl</c>或<c>title</c>为空。</exception>
+            /// <exception cref="ArgumentNullException"><c>introductionUrl</c>或<c>audioUrl</c>或<c>title</c>为<c>null</c>。</exception>
+            /// <returns></returns>
+            internal static Section MusicCustom(string introductionUrl, string audioUrl, string title, string profile, string imageUrl)
+            {
+                string introductionUrlParamName = "url";
+                string audioUrlParamName = "audio";
+                string titleParamName = "title";
+                string profileParamName = "content";
+                string imageUrlParamName = "image";
+                Utils.CheckStringArgument(introductionUrl, nameof(introductionUrl));
+                Utils.CheckStringArgument(audioUrl, nameof(audioUrl));
+                Utils.CheckStringArgument(title, nameof(title));
+                var arguments = new List<(string argument, string value)>
+                {
+                    (introductionUrlParamName, introductionUrl),
+                    (audioUrlParamName, introductionUrl),
+                    (titleParamName, title),
+                };
+                if (profile != null) arguments.Add((profileParamName, profile));
+                if (!string.IsNullOrEmpty(imageUrl)) arguments.Add((imageUrlParamName, imageUrl));
+                return new Section(MusicType, arguments.ToArray());
             }
 
             internal static Section Shake() => new Section("shake");
