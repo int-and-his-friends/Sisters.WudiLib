@@ -1,7 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Sisters.WudiLib.Responses;
 using System;
-using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -116,5 +115,17 @@ namespace Sisters.WudiLib
             .Replace("&#91;", "[", StringComparison.Ordinal)
             .Replace("&#93;", "]", StringComparison.Ordinal)
             .Replace("&amp;", "&", StringComparison.Ordinal);
+
+        /// <summary>
+        /// 检查<see cref="string"/>是否为<c>null</c>或空值，并抛出相应的异常。
+        /// </summary>
+        /// <param name="argument">要检查的<see cref="string"/>。</param>
+        /// <exception cref="ArgumentException"><c>argument</c>为空。</exception>
+        /// <exception cref="ArgumentNullException"><c>argument</c>为<c>null</c>。</exception>
+        internal static void CheckStringArgument(string argument, string paramName)
+        {
+            if (argument == null) throw new ArgumentNullException(paramName);
+            if (argument.Length == 0) throw new ArgumentException($"{paramName}为空。", paramName);
+        }
     }
 }
