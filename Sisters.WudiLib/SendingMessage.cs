@@ -9,16 +9,23 @@ namespace Sisters.WudiLib
     /// </summary>
     public class SendingMessage : SectionMessage
     {
-        //private readonly ICollection<Section> sections;
+        private readonly static ICollection<string> NoJoinSectionTypes = new List<string>
+        {
+            "record",
+            "rps",
+            "dice",
+            "music",
+            "share",
+        };
 
         internal IList<Section> Sections => sections;
 
         internal override object Serializing => sections;
-
+        
         /// <summary>
         /// 指示此 <see cref="SendingMessage"/> 是否可以与其他 <see cref="SendingMessage"/> 连接。
         /// </summary>
-        private readonly bool canJoin = true;
+        private bool CanConcat => Sections.Any(s => NoJoinSectionTypes.Contains(s.Type));
 
         /// <summary>
         /// 构造新的消息实例。
@@ -29,8 +36,7 @@ namespace Sisters.WudiLib
         /// 从 <see cref="IEnumerable{Section}"/> 创建消息。
         /// </summary>
         /// <param name="sections"></param>
-        internal SendingMessage(IEnumerable<Section> sections, bool canJoin = true)
-            : base(sections) => this.canJoin = canJoin;
+        internal SendingMessage(IEnumerable<Section> sections) : base(sections) { }
 
         /// <summary>
         /// 从文本构造新的消息实例。
@@ -46,7 +52,7 @@ namespace Sisters.WudiLib
         /// <exception cref="InvalidOperationException">有无法连接的消息。</exception>
         private SendingMessage(SendingMessage message1, SendingMessage message2) : this(message1.Sections.Union(message2.Sections))
         {
-            if (!message1.canJoin || !message2.canJoin)
+            if (!message1.CanConcat || !message2.CanConcat)
             {
                 throw new InvalidOperationException("有一个或多个消息不能被连接。");
             }
@@ -56,10 +62,9 @@ namespace Sisters.WudiLib
         /// 从 <see cref="Section"/> 实例创建消息。
         /// </summary>
         /// <param name="section">包含的消息段。</param>
-        private SendingMessage(Section section, bool canJoin = true) : this()
+        private SendingMessage(Section section) : this()
         {
             sections.Add(section);
-            this.canJoin = canJoin;
         }
 
         /// <summary>
@@ -97,11 +102,11 @@ namespace Sisters.WudiLib
         /// <returns>构造的消息。</returns>
         public static SendingMessage NetImage(string url, bool noCache) => new SendingMessage(Section.NetImage(url, noCache));
 
-        public static SendingMessage NetRecord(string url, bool noCache) => new SendingMessage(Section.NetRecord(url, noCache), false);
+        public static SendingMessage NetRecord(string url, bool noCache) => new SendingMessage(Section.NetRecord(url, noCache));
 
-        public static SendingMessage NetRecord(string url) => new SendingMessage(Section.NetRecord(url), false);
+        public static SendingMessage NetRecord(string url) => new SendingMessage(Section.NetRecord(url));
 
-        public static SendingMessage Shake() => new SendingMessage(Section.Shake(), false);
+        public static SendingMessage Shake() => new SendingMessage(Section.Shake());
 
         /// <summary>
         /// 使用 <c>+</c> 连接两条消息。
