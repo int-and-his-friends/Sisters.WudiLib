@@ -69,27 +69,30 @@ namespace Sisters.WudiLib.Posts
             while (true)
             {
                 var context = listener.GetContext();
+                ProcessContext(context);
+            }
+        }
+
+        private void ProcessContext(HttpListenerContext context)
+        {
+            try
+            {
                 var request = context.Request;
-
-                //if (request.ContentType != "application/json; charset=UTF-8")
-                //    continue;
-
-                if (!request.ContentType.StartsWith("application/json"))
-                    continue;
-
-                object responseObject;
-                string requestContent;
-
-                using (var inStream = request.InputStream)
-                using (var streamReader = new StreamReader(inStream))
-                    requestContent = streamReader.ReadToEnd();
-
-                // 转发
-                Forward(requestContent);
-
-                // 响应
                 using (var response = context.Response)
                 {
+                    if (!request.ContentType.StartsWith("application/json")) return;
+
+                    object responseObject;
+                    string requestContent;
+
+                    using (var inStream = request.InputStream)
+                    using (var streamReader = new StreamReader(inStream))
+                        requestContent = streamReader.ReadToEnd();
+
+                    // 转发
+                    ForwardAsync(requestContent);
+
+                    // 响应
                     responseObject = ProcessPost(requestContent, response);
 
                     response.ContentType = "application/json";
@@ -102,30 +105,52 @@ namespace Sisters.WudiLib.Posts
                             streamWriter.Write(jsonResponse);
                         }
                     }
+                    else
+                    {
+                        response.StatusCode = 204;
+                    }
                 }
             }
-
+            catch (Exception e)
+            {
+                LogException(e);
+            }
         }
 
-        private void Forward(string content)
+        private async void ForwardAsync(string content)
         {
             string to = ForwardTo;
             if (string.IsNullOrEmpty(to)) return;
-            Task.Run(async () =>
+            await Task.Run(async () =>
             {
                 try
                 {
                     using (var client = new http::HttpClient())
                     {
                         var stringContent = new http::StringContent(content, System.Text.Encoding.UTF8, "application/json");
-                        await client.PostAsync(to, stringContent);
+                        using (await client.PostAsync(to, stringContent)) { }
                     }
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
-                    // TODO: Log
+                    OnException(e);
                 }
             });
+        }
+        #endregion
+
+        #region Logging
+        public event Action<Exception> OnException;
+
+        private void LogException(Exception e)
+        {
+            try
+            {
+                OnException(e);
+            }
+            catch (Exception)
+            {
+            }
         }
         #endregion
 
