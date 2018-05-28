@@ -176,18 +176,18 @@ namespace Sisters.WudiLib
             /// <returns></returns>
             internal static Section MusicCustom(string introductionUrl, string audioUrl, string title, string profile, string imageUrl)
             {
-                string introductionUrlParamName = "url";
-                string audioUrlParamName = "audio";
-                string titleParamName = "title";
-                string profileParamName = "content";
-                string imageUrlParamName = "image";
+                const string introductionUrlParamName = "url";
+                const string audioUrlParamName = "audio";
+                const string titleParamName = "title";
+                const string profileParamName = "content";
+                const string imageUrlParamName = "image";
                 Utils.CheckStringArgument(introductionUrl, nameof(introductionUrl));
                 Utils.CheckStringArgument(audioUrl, nameof(audioUrl));
                 Utils.CheckStringArgument(title, nameof(title));
                 var arguments = new List<(string argument, string value)>
                 {
                     (introductionUrlParamName, introductionUrl),
-                    (audioUrlParamName, introductionUrl),
+                    (audioUrlParamName, audioUrl),
                     (titleParamName, title),
                 };
                 if (profile != null) arguments.Add((profileParamName, profile));
