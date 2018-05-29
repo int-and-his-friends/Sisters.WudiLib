@@ -73,43 +73,46 @@ namespace Sisters.WudiLib.Posts
             }
         }
 
-        private void ProcessContext(HttpListenerContext context)
+        private async void ProcessContext(HttpListenerContext context)
         {
             try
             {
-                var request = context.Request;
-                using (var response = context.Response)
+                await Task.Run(() =>
                 {
-                    if (!request.ContentType.StartsWith("application/json")) return;
-
-                    object responseObject;
-                    string requestContent;
-
-                    using (var inStream = request.InputStream)
-                    using (var streamReader = new StreamReader(inStream))
-                        requestContent = streamReader.ReadToEnd();
-
-                    // 转发
-                    ForwardAsync(requestContent);
-
-                    // 响应
-                    responseObject = ProcessPost(requestContent, response);
-
-                    response.ContentType = "application/json";
-                    if (responseObject != null)
+                    var request = context.Request;
+                    using (var response = context.Response)
                     {
-                        using (var outStream = response.OutputStream)
-                        using (var streamWriter = new StreamWriter(outStream))
+                        if (!request.ContentType.StartsWith("application/json")) return;
+
+                        object responseObject;
+                        string requestContent;
+
+                        using (var inStream = request.InputStream)
+                        using (var streamReader = new StreamReader(inStream))
+                            requestContent = streamReader.ReadToEnd();
+
+                        // 转发
+                        ForwardAsync(requestContent);
+
+                        // 响应
+                        responseObject = ProcessPost(requestContent, response);
+
+                        response.ContentType = "application/json";
+                        if (responseObject != null)
                         {
-                            string jsonResponse = JsonConvert.SerializeObject(responseObject);
-                            streamWriter.Write(jsonResponse);
+                            using (var outStream = response.OutputStream)
+                            using (var streamWriter = new StreamWriter(outStream))
+                            {
+                                string jsonResponse = JsonConvert.SerializeObject(responseObject);
+                                streamWriter.Write(jsonResponse);
+                            }
+                        }
+                        else
+                        {
+                            response.StatusCode = 204;
                         }
                     }
-                    else
-                    {
-                        response.StatusCode = 204;
-                    }
-                }
+                });
             }
             catch (Exception e)
             {
