@@ -181,9 +181,9 @@ namespace Sisters.WudiLib
                 const string titleParamName = "title";
                 const string profileParamName = "content";
                 const string imageUrlParamName = "image";
-                Utils.CheckStringArgument(introductionUrl, nameof(introductionUrl));
-                Utils.CheckStringArgument(audioUrl, nameof(audioUrl));
-                Utils.CheckStringArgument(title, nameof(title));
+                Utilities.CheckStringArgument(introductionUrl, nameof(introductionUrl));
+                Utilities.CheckStringArgument(audioUrl, nameof(audioUrl));
+                Utilities.CheckStringArgument(title, nameof(title));
                 var arguments = new List<(string argument, string value)>
                 {
                     (introductionUrlParamName, introductionUrl),

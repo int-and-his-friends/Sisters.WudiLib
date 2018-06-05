@@ -86,7 +86,7 @@ namespace Sisters.WudiLib
                 message,
                 auto_escape = true,
             };
-            var result = await Utils.PostAsync<SendPrivateMessageResponseData>(PrivateUrl, data);
+            var result = await Utilities.PostAsync<SendPrivateMessageResponseData>(PrivateUrl, data);
             return result;
         }
 
@@ -97,7 +97,7 @@ namespace Sisters.WudiLib
                 user_id = qq,
                 message = message.Serializing,
             };
-            var result = await Utils.PostAsync<SendPrivateMessageResponseData>(PrivateUrl, data);
+            var result = await Utilities.PostAsync<SendPrivateMessageResponseData>(PrivateUrl, data);
             return result;
         }
 
@@ -115,7 +115,7 @@ namespace Sisters.WudiLib
                 message,
                 auto_escape = true,
             };
-            var result = await Utils.PostAsync<SendGroupMessageResponseData>(GroupUrl, data);
+            var result = await Utilities.PostAsync<SendGroupMessageResponseData>(GroupUrl, data);
             return result;
         }
 
@@ -126,7 +126,7 @@ namespace Sisters.WudiLib
                 group_id = groupId,
                 message = message.Serializing,
             };
-            var result = await Utils.PostAsync<SendGroupMessageResponseData>(GroupUrl, data);
+            var result = await Utilities.PostAsync<SendGroupMessageResponseData>(GroupUrl, data);
             return result;
         }
 
@@ -144,7 +144,7 @@ namespace Sisters.WudiLib
                 message,
                 auto_escape = true,
             };
-            var result = await Utils.PostAsync<SendDiscussMessageResponseData>(DiscussUrl, data);
+            var result = await Utilities.PostAsync<SendDiscussMessageResponseData>(DiscussUrl, data);
             return result;
         }
 
@@ -155,7 +155,7 @@ namespace Sisters.WudiLib
                 discuss_id = discussId,
                 message = message.Serializing,
             };
-            var result = await Utils.PostAsync<SendDiscussMessageResponseData>(DiscussUrl, data);
+            var result = await Utilities.PostAsync<SendDiscussMessageResponseData>(DiscussUrl, data);
             return result;
         }
 
@@ -169,7 +169,7 @@ namespace Sisters.WudiLib
         {
             var data = JObject.FromObject(endpoint);
             data["message"] = JToken.FromObject(message.Serializing);
-            var result = await Utils.PostAsync<SendMessageResponseData>(MessageUrl, data);
+            var result = await Utilities.PostAsync<SendMessageResponseData>(MessageUrl, data);
             return result;
         }
 
@@ -178,7 +178,7 @@ namespace Sisters.WudiLib
             var data = JObject.FromObject(endpoint);
             data["message"] = JToken.FromObject(message);
             data["auto_escape"] = true;
-            var result = await Utils.PostAsync<SendMessageResponseData>(MessageUrl, data);
+            var result = await Utilities.PostAsync<SendMessageResponseData>(MessageUrl, data);
             return result;
         }
 
@@ -195,7 +195,7 @@ namespace Sisters.WudiLib
                 group_id = groupId,
                 user_id = userId,
             };
-            var success = await Utils.PostAsync(KickGroupMemberUrl, data);
+            var success = await Utilities.PostAsync(KickGroupMemberUrl, data);
             return success;
         }
 
@@ -217,7 +217,7 @@ namespace Sisters.WudiLib
         public async Task<bool> RecallMessageAsync(long messageId)
         {
             var data = new { message_id = (int)messageId };
-            var success = await Utils.PostAsync(RecallUrl, data);
+            var success = await Utilities.PostAsync(RecallUrl, data);
             return success;
         }
 
@@ -228,7 +228,7 @@ namespace Sisters.WudiLib
         public async Task<LoginInfo> GetLoginInfoAsync()
         {
             var data = new object();
-            var result = await Utils.PostAsync<LoginInfo>(LoginInfoUrl, data);
+            var result = await Utilities.PostAsync<LoginInfo>(LoginInfoUrl, data);
             return result;
         }
 
@@ -246,7 +246,7 @@ namespace Sisters.WudiLib
                 user_id = qq,
                 no_cache = true,
             };
-            var result = await Utils.PostAsync<GroupMemberInfo>(GroupMemberInfoUrl, data);
+            var result = await Utilities.PostAsync<GroupMemberInfo>(GroupMemberInfoUrl, data);
             return result;
         }
 
@@ -261,7 +261,7 @@ namespace Sisters.WudiLib
             {
                 group_id = group,
             };
-            var result = await Utils.PostAsync<GroupMemberInfo[]>(GroupMemberListUrl, data);
+            var result = await Utilities.PostAsync<GroupMemberInfo[]>(GroupMemberListUrl, data);
             return result;
         }
 
@@ -270,6 +270,6 @@ namespace Sisters.WudiLib
         /// </summary>
         /// <returns></returns>
         public async Task CleanImageData()
-            => await Utils.PostAsync(CleanUrl, new { data_dir = "image" });
+            => await Utilities.PostAsync(CleanUrl, new { data_dir = "image" });
     }
 }

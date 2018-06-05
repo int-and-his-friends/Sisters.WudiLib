@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Sisters.WudiLib
 {
-    internal static class Utils
+    internal static class Utilities
     {
         private static async Task<HttpApiResponse<T>> PostApiAsync<T>(string url, object data)
         {
