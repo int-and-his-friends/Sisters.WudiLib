@@ -20,7 +20,7 @@ namespace Sisters.WudiLib.Posts
         [JsonConverter(typeof(UnixDateTimeConverter))]
         public DateTimeOffset Time { get; private set; }
         [JsonProperty("self_id")]
-        public int SelfId { get; private set; }
+        public long SelfId { get; private set; }
 
         public abstract Endpoint Endpoint { get; }
     }
@@ -41,8 +41,7 @@ namespace Sisters.WudiLib.Posts
         [JsonProperty("message")]
         public string Message { get; private set; }
         [JsonProperty("user_id")]
-        public int UserId { get; private set; }
-
+        public long UserId { get; private set; }
     }
 
     [JsonObject(MemberSerialization.OptIn)]
@@ -65,7 +64,7 @@ namespace Sisters.WudiLib.Posts
         internal string SubType { get; private set; }
 
         [JsonProperty("group_id")]
-        public int GroupId { get; private set; }
+        public long GroupId { get; private set; }
 
         public override Endpoint Endpoint => throw new NotImplementedException();
     }
