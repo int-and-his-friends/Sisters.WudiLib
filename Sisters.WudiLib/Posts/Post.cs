@@ -21,6 +21,8 @@ namespace Sisters.WudiLib.Posts
         public DateTimeOffset Time { get; private set; }
         [JsonProperty("self_id")]
         public long SelfId { get; private set; }
+        [JsonProperty("user_id")]
+        public long UserId { get; private set; }
 
         public abstract Endpoint Endpoint { get; }
     }
@@ -40,8 +42,6 @@ namespace Sisters.WudiLib.Posts
         public string Flag { get; private set; }
         [JsonProperty("message")]
         public string Message { get; private set; }
-        [JsonProperty("user_id")]
-        public long UserId { get; private set; }
     }
 
     [JsonObject(MemberSerialization.OptIn)]

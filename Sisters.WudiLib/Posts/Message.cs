@@ -17,8 +17,6 @@ namespace Sisters.WudiLib.Posts
         public string MessageType { get; private set; }
         [JsonProperty("message_id")]
         public int MessageId { get; private set; }
-        [JsonProperty("user_id")]
-        protected internal long UserId { get; private set; }
         [JsonProperty("message")]
         private object _message { get; set; }
         [JsonIgnore]
