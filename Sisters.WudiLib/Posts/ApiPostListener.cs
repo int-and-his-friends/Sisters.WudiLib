@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -167,13 +168,14 @@ namespace Sisters.WudiLib.Posts
 
             switch (post.PostType)
             {
-                case Post.MessageType:
+                case Post.MessagePost:
                     ProcessMessage(content, post);
                     return null;
-                case Post.EventType:
+                case Post.EventPost:
+                    JObject contentObject = JsonConvert.DeserializeObject<JObject>(content);
                     // TODO
                     return null;
-                case Post.RequestType:
+                case Post.RequestPost:
                     return ProcessRequest(content);
             }
             // log needed
@@ -219,6 +221,11 @@ namespace Sisters.WudiLib.Posts
                     // log needed
                     break;
             }
+        }
+
+        private void ProcessEvent(JObject jObject)
+        {
+
         }
 
         private object ProcessRequest(string content)

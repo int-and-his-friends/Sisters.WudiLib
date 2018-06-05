@@ -14,7 +14,7 @@ namespace Sisters.WudiLib.Posts
             => messageLazy = new Lazy<ReceivedMessage>(() => new ReceivedMessage(_message));
 
         [JsonProperty("message_type")]
-        public new string MessageType { get; private set; }
+        public string MessageType { get; private set; }
         [JsonProperty("message_id")]
         public int MessageId { get; private set; }
         [JsonProperty("user_id")]
