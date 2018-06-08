@@ -8,7 +8,7 @@ namespace Sisters.WudiLib.Posts
     public abstract class Post
     {
         internal const string MessagePost = "message";
-        internal const string NoticePost = "event";
+        internal const string NoticePost = "notice";
         internal const string RequestPost = "request";
 
         internal const string SubTypeField = "sub_type";
@@ -42,8 +42,8 @@ namespace Sisters.WudiLib.Posts
 
         [JsonProperty("flag")]
         public string Flag { get; private set; }
-        [JsonProperty("message")]
-        public string Message { get; private set; }
+        [JsonProperty("comment")]
+        public string Comment { get; private set; }
     }
 
     [JsonObject(MemberSerialization.OptIn)]

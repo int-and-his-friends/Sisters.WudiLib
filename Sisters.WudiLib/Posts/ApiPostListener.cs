@@ -285,8 +285,6 @@ namespace Sisters.WudiLib.Posts
                     break;
             }
         }
-
-
         #endregion
 
         #region GroupRequest

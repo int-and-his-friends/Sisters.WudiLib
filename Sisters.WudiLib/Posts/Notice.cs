@@ -9,7 +9,7 @@ namespace Sisters.WudiLib.Posts
         internal const string GroupDecreaseNotice = "group_decrease";
         internal const string GroupIncreaseNotice = "group_increase";
         internal const string FriendAddNotice = "friend_add";
-        internal const string NoticeField = "event";
+        internal const string NoticeField = "notice_type";
 
         public override abstract Endpoint Endpoint { get; }
         [JsonProperty(NoticeField)]
