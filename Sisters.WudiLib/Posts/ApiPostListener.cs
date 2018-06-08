@@ -171,9 +171,9 @@ namespace Sisters.WudiLib.Posts
                 case Post.MessagePost:
                     ProcessMessage(content, post);
                     return null;
-                case Post.EventPost:
+                case Post.NoticePost:
                     JObject contentObject = JsonConvert.DeserializeObject<JObject>(content);
-                    // TODO
+                    ProcessNotice(contentObject);
                     return null;
                 case Post.RequestPost:
                     return ProcessRequest(content);
@@ -223,11 +223,6 @@ namespace Sisters.WudiLib.Posts
             }
         }
 
-        private void ProcessEvent(JObject jObject)
-        {
-
-        }
-
         private object ProcessRequest(string content)
         {
             GroupRequest request = JsonConvert.DeserializeObject<GroupRequest>(content);
@@ -254,6 +249,44 @@ namespace Sisters.WudiLib.Posts
             }
             return null;
         }
+        #endregion
+
+        #region Notice
+        private void ProcessNotice(JObject contentObject)
+        {
+            switch (contentObject[Notice.NoticeField].ToObject<string>())
+            {
+                case Notice.GroupUploadNotice:
+                    // TODO: input code
+                    break;
+                case Notice.GroupAdminNotice:
+                    break;
+                case Notice.GroupDecreaseNotice:
+                    break;
+                case Notice.GroupIncreaseNotice:
+                    break;
+                case Notice.FriendAddNotice:
+                    break;
+                default:
+                    // TODO: Logging
+                    break;
+            }
+        }
+
+        private void ProcessGroupAdminNotice(JObject contentObject)
+        {
+            switch (contentObject[Post.SubTypeField].ToObject<string>())
+            {
+                case GroupAdminNotice.SetAdmin:
+                    break;
+                case GroupAdminNotice.UnsetAdmin:
+                    break;
+                default:
+                    break;
+            }
+        }
+
+
         #endregion
 
         #region GroupRequest

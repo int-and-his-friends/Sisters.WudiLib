@@ -8,8 +8,10 @@ namespace Sisters.WudiLib.Posts
     public abstract class Post
     {
         internal const string MessagePost = "message";
-        internal const string EventPost = "event";
+        internal const string NoticePost = "event";
         internal const string RequestPost = "request";
+
+        internal const string SubTypeField = "sub_type";
 
         internal Post() { }
 
@@ -60,7 +62,7 @@ namespace Sisters.WudiLib.Posts
 
         internal GroupRequest() { }
 
-        [JsonProperty("sub_type")]
+        [JsonProperty(SubTypeField)]
         internal string SubType { get; private set; }
 
         [JsonProperty("group_id")]

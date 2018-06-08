@@ -37,7 +37,7 @@ namespace Sisters.WudiLib.Posts
         internal const string AnonymousType = "anonymous";
         internal const string NoticeType = "notice";
 
-        [JsonProperty("sub_type")]
+        [JsonProperty(SubTypeField)]
         internal string SubType { get; private set; }
         [JsonProperty("group_id")]
         public long GroupId { get; private set; }
@@ -53,7 +53,7 @@ namespace Sisters.WudiLib.Posts
         public new const string DiscussType = "discuss";
         public const string OtherType = "other";
 
-        [JsonProperty("sub_type")]
+        [JsonProperty(SubTypeField)]
         public string SubType { get; private set; }
 
         public override Endpoint Endpoint => new PrivateEndpoint(UserId);
