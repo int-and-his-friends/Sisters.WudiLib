@@ -8,16 +8,16 @@ namespace Sisters.WudiLib
 {
     partial class HttpApiClient
     {
-        private static readonly string PrivatePath = "/send_private_msg";
-        private static readonly string GroupPath = "/send_group_msg";
-        private static readonly string DiscussPath = "/send_discuss_msg";
-        private static readonly string MessagePath = "/send_msg";
-        private static readonly string KickGroupMemberPath = "/set_group_kick";
-        private static readonly string RecallPath = "/delete_msg";
-        private static readonly string LoginInfoPath = "/get_login_info";
-        private static readonly string GroupMemberInfoPath = "/get_group_member_info";
-        private static readonly string GroupMemberListPath = "/get_group_member_list";
-        private static readonly string CleanPath = "/clean_data_dir";
+        private static readonly string PrivatePath = "send_private_msg";
+        private static readonly string GroupPath = "send_group_msg";
+        private static readonly string DiscussPath = "send_discuss_msg";
+        private static readonly string MessagePath = "send_msg";
+        private static readonly string KickGroupMemberPath = "set_group_kick";
+        private static readonly string RecallPath = "delete_msg";
+        private static readonly string LoginInfoPath = "get_login_info";
+        private static readonly string GroupMemberInfoPath = "get_group_member_info";
+        private static readonly string GroupMemberListPath = "get_group_member_list";
+        private static readonly string CleanPath = "clean_data_dir";
 
         private string PrivateUrl => apiAddress + PrivatePath;
         private string GroupUrl => apiAddress + GroupPath;
@@ -48,7 +48,17 @@ namespace Sisters.WudiLib
         public string ApiAddress
         {
             get => apiAddress;
-            set => apiAddress = value.TrimEnd('/');
+            set
+            {
+                if (value.EndsWith("/", StringComparison.OrdinalIgnoreCase))
+                {
+                    apiAddress = value;
+                }
+                else
+                {
+                    apiAddress = value + "/";
+                }
+            }
         }
 
         public bool StartClean(int intervalMinutes)
