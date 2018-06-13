@@ -23,8 +23,8 @@ namespace Sisters.WudiLib.Posts
         Lazy<ReceivedMessage> messageLazy;
         [JsonIgnore]
         public ReceivedMessage Content => messageLazy.Value;
-        //[JsonProperty("font")]
-        //public int Font { get; private set; }
+        [JsonProperty("font")]
+        public int Font { get; private set; }
 
         public override abstract Endpoint Endpoint { get; }
         public virtual MessageSource Source => new MessageSource(UserId);
@@ -63,11 +63,9 @@ namespace Sisters.WudiLib.Posts
     public class AnonymousMessage : GroupMessage
     {
         [JsonProperty("anonymous")]
-        internal string Anonymous { get; private set; }
-        [JsonProperty("anonymous_flag")]
-        internal string AnonymousFlag { get; private set; }
+        internal AnonymousInfo Anonymous { get; private set; }
 
-        public override MessageSource Source => new MessageSource(UserId, AnonymousFlag, Anonymous, true);
+        public override MessageSource Source => new MessageSource(UserId, Anonymous.Flag, Anonymous.Name, true);
     }
 
     [JsonObject(MemberSerialization.OptIn)]
