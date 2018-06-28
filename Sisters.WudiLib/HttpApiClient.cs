@@ -8,16 +8,16 @@ namespace Sisters.WudiLib
 {
     partial class HttpApiClient
     {
-        private static readonly string PrivatePath = "send_private_msg";
-        private static readonly string GroupPath = "send_group_msg";
-        private static readonly string DiscussPath = "send_discuss_msg";
-        private static readonly string MessagePath = "send_msg";
-        private static readonly string KickGroupMemberPath = "set_group_kick";
-        private static readonly string RecallPath = "delete_msg";
-        private static readonly string LoginInfoPath = "get_login_info";
-        private static readonly string GroupMemberInfoPath = "get_group_member_info";
-        private static readonly string GroupMemberListPath = "get_group_member_list";
-        private static readonly string CleanPath = "clean_data_dir";
+        private const string PrivatePath = "send_private_msg";
+        private const string GroupPath = "send_group_msg";
+        private const string DiscussPath = "send_discuss_msg";
+        private const string MessagePath = "send_msg";
+        private const string KickGroupMemberPath = "set_group_kick";
+        private const string RecallPath = "delete_msg";
+        private const string LoginInfoPath = "get_login_info";
+        private const string GroupMemberInfoPath = "get_group_member_info";
+        private const string GroupMemberListPath = "get_group_member_list";
+        private const string CleanPath = "clean_data_dir";
 
         private string PrivateUrl => apiAddress + PrivatePath;
         private string GroupUrl => apiAddress + GroupPath;
