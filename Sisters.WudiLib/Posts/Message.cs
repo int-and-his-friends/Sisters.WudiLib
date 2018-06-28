@@ -26,7 +26,7 @@ namespace Sisters.WudiLib.Posts
         [JsonProperty("font")]
         public int Font { get; private set; }
 
-        public override abstract Endpoint Endpoint { get; }
+        public abstract override Endpoint Endpoint { get; }
         public virtual MessageSource Source => new MessageSource(UserId);
     }
 
