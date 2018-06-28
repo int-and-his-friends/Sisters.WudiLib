@@ -159,8 +159,7 @@ namespace Sisters.WudiLib
 
             internal static Section NetRecord(string url, bool noCache)
             {
-                if (!noCache) return NetRecord(url);
-                return new Section(RecordType, ("cache", "0"), ("file", url));
+                return noCache ? new Section(RecordType, ("cache", "0"), ("file", url)) : NetRecord(url);
             }
 
             /// <summary>
