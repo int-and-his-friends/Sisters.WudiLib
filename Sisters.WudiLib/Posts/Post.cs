@@ -13,7 +13,10 @@ namespace Sisters.WudiLib.Posts
 
         internal const string SubTypeField = "sub_type";
 
-        internal Post() { }
+        internal Post()
+        {
+            // ignored
+        }
 
         [JsonProperty("post_type")]
         internal string PostType { get; private set; }
@@ -21,6 +24,7 @@ namespace Sisters.WudiLib.Posts
         [JsonProperty("time")]
         [JsonConverter(typeof(UnixDateTimeConverter))]
         public DateTimeOffset Time { get; private set; }
+
         [JsonProperty("self_id")]
         public long SelfId { get; private set; }
         [JsonProperty("user_id")]
@@ -35,11 +39,13 @@ namespace Sisters.WudiLib.Posts
         internal const string FriendType = "friend";
         internal const string GroupType = "group";
 
-        internal Request() { }
+        internal Request()
+        {
+            // ignored
+        }
 
         [JsonProperty("request_type")]
         internal string RequestType { get; private set; }
-
         [JsonProperty("flag")]
         public string Flag { get; private set; }
         [JsonProperty("comment")]
@@ -49,7 +55,10 @@ namespace Sisters.WudiLib.Posts
     [JsonObject(MemberSerialization.OptIn)]
     public class FriendRequest : Request
     {
-        internal FriendRequest() { }
+        internal FriendRequest()
+        {
+            // ignored
+        }
 
         public override Endpoint Endpoint => new PrivateEndpoint(UserId);
     }
@@ -60,7 +69,10 @@ namespace Sisters.WudiLib.Posts
         internal const string AddType = "add";
         internal const string InvateType = "invite";
 
-        internal GroupRequest() { }
+        internal GroupRequest()
+        {
+            // ignored
+        }
 
         [JsonProperty(SubTypeField)]
         internal string SubType { get; private set; }

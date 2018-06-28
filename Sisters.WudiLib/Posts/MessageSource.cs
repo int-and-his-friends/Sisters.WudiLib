@@ -8,7 +8,8 @@ namespace Sisters.WudiLib.Posts
     /// </summary>
     public sealed class MessageSource : IEquatable<MessageSource>
     {
-        internal MessageSource(long userId, string anonymousFlag = null, string anonymous = null, bool isAnonymous = false)
+        internal MessageSource(long userId, string anonymousFlag = null, string anonymous = null,
+            bool isAnonymous = false)
         {
             IsAnonymous = isAnonymous;
             if (IsAnonymous)
@@ -31,7 +32,11 @@ namespace Sisters.WudiLib.Posts
         public long UserId { get; }
 
         public override bool Equals(object obj) => this.Equals(obj as MessageSource);
-        public bool Equals(MessageSource other) => other != null && this.IsAnonymous == other.IsAnonymous && this.Anonymous == other.Anonymous && this.AnonymousFlag == other.AnonymousFlag && this.UserId == other.UserId;
+
+        public bool Equals(MessageSource other) => other != null && this.IsAnonymous == other.IsAnonymous &&
+                                                   this.Anonymous == other.Anonymous &&
+                                                   this.AnonymousFlag == other.AnonymousFlag &&
+                                                   this.UserId == other.UserId;
 
         public override int GetHashCode()
         {
@@ -43,7 +48,9 @@ namespace Sisters.WudiLib.Posts
             return hashCode;
         }
 
-        public static bool operator ==(MessageSource source1, MessageSource source2) => EqualityComparer<MessageSource>.Default.Equals(source1, source2);
+        public static bool operator ==(MessageSource source1, MessageSource source2) =>
+            EqualityComparer<MessageSource>.Default.Equals(source1, source2);
+
         public static bool operator !=(MessageSource source1, MessageSource source2) => !(source1 == source2);
     }
 }

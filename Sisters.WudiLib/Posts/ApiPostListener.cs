@@ -13,12 +13,14 @@ namespace Sisters.WudiLib.Posts
     public class ApiPostListener
     {
         #region
+
         /// <summary>
         /// 获取或设置 HTTP API 客户端实例，将在发生事件时传给事件处理器。
         /// </summary>
         public HttpApiClient ApiClient { get; set; }
 
         private string _postAddress;
+
         /// <summary>
         /// 获取或设置 HTTP API 的上报地址。如果已经开始监听，则设置无效。
         /// </summary>
@@ -34,6 +36,7 @@ namespace Sisters.WudiLib.Posts
         }
 
         private string _forwardTo;
+
         /// <summary>
         /// 获取或设置转发地址。
         /// </summary>
@@ -132,8 +135,12 @@ namespace Sisters.WudiLib.Posts
                 {
                     using (var client = new http::HttpClient())
                     {
-                        var stringContent = new http::StringContent(content, System.Text.Encoding.UTF8, "application/json");
-                        using (await client.PostAsync(to, stringContent)) { }
+                        var stringContent =
+                            new http::StringContent(content, System.Text.Encoding.UTF8, "application/json");
+                        using (await client.PostAsync(to, stringContent))
+                        {
+                            // ignored
+                        }
                     }
                 }
                 catch (Exception e)
@@ -142,9 +149,11 @@ namespace Sisters.WudiLib.Posts
                 }
             });
         }
+
         #endregion
 
         #region Logging
+
         public event Action<Exception> OnException;
 
         private void LogException(Exception e)
@@ -158,9 +167,11 @@ namespace Sisters.WudiLib.Posts
                 // ignored
             }
         }
+
         #endregion
 
         #region ProcessPost
+
         private object ProcessPost(string content, HttpListenerResponse response)
         {
             if (string.IsNullOrEmpty(content)) return null;
@@ -180,6 +191,7 @@ namespace Sisters.WudiLib.Posts
                 case Post.RequestPost:
                     return ProcessRequest(content);
             }
+
             // log needed
             return null;
         }
@@ -235,6 +247,7 @@ namespace Sisters.WudiLib.Posts
                 case Request.GroupType:
                     return ProcessGroupRequest(request);
             }
+
             return null;
         }
 
@@ -249,11 +262,14 @@ namespace Sisters.WudiLib.Posts
                 case GroupRequest.InvateType:
                     return GroupInviteHappen(groupRequest);
             }
+
             return null;
         }
+
         #endregion
 
         #region Notice
+
         private void ProcessNotice(JObject contentObject)
         {
             switch (contentObject[Notice.NoticeField].ToObject<string>())
@@ -287,10 +303,13 @@ namespace Sisters.WudiLib.Posts
                     break;
             }
         }
+
         #endregion
 
         #region GroupRequest
-        private readonly ICollection<GroupRequestEventHandler> _groupRequestEventHandlers = new LinkedList<GroupRequestEventHandler>();
+
+        private readonly ICollection<GroupRequestEventHandler> _groupRequestEventHandlers =
+            new LinkedList<GroupRequestEventHandler>();
 
         /// <summary>
         /// 收到加群请求事件。
@@ -310,7 +329,9 @@ namespace Sisters.WudiLib.Posts
         #endregion
 
         #region GroupInvite
-        private readonly ICollection<GroupRequestEventHandler> _groupInviteEventHandlers = new LinkedList<GroupRequestEventHandler>();
+
+        private readonly ICollection<GroupRequestEventHandler> _groupInviteEventHandlers =
+            new LinkedList<GroupRequestEventHandler>();
 
         /// <summary>
         /// 收到加群邀请事件。
@@ -330,7 +351,9 @@ namespace Sisters.WudiLib.Posts
         #endregion
 
         #region FriendRequest
-        private readonly ICollection<FriendRequestEventHandler> _friendRequestEventHandlers = new LinkedList<FriendRequestEventHandler>();
+
+        private readonly ICollection<FriendRequestEventHandler> _friendRequestEventHandlers =
+            new LinkedList<FriendRequestEventHandler>();
 
         /// <summary>
         /// 收到好友请求事件。
@@ -350,6 +373,7 @@ namespace Sisters.WudiLib.Posts
         #endregion
 
         #region Message
+
         /// <summary>
         /// 收到消息事件。包括私聊、群聊和讨论组消息，但不包括匿名的群消息。
         /// </summary>
@@ -364,9 +388,11 @@ namespace Sisters.WudiLib.Posts
         /// 群聊信息事件。例如禁言等。
         /// </summary>
         public event GroupNoticeEventHandler GroupNoticeEvent;
+
         #endregion
 
         #region DefaultHandlers
+
         /// <summary>
         /// 同意全部群组请求（请求、邀请）的事件处理器。
         /// </summary>
@@ -403,6 +429,7 @@ namespace Sisters.WudiLib.Posts
 
         //public static void Print(HttpApiClient api, GroupMessage notice)
         //    => Console.WriteLine(notice.Content);
+
         #endregion
     }
 }

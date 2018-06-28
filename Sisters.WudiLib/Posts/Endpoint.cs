@@ -7,7 +7,10 @@ namespace Sisters.WudiLib.Posts
     /// </summary>
     public abstract class Endpoint
     {
-        internal Endpoint() { }
+        internal Endpoint()
+        {
+            // ignored
+        }
 
         [JsonProperty("message_type")]
         internal string MessageType
@@ -36,6 +39,7 @@ namespace Sisters.WudiLib.Posts
                 default:
                     break;
             }
+
             return null;
         }
     }

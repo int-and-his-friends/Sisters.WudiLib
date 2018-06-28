@@ -30,6 +30,7 @@ namespace Sisters.WudiLib.Posts
                 _message = s;
                 return;
             }
+
             if (!(o is JArray jObjectArray))
                 throw new InvalidOperationException("用于构造消息的对象即不是字符，也不是数组。可能是上报数据有错误。");
             var sections = jObjectArray.Select(jo => new Section((JObject)jo));
@@ -44,6 +45,7 @@ namespace Sisters.WudiLib.Posts
                 {
                     return !Regex.IsMatch(_message, CqCodePattern);
                 }
+
                 return _sections.All(s => s.Type == "text");
             }
         }
@@ -79,6 +81,7 @@ namespace Sisters.WudiLib.Posts
                 //return new RawMessage(sendingRaw);
                 return new RawMessage(_message);
             }
+
             //return new SendingMessage(_sections.Select(section =>
             //{
             //    if (section.Type != Section.ImageType) return section;
