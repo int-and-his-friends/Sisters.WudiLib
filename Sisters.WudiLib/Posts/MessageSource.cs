@@ -10,40 +10,36 @@ namespace Sisters.WudiLib.Posts
     {
         internal MessageSource(long userId, string anonymousFlag = null, string anonymous = null, bool isAnonymous = false)
         {
-            _isAnonymous = isAnonymous;
-            if (_isAnonymous)
+            IsAnonymous = isAnonymous;
+            if (IsAnonymous)
             {
-                _anonymous = anonymous;
-                _anonymousFlag = anonymousFlag;
+                Anonymous = anonymous;
+                AnonymousFlag = anonymousFlag;
             }
             else
             {
-                _userId = userId;
+                UserId = userId;
             }
         }
 
-        private readonly bool _isAnonymous;
-        public bool IsAnonymous => _isAnonymous;
+        public bool IsAnonymous { get; }
 
-        private readonly string _anonymous;
-        public string Anonymous => _anonymous;
+        public string Anonymous { get; }
 
-        private readonly string _anonymousFlag;
-        public string AnonymousFlag => _anonymousFlag;
+        public string AnonymousFlag { get; }
 
-        private readonly long _userId;
-        public long UserId => _userId;
+        public long UserId { get; }
 
         public override bool Equals(object obj) => this.Equals(obj as MessageSource);
-        public bool Equals(MessageSource other) => other != null && this._isAnonymous == other._isAnonymous && this._anonymous == other._anonymous && this._anonymousFlag == other._anonymousFlag && this._userId == other._userId;
+        public bool Equals(MessageSource other) => other != null && this.IsAnonymous == other.IsAnonymous && this.Anonymous == other.Anonymous && this.AnonymousFlag == other.AnonymousFlag && this.UserId == other.UserId;
 
         public override int GetHashCode()
         {
             var hashCode = -26995021;
-            hashCode = hashCode * -1521134295 + this._isAnonymous.GetHashCode();
-            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(this._anonymous);
-            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(this._anonymousFlag);
-            hashCode = hashCode * -1521134295 + this._userId.GetHashCode();
+            hashCode = hashCode * -1521134295 + this.IsAnonymous.GetHashCode();
+            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(this.Anonymous);
+            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(this.AnonymousFlag);
+            hashCode = hashCode * -1521134295 + this.UserId.GetHashCode();
             return hashCode;
         }
 
