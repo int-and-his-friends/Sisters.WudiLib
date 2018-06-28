@@ -56,11 +56,10 @@ namespace Sisters.WudiLib.Posts
         {
             get
             {
-                if (_isString)
-                {
-                    return Regex.Replace(_message, CqCodePattern, string.Empty).AfterReceive();
-                }
-                return string.Concat(_sections.Where(s => s.Type == Section.TextType).Select(s => s.Data[Section.TextParamName]));
+                return _isString
+                    ? Regex.Replace(_message, CqCodePattern, string.Empty).AfterReceive()
+                    : string.Concat(_sections.Where(s => s.Type == Section.TextType)
+                        .Select(s => s.Data[Section.TextParamName]));
             }
         }
 
