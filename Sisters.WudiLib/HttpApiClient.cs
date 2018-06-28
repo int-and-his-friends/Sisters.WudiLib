@@ -19,16 +19,16 @@ namespace Sisters.WudiLib
         private const string GroupMemberListPath = "get_group_member_list";
         private const string CleanPath = "clean_data_dir";
 
-        private string PrivateUrl => apiAddress + PrivatePath;
-        private string GroupUrl => apiAddress + GroupPath;
-        private string DiscussUrl => apiAddress + DiscussPath;
-        private string MessageUrl => apiAddress + MessagePath;
-        private string KickGroupMemberUrl => apiAddress + KickGroupMemberPath;
-        private string RecallUrl => apiAddress + RecallPath;
-        private string LoginInfoUrl => apiAddress + LoginInfoPath;
-        private string GroupMemberInfoUrl => apiAddress + GroupMemberInfoPath;
-        private string GroupMemberListUrl => apiAddress + GroupMemberListPath;
-        private string CleanUrl => apiAddress + CleanPath;
+        private string PrivateUrl => _apiAddress + PrivatePath;
+        private string GroupUrl => _apiAddress + GroupPath;
+        private string DiscussUrl => _apiAddress + DiscussPath;
+        private string MessageUrl => _apiAddress + MessagePath;
+        private string KickGroupMemberUrl => _apiAddress + KickGroupMemberPath;
+        private string RecallUrl => _apiAddress + RecallPath;
+        private string LoginInfoUrl => _apiAddress + LoginInfoPath;
+        private string GroupMemberInfoUrl => _apiAddress + GroupMemberInfoPath;
+        private string GroupMemberListUrl => _apiAddress + GroupMemberListPath;
+        private string CleanUrl => _apiAddress + CleanPath;
     }
 
     /// <summary>
@@ -40,23 +40,23 @@ namespace Sisters.WudiLib
 
         public bool IsCleaningData => _isReadyToCleanData != 0;
 
-        private string apiAddress;
+        private string _apiAddress;
 
         /// <summary>
         /// 获取或设置 HTTP API 的监听地址
         /// </summary>
         public string ApiAddress
         {
-            get => apiAddress;
+            get => _apiAddress;
             set
             {
                 if (value.EndsWith("/", StringComparison.OrdinalIgnoreCase))
                 {
-                    apiAddress = value;
+                    _apiAddress = value;
                 }
                 else
                 {
-                    apiAddress = value + "/";
+                    _apiAddress = value + "/";
                 }
             }
         }
