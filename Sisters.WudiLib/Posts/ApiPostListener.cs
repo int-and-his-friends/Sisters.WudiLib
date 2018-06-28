@@ -295,8 +295,8 @@ namespace Sisters.WudiLib.Posts
         /// </summary>
         public event GroupRequestEventHandler GroupRequestEvent
         {
-            add { _groupRequestEventHandlers.Add(value); }
-            remove { _groupRequestEventHandlers.Remove(value); }
+            add => _groupRequestEventHandlers.Add(value);
+            remove => _groupRequestEventHandlers.Remove(value);
         }
 
         private GroupRequestResponse GroupRequestHappen(GroupRequest request)
@@ -318,8 +318,8 @@ namespace Sisters.WudiLib.Posts
         /// </summary>
         public event GroupRequestEventHandler GroupInviteEvent
         {
-            add { _groupInviteEventHandlers.Add(value); }
-            remove { _groupInviteEventHandlers.Remove(value); }
+            add => _groupInviteEventHandlers.Add(value);
+            remove => _groupInviteEventHandlers.Remove(value);
         }
 
         private GroupRequestResponse GroupInviteHappen(GroupRequest request)
@@ -341,8 +341,8 @@ namespace Sisters.WudiLib.Posts
         /// </summary>
         public event FriendRequestEventHandler FriendRequestEvent
         {
-            add { _friendRequestEventHandlers.Add(value); }
-            remove { _friendRequestEventHandlers.Remove(value); }
+            add => _friendRequestEventHandlers.Add(value);
+            remove => _friendRequestEventHandlers.Remove(value);
         }
 
         private FriendRequestResponse FriendRequestHappen(FriendRequest request)
