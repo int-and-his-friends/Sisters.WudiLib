@@ -42,26 +42,26 @@ namespace Sisters.WudiLib.Posts
             set => System.Threading.Interlocked.Exchange(ref _forwardTo, value);
         }
 
-        private readonly object listenerLock = new object();
+        private readonly object _listenerLock = new object();
 
-        private HttpListener listener = new HttpListener();
+        private readonly HttpListener _listener = new HttpListener();
 
-        private Task listenTask;
+        private Task _listenTask;
 
         /// <summary>
         /// 获取当前是否监听 HTTP API 的上报数据。
         /// </summary>
-        public bool IsListening => listener.IsListening;
+        public bool IsListening => _listener.IsListening;
 
         public void StartListen()
         {
-            lock (listenerLock)
+            lock (_listenerLock)
             {
                 if (IsListening) return;
                 string prefix = PostAddress;
-                listener.Prefixes.Add(prefix);
-                listener.Start();
-                listenTask = Task.Run((Action)Listening);
+                _listener.Prefixes.Add(prefix);
+                _listener.Start();
+                _listenTask = Task.Run((Action)Listening);
             }
         }
 
@@ -69,7 +69,7 @@ namespace Sisters.WudiLib.Posts
         {
             while (true)
             {
-                var context = listener.GetContext();
+                var context = _listener.GetContext();
                 ProcessContext(context);
             }
         }
@@ -288,20 +288,20 @@ namespace Sisters.WudiLib.Posts
         #endregion
 
         #region GroupRequest
-        private readonly ICollection<GroupRequestEventHandler> groupRequestEventHandlers = new LinkedList<GroupRequestEventHandler>();
+        private readonly ICollection<GroupRequestEventHandler> _groupRequestEventHandlers = new LinkedList<GroupRequestEventHandler>();
 
         /// <summary>
         /// 收到加群请求事件。
         /// </summary>
         public event GroupRequestEventHandler GroupRequestEvent
         {
-            add { groupRequestEventHandlers.Add(value); }
-            remove { groupRequestEventHandlers.Remove(value); }
+            add { _groupRequestEventHandlers.Add(value); }
+            remove { _groupRequestEventHandlers.Remove(value); }
         }
 
         private GroupRequestResponse GroupRequestHappen(GroupRequest request)
         {
-            foreach (var handler in groupRequestEventHandlers)
+            foreach (var handler in _groupRequestEventHandlers)
             {
                 var response = handler.Invoke(ApiClient, request);
                 if (response != null) return response;
@@ -311,20 +311,20 @@ namespace Sisters.WudiLib.Posts
         #endregion
 
         #region GroupInvite
-        private readonly ICollection<GroupRequestEventHandler> groupInviteEventHandlers = new LinkedList<GroupRequestEventHandler>();
+        private readonly ICollection<GroupRequestEventHandler> _groupInviteEventHandlers = new LinkedList<GroupRequestEventHandler>();
 
         /// <summary>
         /// 收到加群邀请事件。
         /// </summary>
         public event GroupRequestEventHandler GroupInviteEvent
         {
-            add { groupInviteEventHandlers.Add(value); }
-            remove { groupInviteEventHandlers.Remove(value); }
+            add { _groupInviteEventHandlers.Add(value); }
+            remove { _groupInviteEventHandlers.Remove(value); }
         }
 
         private GroupRequestResponse GroupInviteHappen(GroupRequest request)
         {
-            foreach (var handler in groupInviteEventHandlers)
+            foreach (var handler in _groupInviteEventHandlers)
             {
                 var response = handler.Invoke(ApiClient, request);
                 if (response != null) return response;
@@ -334,20 +334,20 @@ namespace Sisters.WudiLib.Posts
         #endregion
 
         #region FriendRequest
-        private readonly ICollection<FriendRequestEventHandler> friendRequestEventHandlers = new LinkedList<FriendRequestEventHandler>();
+        private readonly ICollection<FriendRequestEventHandler> _friendRequestEventHandlers = new LinkedList<FriendRequestEventHandler>();
 
         /// <summary>
         /// 收到好友请求事件。
         /// </summary>
         public event FriendRequestEventHandler FriendRequestEvent
         {
-            add { friendRequestEventHandlers.Add(value); }
-            remove { friendRequestEventHandlers.Remove(value); }
+            add { _friendRequestEventHandlers.Add(value); }
+            remove { _friendRequestEventHandlers.Remove(value); }
         }
 
         private FriendRequestResponse FriendRequestHappen(FriendRequest request)
         {
-            foreach (var handler in friendRequestEventHandlers)
+            foreach (var handler in _friendRequestEventHandlers)
             {
                 var response = handler.Invoke(ApiClient, request);
                 if (response != null) return response;
