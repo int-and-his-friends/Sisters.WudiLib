@@ -3,6 +3,7 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using http = System.Net.Http;
@@ -154,6 +155,7 @@ namespace Sisters.WudiLib.Posts
             }
             catch (Exception)
             {
+                // ignored
             }
         }
         #endregion
@@ -301,13 +303,10 @@ namespace Sisters.WudiLib.Posts
 
         private GroupRequestResponse GroupRequestHappen(GroupRequest request)
         {
-            foreach (var handler in _groupRequestEventHandlers)
-            {
-                var response = handler.Invoke(ApiClient, request);
-                if (response != null) return response;
-            }
-            return null;
+            return _groupRequestEventHandlers.Select(handler => handler.Invoke(ApiClient, request))
+                .FirstOrDefault(response => response != null);
         }
+
         #endregion
 
         #region GroupInvite
@@ -324,13 +323,10 @@ namespace Sisters.WudiLib.Posts
 
         private GroupRequestResponse GroupInviteHappen(GroupRequest request)
         {
-            foreach (var handler in _groupInviteEventHandlers)
-            {
-                var response = handler.Invoke(ApiClient, request);
-                if (response != null) return response;
-            }
-            return null;
+            return _groupInviteEventHandlers.Select(handler => handler.Invoke(ApiClient, request))
+                .FirstOrDefault(response => response != null);
         }
+
         #endregion
 
         #region FriendRequest
@@ -347,13 +343,10 @@ namespace Sisters.WudiLib.Posts
 
         private FriendRequestResponse FriendRequestHappen(FriendRequest request)
         {
-            foreach (var handler in _friendRequestEventHandlers)
-            {
-                var response = handler.Invoke(ApiClient, request);
-                if (response != null) return response;
-            }
-            return null;
+            return _friendRequestEventHandlers.Select(handler => handler.Invoke(ApiClient, request))
+                .FirstOrDefault(response => response != null);
         }
+
         #endregion
 
         #region Message
