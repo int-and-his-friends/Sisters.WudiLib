@@ -75,7 +75,7 @@ namespace Sisters.WudiLib.Responses
 
         private class AuthorityConverter : JsonConverter
         {
-            private static readonly IReadOnlyDictionary<string, GroupMemberAuthority> list = new Dictionary<string, GroupMemberAuthority>
+            private static readonly IReadOnlyDictionary<string, GroupMemberAuthority> List = new Dictionary<string, GroupMemberAuthority>
             {
                 { "member", GroupMemberAuthority.Normal },
                 { "admin", GroupMemberAuthority.Manager },
@@ -88,12 +88,12 @@ namespace Sisters.WudiLib.Responses
             {
                 if (reader.TokenType != JsonToken.String)
                     return GroupMemberAuthority.Unknown;
-                return list.GetValueOrDefault(reader.Value.ToString(), GroupMemberAuthority.Unknown);
+                return List.GetValueOrDefault(reader.Value.ToString(), GroupMemberAuthority.Unknown);
             }
 
             public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
             {
-                var result = from e in list
+                var result = from e in List
                              where e.Value == value as GroupMemberAuthority?
                              select e.Key;
                 if (!result.Any()) writer.WriteNull();
