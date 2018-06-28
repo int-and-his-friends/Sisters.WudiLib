@@ -172,7 +172,7 @@ namespace Sisters.WudiLib
         /// <summary>
         /// 发送消息。
         /// </summary>
-        /// <param name="source">收到上报时的参数。</param>
+        /// <param name="endpoint">TODO</param>
         /// <param name="message">要发送的消息。</param>
         /// <returns></returns>
         public async Task<SendMessageResponseData> SendMessageAsync(Posts.Endpoint endpoint, Message message)
