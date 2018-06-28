@@ -9,7 +9,7 @@ namespace Sisters.WudiLib
     /// </summary>
     public class SendingMessage : SectionMessage
     {
-        private readonly static ICollection<string> NoJoinSectionTypes = new List<string>
+        private static readonly ICollection<string> NoJoinSectionTypes = new List<string>
         {
             "record",
             "rps",
