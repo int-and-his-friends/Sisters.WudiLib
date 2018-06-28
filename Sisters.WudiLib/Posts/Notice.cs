@@ -11,7 +11,7 @@ namespace Sisters.WudiLib.Posts
         internal const string FriendAddNotice = "friend_add";
         internal const string NoticeField = "notice_type";
 
-        public override abstract Endpoint Endpoint { get; }
+        public abstract override Endpoint Endpoint { get; }
         [JsonProperty(NoticeField)]
         internal string NoticeType { get; private set; }
     }
