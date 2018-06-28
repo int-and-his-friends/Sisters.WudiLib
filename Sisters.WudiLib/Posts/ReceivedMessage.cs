@@ -12,10 +12,10 @@ namespace Sisters.WudiLib.Posts
         private const string CqCodePattern = @"\[CQ:([\w\-\.]+?)(?:,([\w\-\.]+?)=(.+?))\]";
 
         //private const string NotImplementedMessage = "暂时不支持数组格式的上报数据。";
-        bool _isString = false;
-        string _message;
+        private readonly bool _isString;
+        private readonly string _message;
 
-        readonly IList<Section> _sections;
+        private readonly IList<Section> _sections;
 
         /// <summary>
         /// 
