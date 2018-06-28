@@ -111,10 +111,10 @@ namespace Sisters.WudiLib
 
         internal static string AfterReceive(this string received)
             => received
-            .Replace("&#44;", ",", StringComparison.Ordinal)
-            .Replace("&#91;", "[", StringComparison.Ordinal)
-            .Replace("&#93;", "]", StringComparison.Ordinal)
-            .Replace("&amp;", "&", StringComparison.Ordinal);
+                .Replace("&#44;", ",", StringComparison.Ordinal)
+                .Replace("&#91;", "[", StringComparison.Ordinal)
+                .Replace("&#93;", "]", StringComparison.Ordinal)
+                .Replace("&amp;", "&", StringComparison.Ordinal);
 
         /// <summary>
         /// 检查<see cref="string"/>是否为<c>null</c>或空值，并抛出相应的异常。

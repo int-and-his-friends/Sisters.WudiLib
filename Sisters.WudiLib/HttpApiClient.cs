@@ -73,12 +73,17 @@ namespace Sisters.WudiLib
                         {
                             await this.CleanImageData();
                         }
-                        catch (Exception) { }
+                        catch (Exception)
+                        {
+                            // ignored
+                        }
+
                         await Task.Delay(60000 * intervalMinutes);
                     }
                 });
                 return true;
             }
+
             return false;
         }
 

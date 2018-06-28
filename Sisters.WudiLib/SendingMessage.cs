@@ -18,9 +18,9 @@ namespace Sisters.WudiLib
             "share",
         };
 
-        internal IList<Section> Sections => sections;
+        internal IList<Section> Sections => SectionsBase;
 
-        internal override object Serializing => sections;
+        internal override object Serializing => SectionsBase;
 
         /// <summary>
         /// 指示此 <see cref="SendingMessage"/> 是否可以与其他 <see cref="SendingMessage"/> 连接。
@@ -30,19 +30,25 @@ namespace Sisters.WudiLib
         /// <summary>
         /// 构造新的消息实例。
         /// </summary>
-        public SendingMessage() : base() { }
+        public SendingMessage() : base()
+        {
+            // ignored
+        }
 
         /// <summary>
         /// 从 <see cref="IEnumerable{Section}"/> 创建消息。
         /// </summary>
         /// <param name="sections"></param>
-        internal SendingMessage(IEnumerable<Section> sections) : base(sections) { }
+        internal SendingMessage(IEnumerable<Section> sections) : base(sections)
+        { 
+            // ignored
+        }
 
         /// <summary>
         /// 从文本构造新的消息实例。
         /// </summary>
         /// <param name="text">消息内容文本。</param>
-        public SendingMessage(string text) : this() => sections.Add(Section.Text(text));
+        public SendingMessage(string text) : this() => SectionsBase.Add(Section.Text(text));
 
         /// <summary>
         /// 从两个 <see cref="SendingMessage"/> 实例创建消息。
@@ -50,7 +56,8 @@ namespace Sisters.WudiLib
         /// <param name="message1">在前面的消息。</param>
         /// <param name="message2">在后面的消息。</param>
         /// <exception cref="InvalidOperationException">有无法连接的消息。</exception>
-        private SendingMessage(SendingMessage message1, SendingMessage message2) : this(message1.Sections.Union(message2.Sections))
+        private SendingMessage(SendingMessage message1, SendingMessage message2) : this(
+            message1.Sections.Union(message2.Sections))
         {
             if (!message1.CanConcat || !message2.CanConcat)
             {
@@ -64,7 +71,7 @@ namespace Sisters.WudiLib
         /// <param name="section">包含的消息段。</param>
         private SendingMessage(Section section) : this()
         {
-            sections.Add(section);
+            SectionsBase.Add(section);
         }
 
         /// <summary>
@@ -100,9 +107,11 @@ namespace Sisters.WudiLib
         /// <param name="url">网络图片 URL。</param>
         /// <param name="noCache">是否不使用缓存（默认使用）。</param>
         /// <returns>构造的消息。</returns>
-        public static SendingMessage NetImage(string url, bool noCache) => new SendingMessage(Section.NetImage(url, noCache));
+        public static SendingMessage NetImage(string url, bool noCache) =>
+            new SendingMessage(Section.NetImage(url, noCache));
 
-        public static SendingMessage NetRecord(string url, bool noCache) => new SendingMessage(Section.NetRecord(url, noCache));
+        public static SendingMessage NetRecord(string url, bool noCache) =>
+            new SendingMessage(Section.NetRecord(url, noCache));
 
         public static SendingMessage NetRecord(string url) => new SendingMessage(Section.NetRecord(url));
 
@@ -117,7 +126,8 @@ namespace Sisters.WudiLib
         /// <exception cref="ArgumentException"><c>introductionUrl</c>或<c>audioUrl</c>或<c>title</c>为空。</exception>
         /// <exception cref="ArgumentNullException"><c>introductionUrl</c>或<c>audioUrl</c>或<c>title</c>为<c>null</c>。</exception>
         /// <returns>包含该音乐自定义分享的消息。</returns>
-        public static SendingMessage MusicCustom(string introductionUrl, string audioUrl, string title, string profile, string imageUrl)
+        public static SendingMessage MusicCustom(string introductionUrl, string audioUrl, string title, string profile,
+            string imageUrl)
             => new SendingMessage(Section.MusicCustom(introductionUrl, audioUrl, title, profile, imageUrl));
 
         /// <summary>
@@ -141,6 +151,7 @@ namespace Sisters.WudiLib
         /// <param name="right"></param>
         /// <exception cref="InvalidOperationException">一个或多个消息不可连接。</exception>
         /// <returns></returns>
-        public static SendingMessage operator +(SendingMessage left, SendingMessage right) => new SendingMessage(left, right);
+        public static SendingMessage operator +(SendingMessage left, SendingMessage right) =>
+            new SendingMessage(left, right);
     }
 }

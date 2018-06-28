@@ -75,16 +75,18 @@ namespace Sisters.WudiLib.Responses
 
         private class AuthorityConverter : JsonConverter
         {
-            private static readonly IReadOnlyDictionary<string, GroupMemberAuthority> List = new Dictionary<string, GroupMemberAuthority>
-            {
-                { "member", GroupMemberAuthority.Normal },
-                { "admin", GroupMemberAuthority.Manager },
-                { "owner", GroupMemberAuthority.Leader },
-            };
+            private static readonly IReadOnlyDictionary<string, GroupMemberAuthority> List =
+                new Dictionary<string, GroupMemberAuthority>
+                {
+                    {"member", GroupMemberAuthority.Normal},
+                    {"admin", GroupMemberAuthority.Manager},
+                    {"owner", GroupMemberAuthority.Leader},
+                };
 
             public override bool CanConvert(Type objectType) => objectType == typeof(GroupMemberAuthority);
 
-            public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+            public override object ReadJson(JsonReader reader, Type objectType, object existingValue,
+                JsonSerializer serializer)
             {
                 return reader.TokenType == JsonToken.String
                     ? List.GetValueOrDefault(reader.Value.ToString(), GroupMemberAuthority.Unknown)
