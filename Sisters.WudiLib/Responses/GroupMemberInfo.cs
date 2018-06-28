@@ -86,9 +86,9 @@ namespace Sisters.WudiLib.Responses
 
             public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
             {
-                if (reader.TokenType != JsonToken.String)
-                    return GroupMemberAuthority.Unknown;
-                return List.GetValueOrDefault(reader.Value.ToString(), GroupMemberAuthority.Unknown);
+                return reader.TokenType == JsonToken.String
+                    ? List.GetValueOrDefault(reader.Value.ToString(), GroupMemberAuthority.Unknown)
+                    : GroupMemberAuthority.Unknown;
             }
 
             public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
