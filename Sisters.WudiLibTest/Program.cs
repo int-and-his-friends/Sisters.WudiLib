@@ -136,7 +136,7 @@ namespace Sisters.WudiLibTest
             Console.WriteLine(request.SelfId);
             Console.WriteLine(request.GroupId);
             Console.WriteLine(request.UserId);
-            Console.WriteLine(request.Message);
+            Console.WriteLine(request.Comment);
             Console.WriteLine(request.Flag);
             return null;
         }
@@ -147,7 +147,7 @@ namespace Sisters.WudiLibTest
             Console.WriteLine(request.Time);
             Console.WriteLine(request.SelfId);
             Console.WriteLine(request.UserId);
-            Console.WriteLine(request.Message);
+            Console.WriteLine(request.Comment);
             Console.WriteLine(request.Flag);
             return null;
         }
