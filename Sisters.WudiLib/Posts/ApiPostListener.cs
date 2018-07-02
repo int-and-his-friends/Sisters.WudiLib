@@ -53,6 +53,19 @@ namespace Sisters.WudiLib.Posts
         /// </summary>
         public bool IsListening => listener.IsListening;
 
+        public ApiPostListener()
+        {
+        }
+
+        public ApiPostListener(string address) => PostAddress = address;
+
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
+        public ApiPostListener(int port)
+        {
+            if (port <= IPEndPoint.MinPort || port >= IPEndPoint.MaxPort) throw new ArgumentOutOfRangeException();
+            PostAddress = $"http://+:{port.ToString(System.Globalization.CultureInfo.InvariantCulture)}/";
+        }
+
         public void StartListen()
         {
             lock (listenerLock)
