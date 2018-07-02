@@ -23,6 +23,7 @@ namespace Sisters.WudiLib.Posts
 
     public abstract class GroupNotice : Notice
     {
+        [JsonProperty("group_id")]
         public long GroupId { get; private set; }
 
         public override Endpoint Endpoint => new GroupEndpoint(GroupId);

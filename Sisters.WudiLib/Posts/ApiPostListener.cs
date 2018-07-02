@@ -62,7 +62,7 @@ namespace Sisters.WudiLib.Posts
         /// <exception cref="ArgumentOutOfRangeException"></exception>
         public ApiPostListener(int port)
         {
-            if (port <= IPEndPoint.MinPort || port >= IPEndPoint.MaxPort) throw new ArgumentOutOfRangeException();
+            if (port <= IPEndPoint.MinPort || port > IPEndPoint.MaxPort) throw new ArgumentOutOfRangeException();
             PostAddress = $"http://+:{port.ToString(System.Globalization.CultureInfo.InvariantCulture)}/";
         }
 
@@ -347,6 +347,9 @@ namespace Sisters.WudiLib.Posts
 
         public event Action<HttpApiClient, GroupMemberIncreaseNotice> GroupMemberIncreasedEvent;
 
+        /// <summary>
+        /// 加入新群时发生的事件。注意此事件没有 <see cref="GroupMemberChangeNotice.OperatorId"/> 的数据（至少 Invite 没有，Approve 不清楚）。
+        /// </summary>
         public event Action<HttpApiClient, GroupMemberIncreaseNotice> GroupAddedEvent;
         #endregion
 
@@ -377,7 +380,7 @@ namespace Sisters.WudiLib.Posts
         private readonly ICollection<GroupRequestEventHandler> groupInviteEventHandlers = new LinkedList<GroupRequestEventHandler>();
 
         /// <summary>
-        /// 收到加群邀请事件。
+        /// 收到加群邀请事件。此时 <see cref="Request.Comment"/> 并不存在。
         /// </summary>
         public event GroupRequestEventHandler GroupInviteEvent
         {
