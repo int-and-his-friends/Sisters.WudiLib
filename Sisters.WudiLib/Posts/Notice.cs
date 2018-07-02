@@ -59,12 +59,45 @@ namespace Sisters.WudiLib.Posts
         public string SubType { get; private set; }
     }
 
-    public sealed class GroupMemberChangeNotice : GroupNotice
+    public abstract class GroupMemberChangeNotice : GroupNotice
     {
         [JsonProperty(SubTypeField)]
-        internal string SubType { get; private set; }
+        public string SubType { get; private set; }
 
         [JsonProperty("operator_id")]
         internal long OperatorId { get; private set; }
+    }
+
+    public sealed class GroupMemberIncreaseNotice : GroupMemberChangeNotice
+    {
+        /// <summary>
+        /// 表示管理员已同意入群。
+        /// </summary>
+        public const string AdminApprove = "approve";
+
+        /// <summary>
+        /// 表示管理员邀请入群。
+        /// </summary>
+        public const string AdminInvite = "invite";
+
+        internal bool IsMe => UserId == SelfId;
+    }
+
+    public sealed class GroupMemberDecreaseNotice : GroupMemberChangeNotice
+    {
+        /// <summary>
+        /// 表示主动退群。
+        /// </summary>
+        public const string Leave = "leave";
+
+        /// <summary>
+        /// 成员被踢。
+        /// </summary>
+        public const string Kick = "kick";
+    }
+
+    public sealed class KickedNotice : GroupMemberChangeNotice
+    {
+        internal const string Kicked = "kick_me";
     }
 }

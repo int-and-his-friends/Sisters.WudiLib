@@ -263,8 +263,10 @@ namespace Sisters.WudiLib.Posts
                     ProcessGroupAdminNotice(contentObject);
                     break;
                 case Notice.GroupDecreaseNotice:
+                    ProcessGroupMemberDecrease(contentObject);
                     break;
                 case Notice.GroupIncreaseNotice:
+                    ProcessGroupMemberIncrease(contentObject);
                     break;
                 case Notice.FriendAddNotice:
                     FriendAddedEvent?.Invoke(ApiClient, contentObject.ToObject<FriendAddNotice>());
@@ -292,11 +294,45 @@ namespace Sisters.WudiLib.Posts
             }
         }
 
+        private void ProcessGroupMemberDecrease(JObject contentObject)
+        {
+            switch (contentObject[Post.SubTypeField].ToObject<string>())
+            {
+                case KickedNotice.Kicked:
+                    KickedEvent?.Invoke(ApiClient, contentObject.ToObject<KickedNotice>());
+                    break;
+                default:
+                    GroupMemberDecreasedEvent?.Invoke(ApiClient, contentObject.ToObject<GroupMemberDecreaseNotice>());
+                    break;
+            }
+        }
+
+        private void ProcessGroupMemberIncrease(JObject contentObject)
+        {
+            var data = contentObject.ToObject<GroupMemberIncreaseNotice>();
+            if (data.IsMe)
+            {
+                GroupAddedEvent?.Invoke(ApiClient, data);
+            }
+            else
+            {
+                GroupMemberIncreasedEvent?.Invoke(ApiClient, data);
+            }
+        }
+
         public event Action<HttpApiClient, GroupAdminNotice> GroupAdminSetEvent;
 
         public event Action<HttpApiClient, GroupAdminNotice> GroupAdminUnsetEvent;
 
         public event Action<HttpApiClient, FriendAddNotice> FriendAddedEvent;
+
+        public event Action<HttpApiClient, GroupMemberDecreaseNotice> GroupMemberDecreasedEvent;
+
+        public event Action<HttpApiClient, KickedNotice> KickedEvent;
+
+        public event Action<HttpApiClient, GroupMemberIncreaseNotice> GroupMemberIncreasedEvent;
+
+        public event Action<HttpApiClient, GroupMemberIncreaseNotice> GroupAddedEvent;
         #endregion
 
         #region GroupRequest
