@@ -14,6 +14,7 @@ namespace Sisters.WudiLib
         private static readonly string MessagePath = "send_msg";
         private static readonly string KickGroupMemberPath = "set_group_kick";
         private static readonly string RecallPath = "delete_msg";
+        private static readonly string BanGroupMemberPath = "set_group_ban";
         private static readonly string LoginInfoPath = "get_login_info";
         private static readonly string GroupMemberInfoPath = "get_group_member_info";
         private static readonly string GroupMemberListPath = "get_group_member_list";
@@ -25,6 +26,7 @@ namespace Sisters.WudiLib
         private string MessageUrl => apiAddress + MessagePath;
         private string KickGroupMemberUrl => apiAddress + KickGroupMemberPath;
         private string RecallUrl => apiAddress + RecallPath;
+        private string BanGroupMemberUrl => apiAddress + BanGroupMemberPath;
         private string LoginInfoUrl => apiAddress + LoginInfoPath;
         private string GroupMemberInfoUrl => apiAddress + GroupMemberInfoPath;
         private string GroupMemberListUrl => apiAddress + GroupMemberListPath;
@@ -224,11 +226,30 @@ namespace Sisters.WudiLib
         /// </summary>
         /// <param name="messageId">消息返回值</param>
         /// <returns></returns>
-        public async Task<bool> RecallMessageAsync(long messageId)
+        public async Task<bool> RecallMessageAsync(int messageId)
         {
-            var data = new { message_id = (int)messageId };
+            var data = new { message_id = messageId };
             var success = await Utilities.PostAsync(RecallUrl, data);
             return success;
+        }
+
+        /// <summary>
+        /// 群组单人禁言。
+        /// </summary>
+        /// <param name="groupId">群号。</param>
+        /// <param name="userId">要禁言的 QQ 号。</param>
+        /// <param name="duration">禁言时长，单位秒，0 表示取消禁言。</param>
+        /// <exception cref="ApiAccessException"></exception>
+        /// <returns>如果操作成功，返回 <c>true</c>。</returns>
+        public async Task<bool> BanGroupMember(long groupId, long userId, int duration)
+        {
+            var data = new
+            {
+                group_id = groupId,
+                user_id = userId,
+                duration,
+            };
+            return await Utilities.PostAsync(BanGroupMemberUrl, data);
         }
 
         /// <summary>
