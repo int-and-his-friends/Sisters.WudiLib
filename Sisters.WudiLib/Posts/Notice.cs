@@ -28,7 +28,7 @@ namespace Sisters.WudiLib.Posts
         public override Endpoint Endpoint => new GroupEndpoint(GroupId);
     }
 
-    public sealed class GroupUploadNotice : GroupNotice
+    public sealed class GroupFileNotice : GroupNotice
     {
         [JsonProperty("file")]
         public GroupFile File { get; private set; }

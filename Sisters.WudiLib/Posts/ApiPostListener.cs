@@ -257,7 +257,7 @@ namespace Sisters.WudiLib.Posts
             switch (contentObject[Notice.NoticeField].ToObject<string>())
             {
                 case Notice.GroupUploadNotice:
-                    // TODO: input code
+                    GroupFileUploadedEvent?.Invoke(ApiClient, contentObject.ToObject<GroupFileNotice>());
                     break;
                 case Notice.GroupAdminNotice:
                     ProcessGroupAdminNotice(contentObject);
@@ -319,6 +319,8 @@ namespace Sisters.WudiLib.Posts
                 GroupMemberIncreasedEvent?.Invoke(ApiClient, data);
             }
         }
+
+        public event Action<HttpApiClient, GroupFileNotice> GroupFileUploadedEvent;
 
         public event Action<HttpApiClient, GroupAdminNotice> GroupAdminSetEvent;
 
