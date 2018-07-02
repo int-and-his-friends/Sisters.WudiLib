@@ -260,12 +260,14 @@ namespace Sisters.WudiLib.Posts
                     // TODO: input code
                     break;
                 case Notice.GroupAdminNotice:
+                    ProcessGroupAdminNotice(contentObject);
                     break;
                 case Notice.GroupDecreaseNotice:
                     break;
                 case Notice.GroupIncreaseNotice:
                     break;
                 case Notice.FriendAddNotice:
+                    FriendAddedEvent?.Invoke(ApiClient, contentObject.ToObject<FriendAddNotice>());
                     break;
                 default:
                     // TODO: Logging
@@ -275,16 +277,26 @@ namespace Sisters.WudiLib.Posts
 
         private void ProcessGroupAdminNotice(JObject contentObject)
         {
-            switch (contentObject[Post.SubTypeField].ToObject<string>())
+            var data = contentObject.ToObject<GroupAdminNotice>();
+            switch (data.SubType)
             {
                 case GroupAdminNotice.SetAdmin:
+                    GroupAdminSetEvent?.Invoke(ApiClient, data);
                     break;
                 case GroupAdminNotice.UnsetAdmin:
+                    GroupAdminUnsetEvent?.Invoke(ApiClient, data);
                     break;
                 default:
+                    // TODO
                     break;
             }
         }
+
+        public event Action<HttpApiClient, GroupAdminNotice> GroupAdminSetEvent;
+
+        public event Action<HttpApiClient, GroupAdminNotice> GroupAdminUnsetEvent;
+
+        public event Action<HttpApiClient, FriendAddNotice> FriendAddedEvent;
         #endregion
 
         #region GroupRequest

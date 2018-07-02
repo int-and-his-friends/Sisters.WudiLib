@@ -52,11 +52,11 @@ namespace Sisters.WudiLib.Posts
 
     public sealed class GroupAdminNotice : GroupNotice
     {
-        internal const string SetAdmin = "set";
-        internal const string UnsetAdmin = "unset";
+        public const string SetAdmin = "set";
+        public const string UnsetAdmin = "unset";
 
         [JsonProperty(SubTypeField)]
-        internal string SubType { get; private set; }
+        public string SubType { get; private set; }
     }
 
     public sealed class GroupMemberChangeNotice : GroupNotice
