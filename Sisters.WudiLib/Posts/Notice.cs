@@ -65,7 +65,7 @@ namespace Sisters.WudiLib.Posts
         public string SubType { get; private set; }
 
         [JsonProperty("operator_id")]
-        internal long OperatorId { get; private set; }
+        public long OperatorId { get; private set; }
     }
 
     public sealed class GroupMemberIncreaseNotice : GroupMemberChangeNotice
