@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using Sisters.WudiLib;
 using Sisters.WudiLib.Posts;
 
@@ -115,6 +116,12 @@ namespace Sisters.WudiLibTest
 
         static void Main(string[] args)
         {
+            var culture = CultureInfo.GetCultureInfo("zh-CN");
+            CultureInfo.DefaultThreadCurrentCulture = culture;
+            CultureInfo.DefaultThreadCurrentUICulture = culture;
+            CultureInfo.CurrentCulture = culture;
+            CultureInfo.CurrentUICulture = culture;
+
             var postListener = new ApiPostListener(8876);
             PrintNoticeAndRequests(postListener);
             postListener.StartListen();
