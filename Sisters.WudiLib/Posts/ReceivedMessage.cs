@@ -12,10 +12,10 @@ namespace Sisters.WudiLib.Posts
         private const string CqCodePattern = @"\[CQ:([\w\-\.]+?)(?:,([\w\-\.]+?)=(.+?))\]";
 
         //private const string NotImplementedMessage = "暂时不支持数组格式的上报数据。";
-        bool _isString = false;
-        string _message;
+        private readonly bool _isString;
+        private readonly string _message;
 
-        readonly IList<Section> _sections;
+        private readonly IList<Section> _sections;
 
         /// <summary>
         /// 
@@ -30,6 +30,7 @@ namespace Sisters.WudiLib.Posts
                 _message = s;
                 return;
             }
+
             if (!(o is JArray jObjectArray))
                 throw new InvalidOperationException("用于构造消息的对象即不是字符，也不是数组。可能是上报数据有错误。");
             var sections = jObjectArray.Select(jo => new Section((JObject)jo));
@@ -44,6 +45,7 @@ namespace Sisters.WudiLib.Posts
                 {
                     return !Regex.IsMatch(_message, CqCodePattern);
                 }
+
                 return _sections.All(s => s.Type == "text");
             }
         }
@@ -56,11 +58,10 @@ namespace Sisters.WudiLib.Posts
         {
             get
             {
-                if (_isString)
-                {
-                    return Regex.Replace(_message, CqCodePattern, string.Empty).AfterReceive();
-                }
-                return string.Concat(_sections.Where(s => s.Type == Section.TextType).Select(s => s.Data[Section.TextParamName]));
+                return _isString
+                    ? Regex.Replace(_message, CqCodePattern, string.Empty).AfterReceive()
+                    : string.Concat(_sections.Where(s => s.Type == Section.TextType)
+                        .Select(s => s.Data[Section.TextParamName]));
             }
         }
 
@@ -80,6 +81,7 @@ namespace Sisters.WudiLib.Posts
                 //return new RawMessage(sendingRaw);
                 return new RawMessage(_message);
             }
+
             //return new SendingMessage(_sections.Select(section =>
             //{
             //    if (section.Type != Section.ImageType) return section;

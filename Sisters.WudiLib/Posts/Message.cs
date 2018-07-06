@@ -11,22 +11,22 @@ namespace Sisters.WudiLib.Posts
         internal const string DiscussType = "discuss";
 
         public Message()
-            => messageLazy = new Lazy<ReceivedMessage>(() => new ReceivedMessage(_message));
+            => _messageLazy = new Lazy<ReceivedMessage>(() => new ReceivedMessage(ObjMessage));
 
         [JsonProperty("message_type")]
         public string MessageType { get; private set; }
         [JsonProperty("message_id")]
         public int MessageId { get; private set; }
         [JsonProperty("message")]
-        private object _message { get; set; }
+        private object ObjMessage { get; set; }
         [JsonIgnore]
-        Lazy<ReceivedMessage> messageLazy;
+        private readonly Lazy<ReceivedMessage> _messageLazy;
         [JsonIgnore]
-        public ReceivedMessage Content => messageLazy.Value;
+        public ReceivedMessage Content => _messageLazy.Value;
         [JsonProperty("font")]
         public int Font { get; private set; }
 
-        public override abstract Endpoint Endpoint { get; }
+        public abstract override Endpoint Endpoint { get; }
         public virtual MessageSource Source => new MessageSource(UserId);
     }
 

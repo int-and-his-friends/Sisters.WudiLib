@@ -21,14 +21,13 @@ namespace Sisters.WudiLib
             /// <summary>
             /// 仅支持大小写字母、数字、短横线（-）、下划线（_）及点号（.）。
             /// </summary>
-            [JsonProperty("type")]
-            private readonly string _type;
+            [JsonProperty("type")] private readonly string _type;
 
+            [JsonIgnore]
+            internal string Type => _type;
             public string Type => _type;
-
             [JsonProperty("data")]
             private readonly IReadOnlyDictionary<string, string> _data;
-
             [JsonIgnore]
             internal IReadOnlyDictionary<string, string> Data => _data;
 
@@ -45,6 +44,7 @@ namespace Sisters.WudiLib
                     {
                         sb.Append($",{param.Key}={param.Value.BeforeSend()}");
                     }
+
                     sb.Append("]");
                     return sb.ToString();
                 }
@@ -76,6 +76,7 @@ namespace Sisters.WudiLib
             }
 
             public override bool Equals(object obj) => this.Equals(obj as Section);
+
             public bool Equals(Section other)
             {
                 if (other == null) return false;
@@ -85,9 +86,11 @@ namespace Sisters.WudiLib
                 {
                     string key = param.Key;
                     if (other.Data.TryGetValue(key, out string otherValue))
-                        if (param.Value == otherValue) continue;
+                        if (param.Value == otherValue)
+                            continue;
                     return false;
                 }
+
                 return true;
             }
 
@@ -97,8 +100,10 @@ namespace Sisters.WudiLib
                 hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(this._type);
                 foreach (var param in Data)
                 {
-                    hashCode = hashCode * -1521134295 + EqualityComparer<KeyValuePair<string, string>>.Default.GetHashCode(param);
+                    hashCode = hashCode * -1521134295 +
+                               EqualityComparer<KeyValuePair<string, string>>.Default.GetHashCode(param);
                 }
+
                 //hashCode = hashCode * -1521134295 + EqualityComparer<Dictionary<string, string>>.Default.GetHashCode(this.data);
                 return hashCode;
             }
@@ -155,8 +160,7 @@ namespace Sisters.WudiLib
 
             internal static Section NetRecord(string url, bool noCache)
             {
-                if (!noCache) return NetRecord(url);
-                return new Section(RecordType, ("cache", "0"), ("file", url));
+                return noCache ? new Section(RecordType, ("cache", "0"), ("file", url)) : NetRecord(url);
             }
 
             /// <summary>
@@ -170,7 +174,8 @@ namespace Sisters.WudiLib
             /// <exception cref="ArgumentException"><c>introductionUrl</c>或<c>audioUrl</c>或<c>title</c>为空。</exception>
             /// <exception cref="ArgumentNullException"><c>introductionUrl</c>或<c>audioUrl</c>或<c>title</c>为<c>null</c>。</exception>
             /// <returns></returns>
-            internal static Section MusicCustom(string introductionUrl, string audioUrl, string title, string profile, string imageUrl)
+            internal static Section MusicCustom(string introductionUrl, string audioUrl, string title, string profile,
+                string imageUrl)
             {
                 const string introductionUrlParamName = "url";
                 const string audioUrlParamName = "audio";

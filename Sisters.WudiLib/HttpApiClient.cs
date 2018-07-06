@@ -8,29 +8,29 @@ namespace Sisters.WudiLib
 {
     partial class HttpApiClient
     {
-        private static readonly string PrivatePath = "send_private_msg";
-        private static readonly string GroupPath = "send_group_msg";
-        private static readonly string DiscussPath = "send_discuss_msg";
-        private static readonly string MessagePath = "send_msg";
-        private static readonly string KickGroupMemberPath = "set_group_kick";
-        private static readonly string RecallPath = "delete_msg";
-        private static readonly string BanGroupMemberPath = "set_group_ban";
-        private static readonly string LoginInfoPath = "get_login_info";
-        private static readonly string GroupMemberInfoPath = "get_group_member_info";
-        private static readonly string GroupMemberListPath = "get_group_member_list";
-        private static readonly string CleanPath = "clean_data_dir";
+        private const string PrivatePath = "send_private_msg";
+        private const string GroupPath = "send_group_msg";
+        private const string DiscussPath = "send_discuss_msg";
+        private const string MessagePath = "send_msg";
+        private const string KickGroupMemberPath = "set_group_kick";
+        private const string RecallPath = "delete_msg";
+        private const string BanGroupMemberPath = "set_group_ban";
+        private const string LoginInfoPath = "get_login_info";
+        private const string GroupMemberInfoPath = "get_group_member_info";
+        private const string GroupMemberListPath = "get_group_member_list";
+        private const string CleanPath = "clean_data_dir";
 
-        private string PrivateUrl => apiAddress + PrivatePath;
-        private string GroupUrl => apiAddress + GroupPath;
-        private string DiscussUrl => apiAddress + DiscussPath;
-        private string MessageUrl => apiAddress + MessagePath;
-        private string KickGroupMemberUrl => apiAddress + KickGroupMemberPath;
-        private string RecallUrl => apiAddress + RecallPath;
-        private string BanGroupMemberUrl => apiAddress + BanGroupMemberPath;
-        private string LoginInfoUrl => apiAddress + LoginInfoPath;
-        private string GroupMemberInfoUrl => apiAddress + GroupMemberInfoPath;
-        private string GroupMemberListUrl => apiAddress + GroupMemberListPath;
-        private string CleanUrl => apiAddress + CleanPath;
+        private string PrivateUrl => _apiAddress + PrivatePath;
+        private string GroupUrl => _apiAddress + GroupPath;
+        private string DiscussUrl => _apiAddress + DiscussPath;
+        private string MessageUrl => _apiAddress + MessagePath;
+        private string KickGroupMemberUrl => _apiAddress + KickGroupMemberPath;
+        private string RecallUrl => _apiAddress + RecallPath;
+        private string BanGroupMemberUrl => _apiAddress + BanGroupMemberPath;
+        private string LoginInfoUrl => _apiAddress + LoginInfoPath;
+        private string GroupMemberInfoUrl => _apiAddress + GroupMemberInfoPath;
+        private string GroupMemberListUrl => _apiAddress + GroupMemberListPath;
+        private string CleanUrl => _apiAddress + CleanPath;
     }
 
     /// <summary>
@@ -42,23 +42,23 @@ namespace Sisters.WudiLib
 
         public bool IsCleaningData => _isReadyToCleanData != 0;
 
-        private string apiAddress;
+        private string _apiAddress;
 
         /// <summary>
         /// 获取或设置 HTTP API 的监听地址
         /// </summary>
         public string ApiAddress
         {
-            get => apiAddress;
+            get => _apiAddress;
             set
             {
                 if (value.EndsWith("/", StringComparison.OrdinalIgnoreCase))
                 {
-                    apiAddress = value;
+                    _apiAddress = value;
                 }
                 else
                 {
-                    apiAddress = value + "/";
+                    _apiAddress = value + "/";
                 }
             }
         }
@@ -75,12 +75,17 @@ namespace Sisters.WudiLib
                         {
                             await this.CleanImageData();
                         }
-                        catch (Exception) { }
+                        catch (Exception)
+                        {
+                            // ignored
+                        }
+
                         await Task.Delay(60000 * intervalMinutes);
                     }
                 });
                 return true;
             }
+
             return false;
         }
 
@@ -174,7 +179,7 @@ namespace Sisters.WudiLib
         /// <summary>
         /// 发送消息。
         /// </summary>
-        /// <param name="source">收到上报时的参数。</param>
+        /// <param name="endpoint">TODO</param>
         /// <param name="message">要发送的消息。</param>
         /// <returns></returns>
         public async Task<SendMessageResponseData> SendMessageAsync(Posts.Endpoint endpoint, Message message)
