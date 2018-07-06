@@ -19,6 +19,6 @@ namespace Sisters.WudiLib.Responses
         /// 消息 ID
         /// </summary>
         [JsonProperty("message_id")]
-        public long MessageId { get; internal set; }
+        public int MessageId { get; internal set; }
     }
 }

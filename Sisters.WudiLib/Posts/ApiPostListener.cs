@@ -57,6 +57,19 @@ namespace Sisters.WudiLib.Posts
         /// </summary>
         public bool IsListening => _listener.IsListening;
 
+        public ApiPostListener()
+        {
+        }
+
+        public ApiPostListener(string address) => PostAddress = address;
+
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
+        public ApiPostListener(int port)
+        {
+            if (port <= IPEndPoint.MinPort || port > IPEndPoint.MaxPort) throw new ArgumentOutOfRangeException();
+            PostAddress = $"http://+:{port.ToString(System.Globalization.CultureInfo.InvariantCulture)}/";
+        }
+
         public void StartListen()
         {
             lock (_listenerLock)
@@ -275,15 +288,19 @@ namespace Sisters.WudiLib.Posts
             switch (contentObject[Notice.NoticeField].ToObject<string>())
             {
                 case Notice.GroupUploadNotice:
-                    // TODO: input code
+                    GroupFileUploadedEvent?.Invoke(ApiClient, contentObject.ToObject<GroupFileNotice>());
                     break;
                 case Notice.GroupAdminNotice:
+                    ProcessGroupAdminNotice(contentObject);
                     break;
                 case Notice.GroupDecreaseNotice:
+                    ProcessGroupMemberDecrease(contentObject);
                     break;
                 case Notice.GroupIncreaseNotice:
+                    ProcessGroupMemberIncrease(contentObject);
                     break;
                 case Notice.FriendAddNotice:
+                    FriendAddedEvent?.Invoke(ApiClient, contentObject.ToObject<FriendAddNotice>());
                     break;
                 default:
                     // TODO: Logging
@@ -293,17 +310,65 @@ namespace Sisters.WudiLib.Posts
 
         private void ProcessGroupAdminNotice(JObject contentObject)
         {
-            switch (contentObject[Post.SubTypeField].ToObject<string>())
+            var data = contentObject.ToObject<GroupAdminNotice>();
+            switch (data.SubType)
             {
                 case GroupAdminNotice.SetAdmin:
+                    GroupAdminSetEvent?.Invoke(ApiClient, data);
                     break;
                 case GroupAdminNotice.UnsetAdmin:
+                    GroupAdminUnsetEvent?.Invoke(ApiClient, data);
                     break;
                 default:
+                    // TODO
                     break;
             }
         }
 
+        private void ProcessGroupMemberDecrease(JObject contentObject)
+        {
+            switch (contentObject[Post.SubTypeField].ToObject<string>())
+            {
+                case KickedNotice.Kicked:
+                    KickedEvent?.Invoke(ApiClient, contentObject.ToObject<KickedNotice>());
+                    break;
+                default:
+                    GroupMemberDecreasedEvent?.Invoke(ApiClient, contentObject.ToObject<GroupMemberDecreaseNotice>());
+                    break;
+            }
+        }
+
+        private void ProcessGroupMemberIncrease(JObject contentObject)
+        {
+            var data = contentObject.ToObject<GroupMemberIncreaseNotice>();
+            if (data.IsMe)
+            {
+                GroupAddedEvent?.Invoke(ApiClient, data);
+            }
+            else
+            {
+                GroupMemberIncreasedEvent?.Invoke(ApiClient, data);
+            }
+        }
+
+        public event Action<HttpApiClient, GroupFileNotice> GroupFileUploadedEvent;
+
+        public event Action<HttpApiClient, GroupAdminNotice> GroupAdminSetEvent;
+
+        public event Action<HttpApiClient, GroupAdminNotice> GroupAdminUnsetEvent;
+
+        public event Action<HttpApiClient, FriendAddNotice> FriendAddedEvent;
+
+        public event Action<HttpApiClient, GroupMemberDecreaseNotice> GroupMemberDecreasedEvent;
+
+        public event Action<HttpApiClient, KickedNotice> KickedEvent;
+
+        public event Action<HttpApiClient, GroupMemberIncreaseNotice> GroupMemberIncreasedEvent;
+
+        /// <summary>
+        /// 加入新群时发生的事件。注意此事件没有 <see cref="GroupMemberChangeNotice.OperatorId"/> 的数据（至少 Invite 没有，Approve 不清楚）。
+        /// </summary>
+        public event Action<HttpApiClient, GroupMemberIncreaseNotice> GroupAddedEvent;
         #endregion
 
         #region GroupRequest
@@ -334,7 +399,7 @@ namespace Sisters.WudiLib.Posts
             new LinkedList<GroupRequestEventHandler>();
 
         /// <summary>
-        /// 收到加群邀请事件。
+        /// 收到加群邀请事件。此时 <see cref="Request.Comment"/> 并不存在。
         /// </summary>
         public event GroupRequestEventHandler GroupInviteEvent
         {

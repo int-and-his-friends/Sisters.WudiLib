@@ -23,12 +23,13 @@ namespace Sisters.WudiLib.Posts
 
     public abstract class GroupNotice : Notice
     {
+        [JsonProperty("group_id")]
         public long GroupId { get; private set; }
 
         public override Endpoint Endpoint => new GroupEndpoint(GroupId);
     }
 
-    public sealed class GroupUploadNotice : GroupNotice
+    public sealed class GroupFileNotice : GroupNotice
     {
         [JsonProperty("file")]
         public GroupFile File { get; private set; }
@@ -52,19 +53,52 @@ namespace Sisters.WudiLib.Posts
 
     public sealed class GroupAdminNotice : GroupNotice
     {
-        internal const string SetAdmin = "set";
-        internal const string UnsetAdmin = "unset";
+        public const string SetAdmin = "set";
+        public const string UnsetAdmin = "unset";
 
         [JsonProperty(SubTypeField)]
-        internal string SubType { get; private set; }
+        public string SubType { get; private set; }
     }
 
-    public sealed class GroupMemberChangeNotice : GroupNotice
+    public abstract class GroupMemberChangeNotice : GroupNotice
     {
         [JsonProperty(SubTypeField)]
-        internal string SubType { get; private set; }
+        public string SubType { get; private set; }
 
         [JsonProperty("operator_id")]
-        internal long OperatorId { get; private set; }
+        public long OperatorId { get; private set; }
+    }
+
+    public sealed class GroupMemberIncreaseNotice : GroupMemberChangeNotice
+    {
+        /// <summary>
+        /// 表示管理员已同意入群。
+        /// </summary>
+        public const string AdminApprove = "approve";
+
+        /// <summary>
+        /// 表示管理员邀请入群。
+        /// </summary>
+        public const string AdminInvite = "invite";
+
+        internal bool IsMe => UserId == SelfId;
+    }
+
+    public sealed class GroupMemberDecreaseNotice : GroupMemberChangeNotice
+    {
+        /// <summary>
+        /// 表示主动退群。
+        /// </summary>
+        public const string Leave = "leave";
+
+        /// <summary>
+        /// 成员被踢。
+        /// </summary>
+        public const string Kick = "kick";
+    }
+
+    public sealed class KickedNotice : GroupMemberChangeNotice
+    {
+        internal const string Kicked = "kick_me";
     }
 }

@@ -1,14 +1,133 @@
-﻿using Sisters.WudiLib;
+﻿using System;
+using System.Globalization;
+using Sisters.WudiLib;
 using Sisters.WudiLib.Posts;
-using System;
-using System.Linq;
 
 namespace Sisters.WudiLibTest
 {
     class Program
     {
+        private static void PrintNoticeAndRequests(ApiPostListener apiPostListener)
+        {
+            void PrintPost(Post post)
+            {
+                Console.WriteLine(post.Time);
+                Console.WriteLine("user: " + post.UserId);
+                Console.WriteLine("self: " + post.SelfId);
+            }
+
+            void PrintRequest(Request request)
+            {
+                PrintPost(request);
+                Console.WriteLine(request.Comment);
+                Console.WriteLine(request.Flag);
+            }
+
+            apiPostListener.GroupFileUploadedEvent += (api, notice) =>
+            {
+                Console.WriteLine("file uploaded");
+                PrintPost(notice);
+                Console.WriteLine("group: " + notice.GroupId);
+                Console.WriteLine($"file: {notice.File.Id} | name: {notice.File.Name} | size: {notice.File.Length} | busid: {notice.File.BusId}");
+            };
+
+            apiPostListener.GroupAdminSetEvent += (api, notice) =>
+            {
+                Console.WriteLine($"admin set ({notice.SubType})");
+                PrintPost(notice);
+                Console.WriteLine($"group: {notice.GroupId}");
+            };
+
+            apiPostListener.GroupAdminUnsetEvent += (api, notice) =>
+            {
+                Console.WriteLine($"admin unset ({notice.SubType})");
+                PrintPost(notice);
+                Console.WriteLine($"group: {notice.GroupId}");
+            };
+
+            apiPostListener.GroupMemberDecreasedEvent += (api, notice) =>
+            {
+                Console.WriteLine($"group member decreased ({notice.SubType})");
+                PrintPost(notice);
+                Console.WriteLine($"group: {notice.GroupId}");
+                Console.WriteLine($"operator: {notice.OperatorId}");
+            };
+
+            apiPostListener.KickedEvent += (api, notice) =>
+            {
+                Console.WriteLine($"kicked ({notice.SubType})");
+                PrintPost(notice);
+                Console.WriteLine($"group: {notice.GroupId}");
+                Console.WriteLine($"operator: {notice.OperatorId}");
+            };
+
+            apiPostListener.GroupMemberIncreasedEvent += (api, notice) =>
+            {
+                Console.WriteLine($"group member increased ({notice.SubType})");
+                PrintPost(notice);
+                Console.WriteLine($"group: {notice.GroupId}");
+                Console.WriteLine($"operator: {notice.OperatorId}");
+            };
+
+            apiPostListener.GroupAddedEvent += (api, notice) =>
+            {
+                Console.WriteLine($"group join ({notice.SubType})");
+                PrintPost(notice);
+                Console.WriteLine($"group: {notice.GroupId}");
+                Console.WriteLine($"operator: {notice.OperatorId}");
+            };
+
+            apiPostListener.FriendAddedEvent += (api, notice) =>
+            {
+                Console.WriteLine("friend added");
+                PrintPost(notice);
+            };
+
+            apiPostListener.FriendRequestEvent += (api, request) =>
+            {
+                Console.WriteLine("friend request");
+                PrintRequest(request);
+                return new FriendRequestResponse { Approve = false };
+            };
+
+            apiPostListener.GroupInviteEvent += (api, request) =>
+            {
+                Console.WriteLine($"group invite");
+                PrintRequest(request);
+                Console.WriteLine($"group: {request.GroupId}");
+                if (request.UserId != 962549599)
+                {
+                    return new GroupRequestResponse { Approve = false };
+                }
+                else
+                {
+                    return new GroupRequestResponse { Approve = true };
+                }
+            };
+
+            apiPostListener.GroupRequestEvent += (api, request) =>
+            {
+                Console.WriteLine($"group request");
+                PrintRequest(request);
+                Console.WriteLine($"group: {request.GroupId}");
+                return new GroupRequestResponse { Approve = false };
+            };
+        }
+
         static void Main(string[] args)
         {
+            var culture = CultureInfo.GetCultureInfo("zh-CN");
+            CultureInfo.DefaultThreadCurrentCulture = culture;
+            CultureInfo.DefaultThreadCurrentUICulture = culture;
+            CultureInfo.CurrentCulture = culture;
+            CultureInfo.CurrentUICulture = culture;
+
+            var postListener = new ApiPostListener(8876);
+            PrintNoticeAndRequests(postListener);
+            postListener.StartListen();
+            Console.ReadKey(true);
+            Environment.Exit(0);
+
             var httpApi = new HttpApiClient();
             httpApi.ApiAddress = "http://127.0.0.1:5700/";
 
@@ -136,7 +255,7 @@ namespace Sisters.WudiLibTest
             Console.WriteLine(request.SelfId);
             Console.WriteLine(request.GroupId);
             Console.WriteLine(request.UserId);
-            Console.WriteLine(request.Message);
+            Console.WriteLine(request.Comment);
             Console.WriteLine(request.Flag);
             return null;
         }
@@ -147,7 +266,7 @@ namespace Sisters.WudiLibTest
             Console.WriteLine(request.Time);
             Console.WriteLine(request.SelfId);
             Console.WriteLine(request.UserId);
-            Console.WriteLine(request.Message);
+            Console.WriteLine(request.Comment);
             Console.WriteLine(request.Flag);
             return null;
         }

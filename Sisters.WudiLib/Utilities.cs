@@ -64,6 +64,7 @@ namespace Sisters.WudiLib
             }
         }
 
+        /// <exception cref="ApiAccessException">网络错误等。</exception>
         public static async Task<bool> PostAsync(string url, object data)
         {
             try

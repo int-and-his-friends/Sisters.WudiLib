@@ -5,13 +5,11 @@ using System.Text;
 
 namespace Sisters.WudiLib
 {
-
-    public abstract partial class SectionMessage
-    {
         /// <summary>
         /// 消息段。
         /// </summary>
-        protected internal class Section : IEquatable<Section>
+        [JsonObject(MemberSerialization.OptIn)]
+        public sealed class Section : IEquatable<Section>
         {
             public const string TextParamName = "text";
             public const string TextType = "text";
@@ -27,10 +25,13 @@ namespace Sisters.WudiLib
 
             [JsonIgnore]
             internal string Type => _type;
+            public string Type => _type;
             [JsonProperty("data")]
             private readonly IReadOnlyDictionary<string, string> _data;
             [JsonIgnore]
-            public IReadOnlyDictionary<string, string> Data => _data;
+            internal IReadOnlyDictionary<string, string> Data => _data;
+
+            public IReadOnlyDictionary<string, string> GetData() => new Dictionary<string, string>(Data);
 
             [JsonIgnore]
             internal string Raw
@@ -57,9 +58,6 @@ namespace Sisters.WudiLib
                 this._data = data;
             }
 
-            /// <summary>
-            /// 
-            /// </summary>
             /// <exception cref="InvalidOperationException"></exception>
             /// <param name="jObject"></param>
             internal Section(Newtonsoft.Json.Linq.JToken jObject)
@@ -188,11 +186,11 @@ namespace Sisters.WudiLib
                 Utilities.CheckStringArgument(audioUrl, nameof(audioUrl));
                 Utilities.CheckStringArgument(title, nameof(title));
                 var arguments = new List<(string argument, string value)>
-                {
-                    (introductionUrlParamName, introductionUrl),
-                    (audioUrlParamName, audioUrl),
-                    (titleParamName, title),
-                };
+                    {
+                        (introductionUrlParamName, introductionUrl),
+                        (audioUrlParamName, audioUrl),
+                        (titleParamName, title),
+                    };
                 if (profile != null) arguments.Add((profileParamName, profile));
                 if (!string.IsNullOrEmpty(imageUrl)) arguments.Add((imageUrlParamName, imageUrl));
                 return new Section(MusicType, arguments.ToArray());
@@ -208,5 +206,4 @@ namespace Sisters.WudiLib
 
             public static bool operator !=(Section left, Section right) => !(left == right);
         }
-    }
 }
