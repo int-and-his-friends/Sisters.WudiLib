@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace Sisters.WudiLib
 {
-    public abstract partial class SectionMessage : Message
+    public abstract class SectionMessage : Message
     {
         protected SectionMessage() => SectionsBase = new List<Section>();
 
