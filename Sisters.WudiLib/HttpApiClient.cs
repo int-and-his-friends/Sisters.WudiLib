@@ -15,6 +15,7 @@ namespace Sisters.WudiLib
         private const string KickGroupMemberPath = "set_group_kick";
         private const string RecallPath = "delete_msg";
         private const string BanGroupMemberPath = "set_group_ban";
+        private const string SetGroupCardPath = "set_group_card";
         private const string LoginInfoPath = "get_login_info";
         private const string GroupMemberInfoPath = "get_group_member_info";
         private const string GroupMemberListPath = "get_group_member_list";
@@ -27,6 +28,7 @@ namespace Sisters.WudiLib
         private string KickGroupMemberUrl => _apiAddress + KickGroupMemberPath;
         private string RecallUrl => _apiAddress + RecallPath;
         private string BanGroupMemberUrl => _apiAddress + BanGroupMemberPath;
+        private string SetGroupCardUrl => _apiAddress + SetGroupCardPath;
         private string LoginInfoUrl => _apiAddress + LoginInfoPath;
         private string GroupMemberInfoUrl => _apiAddress + GroupMemberInfoPath;
         private string GroupMemberListUrl => _apiAddress + GroupMemberListPath;
@@ -255,6 +257,24 @@ namespace Sisters.WudiLib
                 duration,
             };
             return await Utilities.PostAsync(BanGroupMemberUrl, data);
+        }
+
+        /// <summary>
+        /// 设置群名片。
+        /// </summary>
+        /// <param name="groupId">群号。</param>
+        /// <param name="userId">要设置的 QQ 号。</param>
+        /// <param name="card">群名片内容，不填或空字符串表示删除群名片。</param>
+        /// <returns>是否成功。</returns>
+        public async Task<bool> SetGroupCard(long groupId, long userId, string card)
+        {
+            var data = new
+            {
+                group_id = groupId,
+                user_id = userId,
+                card,
+            };
+            return await Utilities.PostAsync(SetGroupCardUrl, data);
         }
 
         /// <summary>
