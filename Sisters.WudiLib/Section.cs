@@ -48,6 +48,26 @@ namespace Sisters.WudiLib
             }
         }
 
+        public bool TryGetText(out string text)
+        {
+            bool isText = Type == TextType;
+            text = isText ? Data.GetValueOrDefault(TextParamName, string.Empty) : default(string);
+            return isText;
+        }
+
+        public bool TryGetAtMember(out long qq)
+        {
+            bool isAt = Type == AtType;
+            qq = default(long);
+            bool atMember = isAt && long.TryParse(
+                s: Data.GetValueOrDefault("qq"),
+                style: System.Globalization.NumberStyles.None,
+                provider: System.Globalization.CultureInfo.InvariantCulture,
+                result: out qq
+            );
+            return atMember;
+        }
+
         private Section(string type, params (string key, string value)[] p)
         {
             this._type = type;
