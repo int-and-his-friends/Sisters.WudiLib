@@ -13,11 +13,10 @@ namespace Sisters.WudiLib.Posts
     {
         private const string CqCodePattern = @"\[CQ:([\w\-\.]+?)(?:,([\w\-\.]+?)=(.+?))\]";
 
-        //private const string NotImplementedMessage = "暂时不支持数组格式的上报数据。";
         private readonly bool _isString;
         private readonly string _message;
 
-        private readonly IList<Section> _sections;
+        private readonly IReadOnlyList<Section> _sections;
 
         /// <summary>
         /// 
@@ -36,7 +35,7 @@ namespace Sisters.WudiLib.Posts
             if (!(o is JArray jObjectArray))
                 throw new InvalidOperationException("用于构造消息的对象即不是字符，也不是数组。可能是上报数据有错误。");
             var sections = jObjectArray.Select(jo => new Section((JObject)jo));
-            _sections = sections.ToList();
+            _sections = sections.ToList().AsReadOnly();
         }
 
         public bool IsPlaintext
@@ -165,5 +164,11 @@ namespace Sisters.WudiLib.Posts
             //}), true);
             return new SendingMessage(_sections);
         }
+
+        /// <summary>
+        /// 获取 <see cref="Section"/> 。
+        /// </summary>
+        /// <returns><see cref="Section"/> 列表。如果上报格式不是数组，则为 <c>null</c>。</returns>
+        public IReadOnlyList<Section> GetSections() => _isString ? null : new List<Section>(_sections);
     }
 }

@@ -4,7 +4,7 @@ namespace Sisters.WudiLib
 {
     public class RawMessage : Message
     {
-        private string _raw;
+        private readonly string _raw;
 
         public RawMessage(string raw) => _raw = raw ?? throw new ArgumentNullException(nameof(raw));
 
