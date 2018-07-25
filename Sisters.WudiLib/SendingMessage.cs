@@ -25,7 +25,7 @@ namespace Sisters.WudiLib
         /// <summary>
         /// 指示此 <see cref="SendingMessage"/> 是否可以与其他 <see cref="SendingMessage"/> 连接。
         /// </summary>
-        private bool CanConcat => Sections.Any(s => NoJoinSectionTypes.Contains(s.Type));
+        private bool CanConcat => !Sections.Any(s => NoJoinSectionTypes.Contains(s.Type));
 
         /// <summary>
         /// 构造新的消息实例。
@@ -40,7 +40,7 @@ namespace Sisters.WudiLib
         /// </summary>
         /// <param name="sections"></param>
         internal SendingMessage(IEnumerable<Section> sections) : base(sections)
-        { 
+        {
             // ignored
         }
 
