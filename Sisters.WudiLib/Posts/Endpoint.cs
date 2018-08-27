@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System;
+using Newtonsoft.Json;
 
 namespace Sisters.WudiLib.Posts
 {
@@ -20,7 +21,7 @@ namespace Sisters.WudiLib.Posts
                 const string suffix = nameof(Endpoint);
                 //if (this is PrivateEndPoint) return Message.PrivateType;
                 string type = this.GetType().Name;
-                if (type.EndsWith(suffix))
+                if (type.EndsWith(suffix, StringComparison.Ordinal))
                     type = type.Substring(0, type.Length - suffix.Length);
                 return type.ToLowerInvariant();
             }

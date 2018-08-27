@@ -1,12 +1,12 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
-using http = System.Net.Http;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Sisters.WudiLib.Posts
 {
@@ -30,21 +30,16 @@ namespace Sisters.WudiLib.Posts
             set
             {
                 string address = value;
-                if (!address.EndsWith("/")) address += "/";
+                if (!address.EndsWith("/"))
+                    address += "/";
                 _postAddress = address;
             }
         }
 
-        private string _forwardTo;
-
         /// <summary>
         /// 获取或设置转发地址。
         /// </summary>
-        public string ForwardTo
-        {
-            get => _forwardTo;
-            set => System.Threading.Interlocked.Exchange(ref _forwardTo, value);
-        }
+        public string ForwardTo { get; set; }
 
         private readonly object _listenerLock = new object();
 
@@ -66,7 +61,8 @@ namespace Sisters.WudiLib.Posts
         /// <exception cref="ArgumentOutOfRangeException"></exception>
         public ApiPostListener(int port)
         {
-            if (port <= IPEndPoint.MinPort || port > IPEndPoint.MaxPort) throw new ArgumentOutOfRangeException();
+            if (port <= IPEndPoint.MinPort || port > IPEndPoint.MaxPort)
+                throw new ArgumentOutOfRangeException();
             PostAddress = $"http://+:{port.ToString(System.Globalization.CultureInfo.InvariantCulture)}/";
         }
 
@@ -74,7 +70,8 @@ namespace Sisters.WudiLib.Posts
         {
             lock (_listenerLock)
             {
-                if (IsListening) return;
+                if (IsListening)
+                    return;
                 string prefix = PostAddress;
                 _listener.Prefixes.Add(prefix);
                 _listener.Start();
@@ -100,13 +97,13 @@ namespace Sisters.WudiLib.Posts
                     var request = context.Request;
                     using (var response = context.Response)
                     {
-                        if (!request.ContentType.StartsWith("application/json")) return;
+                        if (!request.ContentType.StartsWith("application/json", StringComparison.Ordinal))
+                            return;
 
                         object responseObject;
                         string requestContent;
 
-                        using (var inStream = request.InputStream)
-                        using (var streamReader = new StreamReader(inStream))
+                        using (var streamReader = new StreamReader(request.InputStream))
                             requestContent = streamReader.ReadToEnd();
 
                         // 转发
@@ -141,26 +138,23 @@ namespace Sisters.WudiLib.Posts
         private async void ForwardAsync(string content)
         {
             string to = ForwardTo;
-            if (string.IsNullOrEmpty(to)) return;
-            await Task.Run(async () =>
+            if (string.IsNullOrEmpty(to))
+                return;
+            try
             {
-                try
+                using (var client = new HttpClient())
                 {
-                    using (var client = new http::HttpClient())
+                    var stringContent = new StringContent(content, System.Text.Encoding.UTF8, "application/json");
+                    using (await client.PostAsync(to, stringContent))
                     {
-                        var stringContent =
-                            new http::StringContent(content, System.Text.Encoding.UTF8, "application/json");
-                        using (await client.PostAsync(to, stringContent))
-                        {
-                            // ignored
-                        }
+                        // ignored
                     }
                 }
-                catch (Exception e)
-                {
-                    OnException(e);
-                }
-            });
+            }
+            catch (Exception e)
+            {
+                OnException(e);
+            }
         }
 
         #endregion
@@ -173,7 +167,7 @@ namespace Sisters.WudiLib.Posts
         {
             try
             {
-                OnException(e);
+                OnException?.Invoke(e);
             }
             catch (Exception)
             {
@@ -187,10 +181,12 @@ namespace Sisters.WudiLib.Posts
 
         private object ProcessPost(string content, HttpListenerResponse response)
         {
-            if (string.IsNullOrEmpty(content)) return null;
+            if (string.IsNullOrEmpty(content))
+                return null;
 
             GroupMessage post = JsonConvert.DeserializeObject<GroupMessage>(content);
-            if (post == null) return null;
+            if (post == null)
+                return null;
 
             switch (post.PostType)
             {
