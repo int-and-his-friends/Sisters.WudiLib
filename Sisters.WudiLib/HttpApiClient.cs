@@ -33,6 +33,8 @@ namespace Sisters.WudiLib
         private string GroupMemberInfoUrl => _apiAddress + GroupMemberInfoPath;
         private string GroupMemberListUrl => _apiAddress + GroupMemberListPath;
         private string CleanUrl => _apiAddress + CleanPath;
+
+        public static string AccessToken { get; set; }
     }
 
     /// <summary>

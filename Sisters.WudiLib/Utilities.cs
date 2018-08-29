@@ -1,9 +1,10 @@
-﻿using Newtonsoft.Json;
-using Sisters.WudiLib.Responses;
-using System;
+﻿using System;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using Sisters.WudiLib.Responses;
 
 namespace Sisters.WudiLib
 {
@@ -11,13 +12,19 @@ namespace Sisters.WudiLib
     {
         private static async Task<HttpApiResponse<T>> PostApiAsync<T>(string url, object data)
         {
-            if (data is null) throw new ArgumentNullException(nameof(data), "data不能为null");
+            if (data is null)
+                throw new ArgumentNullException(nameof(data), "data不能为null");
             try
             {
                 string json = JsonConvert.SerializeObject(data);
                 using (HttpContent content = new StringContent(json, Encoding.UTF8, "application/json"))
                 using (var http = new HttpClient())
                 {
+                    if (!string.IsNullOrEmpty(HttpApiClient.AccessToken))
+                    {
+                        //content.Headers.Add("Authorization", "Token " + HttpApiClient.AccessToken);
+                        http.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse("Token " + HttpApiClient.AccessToken);
+                    }
                     using (var response = (await http.PostAsync(url, content)).EnsureSuccessStatusCode())
                     {
                         string responseContent = await response.Content.ReadAsStringAsync();
@@ -100,13 +107,14 @@ namespace Sisters.WudiLib
             }
         }
 
-        internal static string BeforeSend(this string before, bool codeArg = true)
+        internal static string BeforeSend(this string before, bool isCqCodeArg = true)
         {
             var result = before
                 .Replace("&", "&amp;", StringComparison.Ordinal)
                 .Replace("[", "&#91;", StringComparison.Ordinal)
                 .Replace("]", "&#93;", StringComparison.Ordinal);
-            if (codeArg) result = result.Replace(",", "&#44;", StringComparison.Ordinal);
+            if (isCqCodeArg)
+                result = result.Replace(",", "&#44;", StringComparison.Ordinal);
             return result;
         }
 
@@ -126,8 +134,10 @@ namespace Sisters.WudiLib
         /// <exception cref="ArgumentNullException"><c>argument</c>为<c>null</c>。</exception>
         internal static void CheckStringArgument(string argument, string paramName)
         {
-            if (argument == null) throw new ArgumentNullException(paramName);
-            if (argument.Length == 0) throw new ArgumentException($"{paramName}为空。", paramName);
+            if (argument == null)
+                throw new ArgumentNullException(paramName);
+            if (argument.Length == 0)
+                throw new ArgumentException($"{paramName}为空。", paramName);
         }
     }
 }
