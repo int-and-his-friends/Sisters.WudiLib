@@ -4,6 +4,8 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -40,6 +42,14 @@ namespace Sisters.WudiLib.Posts
         /// 获取或设置转发地址。
         /// </summary>
         public string ForwardTo { get; set; }
+
+        private byte[] _secretBytes;
+
+        /// <summary>
+        /// 设置 secret。用于验证上报数据是否来自插件。详见插件配置。
+        /// </summary>
+        /// <param name="secret">配置中的 secret 字段。</param>
+        public void SetSecret(string secret) => _secretBytes = Encoding.UTF8.GetBytes(secret);
 
         private readonly object _listenerLock = new object();
 
@@ -103,8 +113,9 @@ namespace Sisters.WudiLib.Posts
                         object responseObject;
                         string requestContent;
 
-                        using (var streamReader = new StreamReader(request.InputStream))
-                            requestContent = streamReader.ReadToEnd();
+                        requestContent = GetContent(request);
+                        if (string.IsNullOrEmpty(requestContent))
+                            return;
 
                         // 转发
                         ForwardAsync(requestContent);
@@ -135,6 +146,40 @@ namespace Sisters.WudiLib.Posts
             }
         }
 
+        private string GetContent(HttpListenerRequest request)
+        {
+            var length = request.ContentLength64;
+            byte[] bytes = new byte[length * 2];
+            int actualLength;
+            using (request.InputStream)
+                actualLength = request.InputStream.Read(bytes, 0, bytes.Length);
+
+            // 验证
+            var signature = request.Headers.Get("X-Signature");
+
+            if (Verify(_secretBytes, signature, bytes, 0, actualLength))
+            {
+                string requestContent;
+                requestContent = request.ContentEncoding.GetString(bytes, 0, actualLength);
+                return requestContent;
+            }
+
+            // Authentication failed
+            return null;
+        }
+
+        private static bool Verify(byte[] secret, string signature, byte[] buffer, int offset, int length)
+        {
+            if (secret == null)
+                return true;
+            using (var hmac = new HMACSHA1(secret))
+            {
+                hmac.Initialize();
+                string result = BitConverter.ToString(hmac.ComputeHash(buffer, offset, length)).Replace("-", "");
+                return string.Equals(signature, $"sha1={result}", StringComparison.OrdinalIgnoreCase);
+            }
+        }
+
         private async void ForwardAsync(string content)
         {
             string to = ForwardTo;
@@ -144,7 +189,7 @@ namespace Sisters.WudiLib.Posts
             {
                 using (var client = new HttpClient())
                 {
-                    var stringContent = new StringContent(content, System.Text.Encoding.UTF8, "application/json");
+                    var stringContent = new StringContent(content, Encoding.UTF8, "application/json");
                     using (await client.PostAsync(to, stringContent))
                     {
                         // ignored
