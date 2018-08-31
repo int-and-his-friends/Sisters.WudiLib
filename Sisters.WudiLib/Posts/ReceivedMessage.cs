@@ -11,12 +11,50 @@ namespace Sisters.WudiLib.Posts
 {
     public class ReceivedMessage : WudiLib.Message
     {
-        private const string CqCodePattern = @"\[CQ:([\w\-\.]+?)(?:,([\w\-\.]+?)=(.+?))\]";
+        private const string CqCodePattern = @"\[CQ:([\w\-\.]+?)(?:,([\w\-\.]+?)=(.+?))*\]";
+        private static readonly Regex CqCodeRegex = new Regex(CqCodePattern, RegexOptions.Compiled);
 
         private readonly bool _isString;
         private readonly string _message;
 
         private readonly IReadOnlyList<Section> _sections;
+
+        public IReadOnlyList<Section> Sections
+        {
+            get
+            {
+                if (!_isString)
+                    return _sections;
+                int pos = 0;
+                var regex = CqCodeRegex;
+                var result = new List<Section>();
+                while (pos < _message.Length)
+                {
+                    var match = regex.Match(_message, pos);
+                    if (!match.Success)
+                    {
+                        result.Add(Section.Text(_message.Substring(pos)));
+                        pos = _message.Length;
+                    }
+                    else
+                    {
+                        if (match.Index > pos)
+                        {
+                            result.Add(Section.Text(_message.Substring(pos, match.Index - pos)));
+                        }
+                        pos = match.Index + match.Length;
+
+                        string type = match.Groups[1].Value.AfterReceive();
+                        var paras = match.Groups[2].Captures.Zip(
+                            match.Groups[3].Captures,
+                            (capKey, capVal) => (capKey.Value.AfterReceive(), capVal.Value.AfterReceive())
+                        ).ToArray();
+                        result.Add(new Section(type, paras));
+                    }
+                }
+                return result.AsReadOnly();
+            }
+        }
 
         /// <summary>
         /// 
@@ -44,7 +82,7 @@ namespace Sisters.WudiLib.Posts
             {
                 if (_isString)
                 {
-                    return !Regex.IsMatch(_message, CqCodePattern);
+                    return !CqCodeRegex.IsMatch(_message);
                 }
 
                 return _sections.All(s => s.Type == "text");
@@ -64,7 +102,7 @@ namespace Sisters.WudiLib.Posts
         {
             if (_isString)
             {
-                return Regex.Replace(_message, CqCodePattern, m =>
+                return CqCodeRegex.Replace(_message, m =>
                 {
                     if (m.Groups[1].Value == Section.ImageType)
                     {
@@ -127,7 +165,7 @@ namespace Sisters.WudiLib.Posts
             get
             {
                 return _isString
-                    ? Regex.Replace(_message, CqCodePattern, string.Empty).AfterReceive()
+                    ? CqCodeRegex.Replace(_message, string.Empty).AfterReceive()
                     : string.Concat(_sections.Where(s => s.Type == Section.TextType)
                         .Select(s => s.Data[Section.TextParamName]));
             }

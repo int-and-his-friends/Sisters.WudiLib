@@ -68,7 +68,7 @@ namespace Sisters.WudiLib
             return atMember;
         }
 
-        private Section(string type, params (string key, string value)[] p)
+        internal Section(string type, params (string key, string value)[] p)
         {
             this._type = type;
             var data = new SortedDictionary<string, string>();
