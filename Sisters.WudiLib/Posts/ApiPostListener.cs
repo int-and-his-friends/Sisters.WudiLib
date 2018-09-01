@@ -196,9 +196,9 @@ namespace Sisters.WudiLib.Posts
                     }
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                OnException(e);
+                //OnException(e);
             }
         }
 

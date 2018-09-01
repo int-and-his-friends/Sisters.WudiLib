@@ -71,7 +71,7 @@ namespace Sisters.WudiLib
         {
             if (Interlocked.CompareExchange(ref _isReadyToCleanData, 1, 0) == 0)
             {
-                Task.Run(async () =>
+                var task = new Task(async () =>
                 {
                     while (true)
                     {
@@ -86,7 +86,8 @@ namespace Sisters.WudiLib
 
                         await Task.Delay(60000 * intervalMinutes);
                     }
-                });
+                }, TaskCreationOptions.LongRunning);
+                task.Start();
                 return true;
             }
 
