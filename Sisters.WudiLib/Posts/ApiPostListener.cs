@@ -100,6 +100,7 @@ namespace Sisters.WudiLib.Posts
 
         private async void ProcessContext(HttpListenerContext context)
         {
+            string requestContent = null;
             try
             {
                 await Task.Run(() =>
@@ -111,7 +112,6 @@ namespace Sisters.WudiLib.Posts
                             return;
 
                         object responseObject;
-                        string requestContent;
 
                         requestContent = GetContent(request);
                         if (string.IsNullOrEmpty(requestContent))
@@ -142,7 +142,7 @@ namespace Sisters.WudiLib.Posts
             }
             catch (Exception e)
             {
-                LogException(e);
+                LogException(e, requestContent);
             }
         }
 
@@ -207,12 +207,22 @@ namespace Sisters.WudiLib.Posts
         #region Logging
 
         public event Action<Exception> OnException;
+        public event Action<Exception, string> OnExceptionWithRawContent;
 
-        private void LogException(Exception e)
+        private void LogException(Exception e, string content)
         {
             try
             {
                 OnException?.Invoke(e);
+            }
+            catch (Exception)
+            {
+                // ignored
+            }
+
+            try
+            {
+                OnExceptionWithRawContent?.Invoke(e, content);
             }
             catch (Exception)
             {
