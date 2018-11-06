@@ -1,7 +1,8 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Text;
+using Newtonsoft.Json;
 
 namespace Sisters.WudiLib
 {
@@ -23,13 +24,15 @@ namespace Sisters.WudiLib
         /// </summary>
         [JsonProperty("type")] private readonly string _type;
 
-        public string Type => _type;
         [JsonProperty("data")]
         private readonly IReadOnlyDictionary<string, string> _data;
-        [JsonIgnore]
-        internal IReadOnlyDictionary<string, string> Data => _data;
 
-        public IReadOnlyDictionary<string, string> GetData() => new Dictionary<string, string>(Data);
+        public string Type => _type;
+        [JsonIgnore]
+        public IReadOnlyDictionary<string, string> Data => _data;
+
+        [Obsolete("请改用 Data 属性", true)]
+        public IReadOnlyDictionary<string, string> GetData() => Data;
 
         [JsonIgnore]
         internal string Raw
@@ -73,7 +76,7 @@ namespace Sisters.WudiLib
             this._type = type;
             var data = new SortedDictionary<string, string>();
             Array.ForEach(p, pa => data.Add(pa.key, pa.value));
-            this._data = data;
+            this._data = new ReadOnlyDictionary<string, string>(data);
         }
 
         /// <exception cref="InvalidOperationException"></exception>
@@ -84,8 +87,7 @@ namespace Sisters.WudiLib
             {
                 string type = jObject.Value<string>("type");
                 _type = type;
-                var data = jObject["data"].ToObject<IReadOnlyDictionary<string, string>>();
-                _data = data;
+                _data = jObject["data"].ToObject<ReadOnlyDictionary<string, string>>();
             }
             catch (Exception exception)
             {

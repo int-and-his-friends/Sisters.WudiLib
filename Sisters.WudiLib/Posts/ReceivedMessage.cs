@@ -45,8 +45,8 @@ namespace Sisters.WudiLib.Posts
                         pos = match.Index + match.Length;
 
                         string type = match.Groups[1].Value.AfterReceive();
-                        var paras = match.Groups[2].Captures.Zip(
-                            match.Groups[3].Captures,
+                        var paras = match.Groups[2].Captures.Cast<Capture>().Zip(
+                            match.Groups[3].Captures.Cast<Capture>(),
                             (capKey, capVal) => (capKey.Value.AfterReceive(), capVal.Value.AfterReceive())
                         ).ToArray();
                         result.Add(new Section(type, paras));
