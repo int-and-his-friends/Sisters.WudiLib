@@ -8,8 +8,28 @@ namespace Sisters.WudiLib.Posts
         public bool Block { get; set; }
     }
 
-    public class GroupRequestResponse : Response
+    public class RequestResponse : Response
     {
+        public RequestResponse()
+        {
+        }
+
+        /// <summary>
+        /// 构造拒绝请求的响应。
+        /// </summary>
+        /// <param name="reason">拒绝理由。</param>
+        public RequestResponse(string reason)
+        {
+            Approve = false;
+            Reason = reason;
+        }
+
+        /// <summary>
+        /// 构造同意或者拒绝请求的响应。一般用于同意请求。
+        /// </summary>
+        /// <param name="approve">是否同意请求。</param>
+        public RequestResponse(bool approve) => Approve = approve;
+
         [JsonProperty("approve")]
         public bool Approve { get; set; }
 
@@ -17,13 +37,12 @@ namespace Sisters.WudiLib.Posts
         public string Reason { get; set; }
     }
 
-    public class FriendRequestResponse : Response
+    public sealed class GroupRequestResponse : RequestResponse
     {
-        [JsonProperty("approve")]
-        public bool Approve { get; set; }
+    }
 
-        [JsonProperty("remark")]
-        public string Remark { get; set; }
+    public sealed class FriendRequestResponse : RequestResponse
+    {
     }
 
     public class MessageResponse : Response
@@ -40,7 +59,7 @@ namespace Sisters.WudiLib.Posts
         public bool AtSender { get; set; }
     }
 
-    public class GroupMessageResponse : MultiMessageResponse
+    public sealed class GroupMessageResponse : MultiMessageResponse
     {
         [JsonProperty("delete")]
         public bool Recall { get; set; }

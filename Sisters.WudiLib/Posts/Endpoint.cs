@@ -7,7 +7,7 @@ namespace Sisters.WudiLib.Posts
     /// <summary>
     /// 表示要将消息发送至的地点的类。
     /// </summary>
-    public abstract class Endpoint : IEquatable<Endpoint>
+    public abstract class Endpoint : IEquatable<Endpoint>//, IComparable<Endpoint>
     {
         internal Endpoint()
         {
@@ -20,7 +20,6 @@ namespace Sisters.WudiLib.Posts
             get
             {
                 const string suffix = nameof(Endpoint);
-                //if (this is PrivateEndPoint) return Message.PrivateType;
                 string type = this.GetType().Name;
                 if (type.EndsWith(suffix, StringComparison.Ordinal))
                     type = type.Substring(0, type.Length - suffix.Length);
@@ -56,10 +55,10 @@ namespace Sisters.WudiLib.Posts
 
     public sealed class PrivateEndpoint : Endpoint, IEquatable<PrivateEndpoint>
     {
-        internal PrivateEndpoint(long user) => this.UserId = user;
+        public PrivateEndpoint(long user) => this.UserId = user;
 
         [JsonProperty("user_id")]
-        public long UserId { get; internal set; }
+        public long UserId { get; private set; }
 
         public override bool Equals(object obj) => Equals(obj as PrivateEndpoint);
         public bool Equals(PrivateEndpoint other) => other != null && UserId == other.UserId;
@@ -77,7 +76,7 @@ namespace Sisters.WudiLib.Posts
 
     public sealed class GroupEndpoint : Endpoint, IEquatable<GroupEndpoint>
     {
-        internal GroupEndpoint(long group) => this.GroupId = group;
+        public GroupEndpoint(long group) => this.GroupId = group;
 
         [JsonProperty("group_id")]
         public long GroupId { get; private set; }
@@ -98,7 +97,7 @@ namespace Sisters.WudiLib.Posts
 
     public sealed class DiscussEndpoint : Endpoint, IEquatable<DiscussEndpoint>
     {
-        internal DiscussEndpoint(long discuss) => this.DiscussId = discuss;
+        public DiscussEndpoint(long discuss) => this.DiscussId = discuss;
 
         [JsonProperty("discuss_id")]
         public long DiscussId { get; private set; }
