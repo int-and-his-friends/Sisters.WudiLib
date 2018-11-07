@@ -1,16 +1,17 @@
-﻿using Newtonsoft.Json;
+﻿using System;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
-using System;
 
 namespace Sisters.WudiLib.Posts
 {
     [JsonObject(MemberSerialization.OptIn)]
     public abstract class Post
     {
-        internal const string MessagePost = "message";
-        internal const string NoticePost = "notice";
-        internal const string RequestPost = "request";
+        internal const string Message = "message";
+        internal const string Notice = "notice";
+        internal const string Request = "request";
 
+        internal const string TypeField = "post_type";
         internal const string SubTypeField = "sub_type";
 
         internal Post()
@@ -18,7 +19,7 @@ namespace Sisters.WudiLib.Posts
             // ignored
         }
 
-        [JsonProperty("post_type")]
+        [JsonProperty(TypeField)]
         internal string PostType { get; private set; }
 
         [JsonProperty("time")]
@@ -36,8 +37,8 @@ namespace Sisters.WudiLib.Posts
     [JsonObject(MemberSerialization.OptIn)]
     public abstract class Request : Post
     {
-        internal const string FriendType = "friend";
-        internal const string GroupType = "group";
+        internal const string Friend = "friend";
+        internal const string Group = "group";
 
         internal Request()
         {
@@ -66,8 +67,8 @@ namespace Sisters.WudiLib.Posts
     [JsonObject(MemberSerialization.OptIn)]
     public class GroupRequest : FriendRequest // 为了减少反序列化次数，提高性能，继承关系去TMD（然而我也不知道反序列化要多久）。
     {
-        internal const string AddType = "add";
-        internal const string InvateType = "invite";
+        internal const string Add = "add";
+        internal const string Invate = "invite";
 
         internal GroupRequest()
         {

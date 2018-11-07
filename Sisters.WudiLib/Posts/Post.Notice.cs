@@ -4,15 +4,16 @@ namespace Sisters.WudiLib.Posts
 {
     public abstract class Notice : Post
     {
-        internal const string GroupUploadNotice = "group_upload";
-        internal const string GroupAdminNotice = "group_admin";
-        internal const string GroupDecreaseNotice = "group_decrease";
-        internal const string GroupIncreaseNotice = "group_increase";
-        internal const string FriendAddNotice = "friend_add";
-        internal const string NoticeField = "notice_type";
+        internal const string GroupUpload = "group_upload";
+        internal const string GroupAdmin = "group_admin";
+        internal const string GroupDecrease = "group_decrease";
+        internal const string GroupIncrease = "group_increase";
+        internal const string FriendAdd = "friend_add";
+
+        internal new const string TypeField = "notice_type";
 
         public abstract override Endpoint Endpoint { get; }
-        [JsonProperty(NoticeField)]
+        [JsonProperty(TypeField)]
         internal string NoticeType { get; private set; }
     }
 

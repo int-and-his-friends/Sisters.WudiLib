@@ -12,7 +12,7 @@ using Newtonsoft.Json.Linq;
 
 namespace Sisters.WudiLib.Posts
 {
-    public class ApiPostListener
+    public partial class ApiPostListener
     {
         #region
 
@@ -170,7 +170,7 @@ namespace Sisters.WudiLib.Posts
 
         private static bool Verify(byte[] secret, string signature, byte[] buffer, int offset, int length)
         {
-            if (secret == null)
+            if (secret is null)
                 return true;
             using (var hmac = new HMACSHA1(secret))
             {
@@ -241,18 +241,18 @@ namespace Sisters.WudiLib.Posts
 
             JObject contentObject = JsonConvert.DeserializeObject<JObject>(content);
             GroupMessage post = JsonConvert.DeserializeObject<GroupMessage>(content);
-            if (post == null)
+            if (post is null)
                 return null;
 
             switch (post.PostType)
             {
-                case Post.MessagePost:
+                case Post.Message:
                     ProcessMessage(content, post);
                     return null;
-                case Post.NoticePost:
+                case Post.Notice:
                     ProcessNotice(contentObject);
                     return null;
-                case Post.RequestPost:
+                case Post.Request:
                     return ProcessRequest(content);
             }
 
@@ -306,9 +306,9 @@ namespace Sisters.WudiLib.Posts
             GroupRequest request = JsonConvert.DeserializeObject<GroupRequest>(content);
             switch (request.RequestType)
             {
-                case Request.FriendType:
+                case Request.Friend:
                     return ProcessFriendRequest(request);
-                case Request.GroupType:
+                case Request.Group:
                     return ProcessGroupRequest(request);
             }
 
@@ -321,9 +321,9 @@ namespace Sisters.WudiLib.Posts
         {
             switch (groupRequest.SubType)
             {
-                case GroupRequest.AddType:
+                case GroupRequest.Add:
                     return GroupRequestHappen(groupRequest);
-                case GroupRequest.InvateType:
+                case GroupRequest.Invate:
                     return GroupInviteHappen(groupRequest);
             }
 
@@ -336,21 +336,21 @@ namespace Sisters.WudiLib.Posts
 
         private void ProcessNotice(JObject contentObject)
         {
-            switch (contentObject[Notice.NoticeField].ToObject<string>())
+            switch (contentObject[Notice.TypeField].ToObject<string>())
             {
-                case Notice.GroupUploadNotice:
+                case Notice.GroupUpload:
                     GroupFileUploadedEvent?.Invoke(ApiClient, contentObject.ToObject<GroupFileNotice>());
                     break;
-                case Notice.GroupAdminNotice:
+                case Notice.GroupAdmin:
                     ProcessGroupAdminNotice(contentObject);
                     break;
-                case Notice.GroupDecreaseNotice:
+                case Notice.GroupDecrease:
                     ProcessGroupMemberDecrease(contentObject);
                     break;
-                case Notice.GroupIncreaseNotice:
+                case Notice.GroupIncrease:
                     ProcessGroupMemberIncrease(contentObject);
                     break;
-                case Notice.FriendAddNotice:
+                case Notice.FriendAdd:
                     FriendAddedEvent?.Invoke(ApiClient, contentObject.ToObject<FriendAddNotice>());
                     break;
                 default:

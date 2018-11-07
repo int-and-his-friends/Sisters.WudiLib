@@ -1,5 +1,5 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
+using Newtonsoft.Json;
 
 namespace Sisters.WudiLib.Posts
 {
@@ -10,10 +10,12 @@ namespace Sisters.WudiLib.Posts
         internal const string GroupType = "group";
         internal const string DiscussType = "discuss";
 
+        internal new const string TypeField = "message_type";
+
         public Message()
             => _messageLazy = new Lazy<ReceivedMessage>(() => new ReceivedMessage(ObjMessage));
 
-        [JsonProperty("message_type")]
+        [JsonProperty(TypeField)]
         public string MessageType { get; private set; }
         [JsonProperty("message_id")]
         public int MessageId { get; private set; }
