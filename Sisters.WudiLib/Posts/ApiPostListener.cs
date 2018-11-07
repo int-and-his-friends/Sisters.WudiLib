@@ -146,21 +146,25 @@ namespace Sisters.WudiLib.Posts
             }
         }
 
+        /// <summary>
+        /// 从请求中读取内容。
+        /// </summary>
+        /// <param name="request">收到的 Http 请求。</param>
+        /// <returns>读取到的内容。</returns>
         private string GetContent(HttpListenerRequest request)
         {
-            var length = request.ContentLength64;
-            byte[] bytes = new byte[length * 2];
-            int actualLength;
-            using (request.InputStream)
-                actualLength = request.InputStream.Read(bytes, 0, bytes.Length);
+            var ms = new MemoryStream();
+            request.InputStream.CopyTo(ms);
+            byte[] bytes = ms.ToArray();
+            (request.InputStream as IDisposable).Dispose();
 
             // 验证
             var signature = request.Headers.Get("X-Signature");
 
-            if (Verify(_secretBytes, signature, bytes, 0, actualLength))
+            if (Verify(_secretBytes, signature, bytes, 0, bytes.Length))
             {
                 string requestContent;
-                requestContent = request.ContentEncoding.GetString(bytes, 0, actualLength);
+                requestContent = request.ContentEncoding.GetString(bytes);
                 return requestContent;
             }
 
