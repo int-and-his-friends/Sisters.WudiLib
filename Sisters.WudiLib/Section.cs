@@ -39,7 +39,8 @@ namespace Sisters.WudiLib
         {
             get
             {
-                if (Type == TextType) return Data[TextParamName].BeforeSend(false);
+                if (Type == TextType)
+                    return Data[TextParamName].BeforeSend(false);
                 var sb = new StringBuilder($"[CQ:{Type}");
                 foreach (var param in Data)
                 {
@@ -99,9 +100,12 @@ namespace Sisters.WudiLib
 
         public bool Equals(Section other)
         {
-            if (other == null) return false;
-            if (this.Type != other.Type) return false;
-            if (this.Data.Count != other.Data.Count) return false;
+            if (other is null)
+                return false;
+            if (this.Type != other.Type)
+                return false;
+            if (this.Data.Count != other.Data.Count)
+                return false;
             foreach (var param in this.Data)
             {
                 string key = param.Key;
@@ -128,6 +132,10 @@ namespace Sisters.WudiLib
             return hashCode;
         }
 
+        /// <summary>
+        /// 将消息段转换为 <see cref="string"/>。如果类型为 <see cref="TextType"/>，则为文本内容（不转义）；否则与 CQ 码形式相同。
+        /// </summary>
+        /// <returns>转换后的 <see cref="string"/>。</returns>
         public override string ToString() => Type == TextType ? Data[TextParamName] : Raw;
 
         /// <summary>
@@ -171,10 +179,7 @@ namespace Sisters.WudiLib
         /// <param name="noCache">是否使用缓存。</param>
         /// <returns></returns>
         internal static Section NetImage(string url, bool noCache)
-        {
-            if (!noCache) return NetImage(url);
-            return new Section(ImageType, ("cache", "0"), ("file", url));
-        }
+            => noCache ? new Section(ImageType, ("cache", "0"), ("file", url)) : NetImage(url);
 
         internal static Section NetRecord(string url) => new Section(RecordType, ("file", url));
 
@@ -211,18 +216,17 @@ namespace Sisters.WudiLib
                         (audioUrlParamName, audioUrl),
                         (titleParamName, title),
                     };
-            if (profile != null) arguments.Add((profileParamName, profile));
-            if (!string.IsNullOrEmpty(imageUrl)) arguments.Add((imageUrlParamName, imageUrl));
+            if (profile != null)
+                arguments.Add((profileParamName, profile));
+            if (!string.IsNullOrEmpty(imageUrl))
+                arguments.Add((imageUrlParamName, imageUrl));
             return new Section(MusicType, arguments.ToArray());
         }
 
         internal static Section Shake() => new Section("shake");
 
         public static bool operator ==(Section left, Section right)
-        {
-            if (left is null) return right is null;
-            return left.Equals(right);
-        }
+            => left is null ? right is null : left.Equals(right);
 
         public static bool operator !=(Section left, Section right) => !(left == right);
     }

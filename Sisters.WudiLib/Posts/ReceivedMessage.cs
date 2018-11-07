@@ -147,7 +147,7 @@ namespace Sisters.WudiLib.Posts
         /// <exception cref="ArgumentNullException"><c>url</c>是<c>null</c>。</exception>
         private static string GetFixedImageSection(string url)
         {
-            if (url == null)
+            if (url is null)
             {
                 throw new ArgumentNullException(nameof(url));
             }

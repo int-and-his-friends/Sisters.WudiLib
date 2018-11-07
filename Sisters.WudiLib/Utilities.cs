@@ -134,7 +134,7 @@ namespace Sisters.WudiLib
         /// <exception cref="ArgumentNullException"><c>argument</c>为<c>null</c>。</exception>
         internal static void CheckStringArgument(string argument, string paramName)
         {
-            if (argument == null)
+            if (argument is null)
                 throw new ArgumentNullException(paramName);
             if (argument.Length == 0)
                 throw new ArgumentException($"{paramName}为空。", paramName);
