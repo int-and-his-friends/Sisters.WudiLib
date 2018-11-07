@@ -33,7 +33,7 @@ namespace Sisters.WudiLib.Posts
                     var match = regex.Match(_message, pos);
                     if (!match.Success)
                     {
-                        result.Add(Section.Text(_message.Substring(pos)));
+                        result.Add(Section.Text(_message.Substring(pos).AfterReceive()));
                         pos = _message.Length;
                     }
                     else

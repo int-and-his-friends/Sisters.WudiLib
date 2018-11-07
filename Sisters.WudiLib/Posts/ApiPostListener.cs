@@ -234,11 +234,12 @@ namespace Sisters.WudiLib.Posts
 
         #region ProcessPost
 
-        private object ProcessPost(string content, HttpListenerResponse response)
+        public Response ProcessPost(string content, HttpListenerResponse response)
         {
             if (string.IsNullOrEmpty(content))
                 return null;
 
+            JObject contentObject = JsonConvert.DeserializeObject<JObject>(content);
             GroupMessage post = JsonConvert.DeserializeObject<GroupMessage>(content);
             if (post == null)
                 return null;
@@ -249,7 +250,6 @@ namespace Sisters.WudiLib.Posts
                     ProcessMessage(content, post);
                     return null;
                 case Post.NoticePost:
-                    JObject contentObject = JsonConvert.DeserializeObject<JObject>(content);
                     ProcessNotice(contentObject);
                     return null;
                 case Post.RequestPost:
@@ -301,7 +301,7 @@ namespace Sisters.WudiLib.Posts
             }
         }
 
-        private object ProcessRequest(string content)
+        private RequestResponse ProcessRequest(string content)
         {
             GroupRequest request = JsonConvert.DeserializeObject<GroupRequest>(content);
             switch (request.RequestType)
@@ -315,9 +315,9 @@ namespace Sisters.WudiLib.Posts
             return null;
         }
 
-        private object ProcessFriendRequest(FriendRequest friendRequest) => FriendRequestHappen(friendRequest);
+        private RequestResponse ProcessFriendRequest(FriendRequest friendRequest) => FriendRequestHappen(friendRequest);
 
-        private object ProcessGroupRequest(GroupRequest groupRequest)
+        private RequestResponse ProcessGroupRequest(GroupRequest groupRequest)
         {
             switch (groupRequest.SubType)
             {
@@ -436,7 +436,7 @@ namespace Sisters.WudiLib.Posts
             remove => _groupRequestEventHandlers.Remove(value);
         }
 
-        private GroupRequestResponse GroupRequestHappen(GroupRequest request)
+        private RequestResponse GroupRequestHappen(GroupRequest request)
         {
             return _groupRequestEventHandlers.Select(handler => handler.Invoke(ApiClient, request))
                 .FirstOrDefault(response => response != null);
@@ -458,7 +458,7 @@ namespace Sisters.WudiLib.Posts
             remove => _groupInviteEventHandlers.Remove(value);
         }
 
-        private GroupRequestResponse GroupInviteHappen(GroupRequest request)
+        private RequestResponse GroupInviteHappen(GroupRequest request)
         {
             return _groupInviteEventHandlers.Select(handler => handler.Invoke(ApiClient, request))
                 .FirstOrDefault(response => response != null);
@@ -480,7 +480,7 @@ namespace Sisters.WudiLib.Posts
             remove => _friendRequestEventHandlers.Remove(value);
         }
 
-        private FriendRequestResponse FriendRequestHappen(FriendRequest request)
+        private RequestResponse FriendRequestHappen(FriendRequest request)
         {
             return _friendRequestEventHandlers.Select(handler => handler.Invoke(ApiClient, request))
                 .FirstOrDefault(response => response != null);
