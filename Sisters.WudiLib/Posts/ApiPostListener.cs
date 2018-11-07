@@ -515,8 +515,8 @@ namespace Sisters.WudiLib.Posts
         /// <param name="api"></param>
         /// <param name="groupRequest"></param>
         /// <returns></returns>
-        public static GroupRequestResponse ApproveAllGroupRequests(HttpApiClient api, GroupRequest groupRequest)
-            => new GroupRequestResponse { Approve = true };
+        public static RequestResponse ApproveAllGroupRequests(HttpApiClient api, GroupRequest groupRequest)
+            => new RequestResponse { Approve = true };
 
         /// <summary>
         /// 同意全部好友请求的事件处理器。
@@ -524,8 +524,8 @@ namespace Sisters.WudiLib.Posts
         /// <param name="api"></param>
         /// <param name="friendRequest"></param>
         /// <returns></returns>
-        public static FriendRequestResponse ApproveAllFriendRequests(HttpApiClient api, FriendRequest friendRequest)
-            => new FriendRequestResponse { Approve = true };
+        public static RequestResponse ApproveAllFriendRequests(HttpApiClient api, FriendRequest friendRequest)
+            => new RequestResponse { Approve = true };
 
         /// <summary>
         /// 复读的事件处理器。并没有什么卵用。

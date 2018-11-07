@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System;
+using Newtonsoft.Json;
 
 namespace Sisters.WudiLib.Posts
 {
@@ -37,10 +38,12 @@ namespace Sisters.WudiLib.Posts
         public string Reason { get; set; }
     }
 
+    [Obsolete("RequestResponse")]
     public sealed class GroupRequestResponse : RequestResponse
     {
     }
 
+    [Obsolete("RequestResponse")]
     public sealed class FriendRequestResponse : RequestResponse
     {
     }
