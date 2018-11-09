@@ -5,6 +5,10 @@
     /// </summary>
     public abstract class Message
     {
+        private protected Message()
+        {
+        }
+
         /// <summary>
         /// 返回发送时要序列化的对象。
         /// </summary>

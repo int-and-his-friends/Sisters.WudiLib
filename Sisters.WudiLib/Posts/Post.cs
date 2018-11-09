@@ -40,12 +40,14 @@ namespace Sisters.WudiLib.Posts
         internal const string Friend = "friend";
         internal const string Group = "group";
 
+        internal new const string TypeField = "request_type";
+
         internal Request()
         {
             // ignored
         }
 
-        [JsonProperty("request_type")]
+        [JsonProperty(TypeField)]
         internal string RequestType { get; private set; }
         [JsonProperty("flag")]
         public string Flag { get; private set; }
@@ -65,7 +67,7 @@ namespace Sisters.WudiLib.Posts
     }
 
     [JsonObject(MemberSerialization.OptIn)]
-    public class GroupRequest : FriendRequest // 为了减少反序列化次数，提高性能，继承关系去TMD（然而我也不知道反序列化要多久）。
+    public class GroupRequest : Request
     {
         internal const string Add = "add";
         internal const string Invate = "invite";

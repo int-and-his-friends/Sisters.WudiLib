@@ -238,26 +238,26 @@ namespace Sisters.WudiLib.Posts
 
         #region ProcessPost
 
-        public Response ProcessPost(string content, HttpListenerResponse response)
+        public Response ProcessPost(string content, HttpListenerResponse response = null)
         {
             if (string.IsNullOrEmpty(content))
                 return null;
 
             JObject contentObject = JsonConvert.DeserializeObject<JObject>(content);
-            GroupMessage post = JsonConvert.DeserializeObject<GroupMessage>(content);
-            if (post is null)
+            if (contentObject is null)
                 return null;
 
-            switch (post.PostType)
+            switch (contentObject[Post.TypeField].ToObject<string>())
             {
                 case Post.Message:
+                    GroupMessage post = JsonConvert.DeserializeObject<GroupMessage>(content);
                     ProcessMessage(content, post);
                     return null;
                 case Post.Notice:
                     ProcessNotice(contentObject);
                     return null;
                 case Post.Request:
-                    return ProcessRequest(content);
+                    return ProcessRequest(contentObject);
             }
 
             // log needed
@@ -305,15 +305,14 @@ namespace Sisters.WudiLib.Posts
             }
         }
 
-        private RequestResponse ProcessRequest(string content)
+        private RequestResponse ProcessRequest(JObject jObject)
         {
-            GroupRequest request = JsonConvert.DeserializeObject<GroupRequest>(content);
-            switch (request.RequestType)
+            switch (jObject[Request.TypeField].ToObject<string>())
             {
                 case Request.Friend:
-                    return ProcessFriendRequest(request);
+                    return ProcessFriendRequest(jObject.ToObject<FriendRequest>());
                 case Request.Group:
-                    return ProcessGroupRequest(request);
+                    return ProcessGroupRequest(jObject.ToObject<GroupRequest>());
             }
 
             return null;
@@ -426,69 +425,34 @@ namespace Sisters.WudiLib.Posts
         public event Action<HttpApiClient, GroupMemberIncreaseNotice> GroupAddedEvent;
         #endregion
 
-        #region GroupRequest
-
-        private readonly ICollection<GroupRequestEventHandler> _groupRequestEventHandlers =
-            new LinkedList<GroupRequestEventHandler>();
+        #region Request
 
         /// <summary>
         /// 收到加群请求事件。
         /// </summary>
-        public event GroupRequestEventHandler GroupRequestEvent
-        {
-            add => _groupRequestEventHandlers.Add(value);
-            remove => _groupRequestEventHandlers.Remove(value);
-        }
+        public event GroupRequestEventHandler GroupRequestEvent;
 
-        private RequestResponse GroupRequestHappen(GroupRequest request)
-        {
-            return _groupRequestEventHandlers.Select(handler => handler.Invoke(ApiClient, request))
-                .FirstOrDefault(response => response != null);
-        }
-
-        #endregion
-
-        #region GroupInvite
-
-        private readonly ICollection<GroupRequestEventHandler> _groupInviteEventHandlers =
-            new LinkedList<GroupRequestEventHandler>();
+        private RequestResponse GroupRequestHappen(GroupRequest request) => GetFirstResponseOrDefault(GroupRequestEvent, h => h.Invoke(ApiClient, request));
 
         /// <summary>
         /// 收到加群邀请事件。此时 <see cref="Request.Comment"/> 并不存在。
         /// </summary>
-        public event GroupRequestEventHandler GroupInviteEvent
-        {
-            add => _groupInviteEventHandlers.Add(value);
-            remove => _groupInviteEventHandlers.Remove(value);
-        }
+        public event GroupRequestEventHandler GroupInviteEvent;
 
-        private RequestResponse GroupInviteHappen(GroupRequest request)
-        {
-            return _groupInviteEventHandlers.Select(handler => handler.Invoke(ApiClient, request))
-                .FirstOrDefault(response => response != null);
-        }
-
-        #endregion
-
-        #region FriendRequest
-
-        private readonly ICollection<FriendRequestEventHandler> _friendRequestEventHandlers =
-            new LinkedList<FriendRequestEventHandler>();
+        private RequestResponse GroupInviteHappen(GroupRequest request) => GetFirstResponseOrDefault(GroupInviteEvent, h => h.Invoke(ApiClient, request));
 
         /// <summary>
         /// 收到好友请求事件。
         /// </summary>
-        public event FriendRequestEventHandler FriendRequestEvent
-        {
-            add => _friendRequestEventHandlers.Add(value);
-            remove => _friendRequestEventHandlers.Remove(value);
-        }
+        public event FriendRequestEventHandler FriendRequestEvent;
 
-        private RequestResponse FriendRequestHappen(FriendRequest request)
-        {
-            return _friendRequestEventHandlers.Select(handler => handler.Invoke(ApiClient, request))
-                .FirstOrDefault(response => response != null);
-        }
+        private RequestResponse FriendRequestHappen(FriendRequest request) => GetFirstResponseOrDefault(FriendRequestEvent, h => h.Invoke(ApiClient, request));
+
+        private static TResponse GetFirstResponseOrDefault<TResponse, THandler>(THandler handler, Func<THandler, TResponse> invoker)
+            where THandler : Delegate
+            where TResponse : class
+                => handler?.GetInvocationList().Cast<THandler>().Select(invoker)
+                            .FirstOrDefault(response => response != null);
 
         #endregion
 
