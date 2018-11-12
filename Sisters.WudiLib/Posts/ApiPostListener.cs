@@ -274,8 +274,7 @@ namespace Sisters.WudiLib.Posts
             switch (contentObject[Post.TypeField].ToObject<string>())
             {
                 case Post.Message:
-                    GroupMessage post = JsonConvert.DeserializeObject<GroupMessage>(content);
-                    ProcessMessage(content, post);
+                    ProcessMessage(contentObject);
                     return null;
                 case Post.Notice:
                     ProcessNotice(contentObject);
@@ -288,18 +287,19 @@ namespace Sisters.WudiLib.Posts
             return null;
         }
 
-        private void ProcessMessage(string content, GroupMessage groupMessage)
+        private void ProcessMessage(JObject contentObject)
         {
+            GroupMessage groupMessage = contentObject.ToObject<GroupMessage>();
             switch (groupMessage.MessageType)
             {
                 case Message.PrivateType:
-                    MessageEvent?.Invoke(ApiClient, JsonConvert.DeserializeObject<PrivateMessage>(content));
+                    MessageEvent?.Invoke(ApiClient, contentObject.ToObject<PrivateMessage>());
                     break;
                 case Message.GroupType:
-                    ProcessGroupMessage(content, groupMessage);
+                    ProcessGroupMessage(contentObject, groupMessage);
                     break;
                 case Message.DiscussType:
-                    MessageEvent?.Invoke(ApiClient, JsonConvert.DeserializeObject<DiscussMessage>(content));
+                    MessageEvent?.Invoke(ApiClient, contentObject.ToObject<DiscussMessage>());
                     break;
                 default:
                     // log needed
@@ -307,7 +307,7 @@ namespace Sisters.WudiLib.Posts
             }
         }
 
-        private void ProcessGroupMessage(string content, GroupMessage groupMessage)
+        private void ProcessGroupMessage(JObject contentObject, GroupMessage groupMessage)
         {
             switch (groupMessage.SubType)
             {
@@ -317,7 +317,7 @@ namespace Sisters.WudiLib.Posts
                 case GroupMessage.AnonymousType:
                     AnonymousMessageEvent?.Invoke(
                         ApiClient,
-                        JsonConvert.DeserializeObject<AnonymousMessage>(content)
+                        contentObject.ToObject<AnonymousMessage>()
                     );
                     break;
                 case GroupMessage.NoticeType:

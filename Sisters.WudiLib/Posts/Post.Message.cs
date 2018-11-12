@@ -6,9 +6,9 @@ namespace Sisters.WudiLib.Posts
     [JsonObject(MemberSerialization.OptIn)]
     public abstract class Message : Post
     {
-        internal const string PrivateType = "private";
-        internal const string GroupType = "group";
-        internal const string DiscussType = "discuss";
+        public const string PrivateType = "private";
+        public const string GroupType = "group";
+        public const string DiscussType = "discuss";
 
         internal new const string TypeField = "message_type";
 
