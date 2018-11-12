@@ -121,7 +121,7 @@ namespace Sisters.WudiLib.Posts
                         ForwardAsync(requestContent);
 
                         // 响应
-                        responseObject = ProcessPost(requestContent, response);
+                        responseObject = ProcessPost(requestContent);
 
                         response.ContentType = "application/json";
                         if (responseObject != null)
@@ -238,7 +238,12 @@ namespace Sisters.WudiLib.Posts
 
         #region ProcessPost
 
-        public Response ProcessPost(string content, HttpListenerResponse response = null)
+        /// <summary>
+        /// 传入收到的 JSON 上报数据，调用处理器处理。
+        /// </summary>
+        /// <param name="content">收到的 JSON 数据。</param>
+        /// <returns>由处理器返回的数据。</returns>
+        public Response ProcessPost(string content)
         {
             if (string.IsNullOrEmpty(content))
                 return null;
@@ -483,8 +488,8 @@ namespace Sisters.WudiLib.Posts
         /// <param name="api"></param>
         /// <param name="groupRequest"></param>
         /// <returns></returns>
-        public static RequestResponse ApproveAllGroupRequests(HttpApiClient api, GroupRequest groupRequest)
-            => new RequestResponse { Approve = true };
+        public static GroupRequestResponse ApproveAllGroupRequests(HttpApiClient api, GroupRequest groupRequest)
+            => new GroupRequestResponse { Approve = true };
 
         /// <summary>
         /// 同意全部好友请求的事件处理器。
@@ -492,8 +497,8 @@ namespace Sisters.WudiLib.Posts
         /// <param name="api"></param>
         /// <param name="friendRequest"></param>
         /// <returns></returns>
-        public static RequestResponse ApproveAllFriendRequests(HttpApiClient api, FriendRequest friendRequest)
-            => new RequestResponse { Approve = true };
+        public static FriendRequestResponse ApproveAllFriendRequests(HttpApiClient api, FriendRequest friendRequest)
+            => new FriendRequestResponse { Approve = true };
 
         /// <summary>
         /// 复读的事件处理器。并没有什么卵用。

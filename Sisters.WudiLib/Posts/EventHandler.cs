@@ -1,8 +1,8 @@
 ﻿namespace Sisters.WudiLib.Posts
 {
-    public delegate RequestResponse GroupRequestEventHandler(HttpApiClient api, GroupRequest request);
+    public delegate GroupRequestResponse GroupRequestEventHandler(HttpApiClient api, GroupRequest request);
 
-    public delegate RequestResponse FriendRequestEventHandler(HttpApiClient api, FriendRequest request);
+    public delegate FriendRequestResponse FriendRequestEventHandler(HttpApiClient api, FriendRequest request);
 
     public delegate void MessageEventHandler(HttpApiClient api, Message message);
 
