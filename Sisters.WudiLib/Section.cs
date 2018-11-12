@@ -44,7 +44,7 @@ namespace Sisters.WudiLib
                 var sb = new StringBuilder($"[CQ:{Type}");
                 foreach (var param in Data)
                 {
-                    sb.Append($",{param.Key}={param.Value.BeforeSend()}");
+                    sb.Append($",{param.Key}={param.Value.BeforeSend(true)}");
                 }
 
                 sb.Append("]");

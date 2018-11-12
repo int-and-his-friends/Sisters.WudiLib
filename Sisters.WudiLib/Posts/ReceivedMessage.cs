@@ -156,7 +156,7 @@ namespace Sisters.WudiLib.Posts
             {
                 var imageBytes = http.GetByteArrayAsync(url).Result;
                 var base64 = Convert.ToBase64String(imageBytes);
-                return $"[CQ:image,file=base64://{base64.BeforeSend()}]";
+                return $"[CQ:image,file=base64://{base64.BeforeSend(true)}]";
             }
         }
 

@@ -3,6 +3,17 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <LangVersion>7.3</LangVersion>
+    <Version>0.0.1-alpha</Version>
+    <Authors>bleatingsheep</Authors>
+    <Copyright>bleatingsheep</Copyright>
+    <Company>bleatingsheep</Company>
+    <PackageTags>cqhttp coolq-http-api coolq qq qqbot qqrobot</PackageTags>
+    <PackageProjectUrl>https://github.com/int-and-his-friends/Sisters.WudiLib</PackageProjectUrl>
+    <PackageIconUrl>https://github.com/int-and-his-friends/Sisters.WudiLib/blob/master/LICENSE</PackageIconUrl>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>C:\Users\yinmi\OneDrive\文档\Visual Studio 2017\Projects\Sisters.WudiLib\Sisters.WudiLib\Sisters.WudiLib.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
