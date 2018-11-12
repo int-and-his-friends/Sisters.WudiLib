@@ -34,6 +34,9 @@ namespace Sisters.WudiLib
         private string GroupMemberListUrl => _apiAddress + GroupMemberListPath;
         private string CleanUrl => _apiAddress + CleanPath;
 
+        /// <summary>
+        /// API 访问 token。请详见插件文档。
+        /// </summary>
         public static string AccessToken { get; set; }
     }
 
@@ -44,6 +47,9 @@ namespace Sisters.WudiLib
     {
         private int _isReadyToCleanData;
 
+        /// <summary>
+        /// 是否已设置定期清理图片缓存。
+        /// </summary>
         public bool IsCleaningData => _isReadyToCleanData != 0;
 
         private string _apiAddress;
@@ -67,6 +73,11 @@ namespace Sisters.WudiLib
             }
         }
 
+        /// <summary>
+        /// 开始定期访问清理图片的 API。
+        /// </summary>
+        /// <param name="intervalMinutes">间隔的毫秒数。</param>
+        /// <returns>成功开始则为 <c>true</c>，如果之前已经开始过，则为 <c>false</c>。</returns>
         public bool StartClean(int intervalMinutes)
         {
             if (Interlocked.CompareExchange(ref _isReadyToCleanData, 1, 0) == 0)
@@ -95,11 +106,11 @@ namespace Sisters.WudiLib
         }
 
         /// <summary>
-        /// 发送私聊消息
+        /// 发送私聊消息。
         /// </summary>
-        /// <param name="userId">对方 QQ 号</param>
-        /// <param name="message">要发送的内容（文本）</param>
-        /// <returns></returns>
+        /// <param name="userId">对方 QQ 号。</param>
+        /// <param name="message">要发送的内容（文本）。</param>
+        /// <returns>包含消息 ID 的响应数据。</returns>
         public async Task<SendPrivateMessageResponseData> SendPrivateMessageAsync(long userId, string message)
         {
             var data = new
@@ -112,6 +123,12 @@ namespace Sisters.WudiLib
             return result;
         }
 
+        /// <summary>
+        /// 发送私聊消息。
+        /// </summary>
+        /// <param name="qq">对方 QQ 号。</param>
+        /// <param name="message">要发送的内容。</param>
+        /// <returns>包含消息 ID 的响应数据。</returns>
         public async Task<SendPrivateMessageResponseData> SendPrivateMessageAsync(long qq, Message message)
         {
             var data = new
@@ -124,11 +141,11 @@ namespace Sisters.WudiLib
         }
 
         /// <summary>
-        /// 发送群消息
+        /// 发送群消息。
         /// </summary>
-        /// <param name="groupId">群号</param>
-        /// <param name="message">要发送的内容（文本）</param>
-        /// <returns></returns>
+        /// <param name="groupId">群号。</param>
+        /// <param name="message">要发送的内容（文本）。</param>
+        /// <returns>包含消息 ID 的响应数据。</returns>
         public async Task<SendGroupMessageResponseData> SendGroupMessageAsync(long groupId, string message)
         {
             var data = new
@@ -141,6 +158,12 @@ namespace Sisters.WudiLib
             return result;
         }
 
+        /// <summary>
+        /// 发送群消息。
+        /// </summary>
+        /// <param name="groupId">群号。</param>
+        /// <param name="message">要发送的内容。</param>
+        /// <returns>包含消息 ID 的响应数据。</returns>
         public async Task<SendGroupMessageResponseData> SendGroupMessageAsync(long groupId, Message message)
         {
             var data = new
@@ -153,11 +176,11 @@ namespace Sisters.WudiLib
         }
 
         /// <summary>
-        /// 发送讨论组消息
+        /// 发送讨论组消息。
         /// </summary>
-        /// <param name="discussId">讨论组 ID</param>
-        /// <param name="message">要发送的内容（文本）</param>
-        /// <returns></returns>
+        /// <param name="discussId">讨论组 ID。</param>
+        /// <param name="message">要发送的内容（文本）。</param>
+        /// <returns>包含消息 ID 的响应数据。</returns>
         public async Task<SendDiscussMessageResponseData> SendDiscussMessageAsync(long discussId, string message)
         {
             var data = new
@@ -170,6 +193,12 @@ namespace Sisters.WudiLib
             return result;
         }
 
+        /// <summary>
+        /// 发送讨论组消息。
+        /// </summary>
+        /// <param name="discussId">讨论组 ID。</param>
+        /// <param name="message">要发送的内容。</param>
+        /// <returns>包含消息 ID 的响应数据。</returns>
         public async Task<SendDiscussMessageResponseData> SendDiscussMessageAsync(long discussId, Message message)
         {
             var data = new
@@ -184,9 +213,9 @@ namespace Sisters.WudiLib
         /// <summary>
         /// 发送消息。
         /// </summary>
-        /// <param name="endpoint">TODO</param>
+        /// <param name="endpoint">要发送到的终结点。</param>
         /// <param name="message">要发送的消息。</param>
-        /// <returns></returns>
+        /// <returns>包含消息 ID 的响应数据。</returns>
         public async Task<SendMessageResponseData> SendMessageAsync(Posts.Endpoint endpoint, Message message)
         {
             var data = JObject.FromObject(endpoint);
@@ -195,6 +224,12 @@ namespace Sisters.WudiLib
             return result;
         }
 
+        /// <summary>
+        /// 发送消息。
+        /// </summary>
+        /// <param name="endpoint">要发送到的终结点。</param>
+        /// <param name="message">要发送的消息（文本）。</param>
+        /// <returns>包含消息 ID 的响应数据。</returns>
         public async Task<SendMessageResponseData> SendMessageAsync(Posts.Endpoint endpoint, string message)
         {
             var data = JObject.FromObject(endpoint);
@@ -222,10 +257,10 @@ namespace Sisters.WudiLib
         }
 
         /// <summary>
-        /// 撤回消息（需要Pro）
+        /// 撤回消息（需要Pro）。
         /// </summary>
-        /// <param name="message">消息返回值</param>
-        /// <returns></returns>
+        /// <param name="message">消息返回值。</param>
+        /// <returns>是否成功。</returns>
         public async Task<bool> RecallMessageAsync(SendMessageResponseData message)
         {
             return await RecallMessageAsync(message.MessageId);
@@ -234,8 +269,8 @@ namespace Sisters.WudiLib
         /// <summary>
         /// 撤回消息（需要Pro）
         /// </summary>
-        /// <param name="messageId">消息返回值</param>
-        /// <returns></returns>
+        /// <param name="messageId">消息 ID。</param>
+        /// <returns>是否成功。</returns>
         public async Task<bool> RecallMessageAsync(int messageId)
         {
             var data = new { message_id = messageId };
@@ -281,9 +316,9 @@ namespace Sisters.WudiLib
         }
 
         /// <summary>
-        /// 获取登录信息
+        /// 获取登录信息。
         /// </summary>
-        /// <returns></returns>
+        /// <returns>登录信息。</returns>
         public async Task<LoginInfo> GetLoginInfoAsync()
         {
             var data = new object();

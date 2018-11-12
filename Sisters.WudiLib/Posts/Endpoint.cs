@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 namespace Sisters.WudiLib.Posts
 {
     /// <summary>
-    /// 表示要将消息发送至的地点的类。
+    /// 表示要将消息发送至的地点的类。可以通过 <see cref="Endpoint"/> 实例唯一确定要将消息发送至哪里。
     /// </summary>
     public abstract class Endpoint : IEquatable<Endpoint>//, IComparable<Endpoint>
     {
@@ -44,25 +44,38 @@ namespace Sisters.WudiLib.Posts
             return null;
         }
 
+        /// 
         public abstract override bool Equals(object obj);
+        /// 
         public bool Equals(Endpoint other) => this.Equals(other as object);
 
+        /// 
         public abstract override int GetHashCode();
 
+        /// 
         public static bool operator ==(Endpoint endpoint1, Endpoint endpoint2) => EqualityComparer<Endpoint>.Default.Equals(endpoint1, endpoint2);
+        /// 
         public static bool operator !=(Endpoint endpoint1, Endpoint endpoint2) => !(endpoint1 == endpoint2);
     }
 
+    /// 
     public sealed class PrivateEndpoint : Endpoint, IEquatable<PrivateEndpoint>
     {
+        /// 
         public PrivateEndpoint(long user) => this.UserId = user;
 
+        /// <summary>
+        /// 用户 QQ 号。
+        /// </summary>
         [JsonProperty("user_id")]
         public long UserId { get; private set; }
 
+        /// 
         public override bool Equals(object obj) => Equals(obj as PrivateEndpoint);
+        /// 
         public bool Equals(PrivateEndpoint other) => other != null && UserId == other.UserId;
 
+        /// 
         public override int GetHashCode()
         {
             var hashCode = 1708038101;
@@ -70,20 +83,30 @@ namespace Sisters.WudiLib.Posts
             return hashCode;
         }
 
+        /// 
         public static bool operator ==(PrivateEndpoint endpoint1, PrivateEndpoint endpoint2) => EqualityComparer<PrivateEndpoint>.Default.Equals(endpoint1, endpoint2);
+        /// 
         public static bool operator !=(PrivateEndpoint endpoint1, PrivateEndpoint endpoint2) => !(endpoint1 == endpoint2);
     }
 
+    /// 
     public sealed class GroupEndpoint : Endpoint, IEquatable<GroupEndpoint>
     {
+        /// 
         public GroupEndpoint(long group) => this.GroupId = group;
 
+        /// <summary>
+        /// 群号。
+        /// </summary>
         [JsonProperty("group_id")]
         public long GroupId { get; private set; }
 
+        /// 
         public override bool Equals(object obj) => Equals(obj as GroupEndpoint);
+        /// 
         public bool Equals(GroupEndpoint other) => other != null && GroupId == other.GroupId;
 
+        /// 
         public override int GetHashCode()
         {
             var hashCode = -1449488233;
@@ -91,20 +114,30 @@ namespace Sisters.WudiLib.Posts
             return hashCode;
         }
 
+        /// 
         public static bool operator ==(GroupEndpoint endpoint1, GroupEndpoint endpoint2) => EqualityComparer<GroupEndpoint>.Default.Equals(endpoint1, endpoint2);
+        /// 
         public static bool operator !=(GroupEndpoint endpoint1, GroupEndpoint endpoint2) => !(endpoint1 == endpoint2);
     }
 
+    /// 
     public sealed class DiscussEndpoint : Endpoint, IEquatable<DiscussEndpoint>
     {
+        /// 
         public DiscussEndpoint(long discuss) => this.DiscussId = discuss;
 
+        /// <summary>
+        /// 讨论组 ID。
+        /// </summary>
         [JsonProperty("discuss_id")]
         public long DiscussId { get; private set; }
 
+        /// 
         public override bool Equals(object obj) => Equals(obj as DiscussEndpoint);
+        /// 
         public bool Equals(DiscussEndpoint other) => other != null && DiscussId == other.DiscussId;
 
+        /// 
         public override int GetHashCode()
         {
             var hashCode = -54904678;
@@ -112,7 +145,9 @@ namespace Sisters.WudiLib.Posts
             return hashCode;
         }
 
+        /// 
         public static bool operator ==(DiscussEndpoint endpoint1, DiscussEndpoint endpoint2) => EqualityComparer<DiscussEndpoint>.Default.Equals(endpoint1, endpoint2);
+        /// 
         public static bool operator !=(DiscussEndpoint endpoint1, DiscussEndpoint endpoint2) => !(endpoint1 == endpoint2);
     }
 }

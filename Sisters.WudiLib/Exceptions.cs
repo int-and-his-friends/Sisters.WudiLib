@@ -9,11 +9,13 @@ namespace Sisters.WudiLib
     /// </summary>
     public class ApiAccessException : Exception
     {
+        /// 
         public ApiAccessException()
         {
 
         }
 
+        /// 
         public ApiAccessException(string message, Exception innerException)
             : base(message, innerException)
         {

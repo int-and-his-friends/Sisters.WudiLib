@@ -14,6 +14,9 @@
         /// </summary>
         internal abstract object Serializing { get; }
 
+        /// <summary>
+        /// 用字符串表示的原始消息。
+        /// </summary>
         public abstract string Raw { get; }
     }
 }

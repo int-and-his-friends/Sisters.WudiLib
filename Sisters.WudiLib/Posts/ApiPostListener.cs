@@ -12,6 +12,9 @@ using Newtonsoft.Json.Linq;
 
 namespace Sisters.WudiLib.Posts
 {
+    /// <summary>
+    /// 上报数据监听器。
+    /// </summary>
     public partial class ApiPostListener
     {
         #region
@@ -62,13 +65,20 @@ namespace Sisters.WudiLib.Posts
         /// </summary>
         public bool IsListening => _listener.IsListening;
 
+        /// 
         public ApiPostListener()
         {
         }
 
+        /// <summary>
+        /// 通过上报地址构造 <see cref="ApiPostListener"/> 实例。
+        /// </summary>
+        /// <param name="address">要监听的上报地址。</param>
         public ApiPostListener(string address) => PostAddress = address;
 
-        /// <exception cref="ArgumentOutOfRangeException"></exception>
+        /// <summary>通过监听端口构造 <see cref="ApiPostListener"/> 实例。所有发往该端口的数据都将被监听。</summary>
+        /// <exception cref="ArgumentOutOfRangeException"><c>port</c> 小于等于 <see
+        /// cref="IPEndPoint.MinPort"/>，或者大于 <see cref="IPEndPoint.MaxPort"/>。</exception>
         public ApiPostListener(int port)
         {
             if (port <= IPEndPoint.MinPort || port > IPEndPoint.MaxPort)
@@ -76,6 +86,9 @@ namespace Sisters.WudiLib.Posts
             PostAddress = $"http://+:{port.ToString(System.Globalization.CultureInfo.InvariantCulture)}/";
         }
 
+        /// <summary>
+        /// 开始监听上报。
+        /// </summary>
         public void StartListen()
         {
             lock (_listenerLock)
@@ -210,7 +223,13 @@ namespace Sisters.WudiLib.Posts
 
         #region Logging
 
+        /// <summary>
+        /// 处理上报中发生了异常。可能是业务逻辑中的异常，也可能是数据传输或解析过程中的异常。
+        /// </summary>
         public event Action<Exception> OnException;
+        /// <summary>
+        /// 处理上报中发生了异常。可能是业务逻辑中的异常，也可能是数据传输或解析过程中的异常。此事件会包含上报的原始数据。
+        /// </summary>
         public event Action<Exception, string> OnExceptionWithRawContent;
 
         private void LogException(Exception e, string content)
@@ -410,18 +429,39 @@ namespace Sisters.WudiLib.Posts
             }
         }
 
+        /// <summary>
+        /// 群文件上传。
+        /// </summary>
         public event Action<HttpApiClient, GroupFileNotice> GroupFileUploadedEvent;
 
+        /// <summary>
+        /// 已设置新的群管理员。
+        /// </summary>
         public event Action<HttpApiClient, GroupAdminNotice> GroupAdminSetEvent;
 
+        /// <summary>
+        /// 已取消群管理员。
+        /// </summary>
         public event Action<HttpApiClient, GroupAdminNotice> GroupAdminUnsetEvent;
 
+        /// <summary>
+        /// 好友添加。
+        /// </summary>
         public event Action<HttpApiClient, FriendAddNotice> FriendAddedEvent;
 
+        /// <summary>
+        /// 群成员减少。
+        /// </summary>
         public event Action<HttpApiClient, GroupMemberDecreaseNotice> GroupMemberDecreasedEvent;
 
+        /// <summary>
+        /// 被踢出群。
+        /// </summary>
         public event Action<HttpApiClient, KickedNotice> KickedEvent;
 
+        /// <summary>
+        /// 群成员增加。
+        /// </summary>
         public event Action<HttpApiClient, GroupMemberIncreaseNotice> GroupMemberIncreasedEvent;
 
         /// <summary>
