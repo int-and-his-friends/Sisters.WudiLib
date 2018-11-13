@@ -22,14 +22,11 @@ namespace Sisters.WudiLib
         /// <summary>
         /// 仅支持大小写字母、数字、短横线（-）、下划线（_）及点号（.）。
         /// </summary>
-        [JsonProperty("type")] private readonly string _type;
+        [JsonProperty("type")]
+        public string Type { get; }
 
         [JsonProperty("data")]
-        private readonly IReadOnlyDictionary<string, string> _data;
-
-        public string Type => _type;
-        [JsonIgnore]
-        public IReadOnlyDictionary<string, string> Data => _data;
+        public IReadOnlyDictionary<string, string> Data { get; }
 
         [Obsolete("请改用 Data 属性", true)]
         public IReadOnlyDictionary<string, string> GetData() => Data;
@@ -74,10 +71,10 @@ namespace Sisters.WudiLib
 
         internal Section(string type, params (string key, string value)[] p)
         {
-            this._type = type;
+            this.Type = type;
             var data = new SortedDictionary<string, string>();
             Array.ForEach(p, pa => data.Add(pa.key, pa.value));
-            this._data = new ReadOnlyDictionary<string, string>(data);
+            this.Data = new ReadOnlyDictionary<string, string>(data);
         }
 
         /// <exception cref="InvalidOperationException"></exception>
@@ -87,8 +84,8 @@ namespace Sisters.WudiLib
             try
             {
                 string type = jObject.Value<string>("type");
-                _type = type;
-                _data = jObject["data"].ToObject<ReadOnlyDictionary<string, string>>();
+                Type = type;
+                Data = jObject["data"].ToObject<ReadOnlyDictionary<string, string>>();
             }
             catch (Exception exception)
             {
@@ -121,7 +118,7 @@ namespace Sisters.WudiLib
         public override int GetHashCode()
         {
             var hashCode = -628614918;
-            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(this._type);
+            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(this.Type);
             foreach (var param in Data)
             {
                 hashCode = hashCode * -1521134295 +

@@ -7,6 +7,7 @@ namespace Sisters.WudiLib.Posts
     /// <summary>
     /// 表示要将消息发送至的地点的类。可以通过 <see cref="Endpoint"/> 实例唯一确定要将消息发送至哪里。
     /// </summary>
+    [JsonObject(MemberSerialization.OptIn)]
     public abstract class Endpoint : IEquatable<Endpoint>//, IComparable<Endpoint>
     {
         internal Endpoint()
@@ -62,13 +63,13 @@ namespace Sisters.WudiLib.Posts
     public sealed class PrivateEndpoint : Endpoint, IEquatable<PrivateEndpoint>
     {
         /// 
-        public PrivateEndpoint(long user) => this.UserId = user;
+        public PrivateEndpoint(long userId) => this.UserId = userId;
 
         /// <summary>
         /// 用户 QQ 号。
         /// </summary>
         [JsonProperty("user_id")]
-        public long UserId { get; private set; }
+        public long UserId { get; }
 
         /// 
         public override bool Equals(object obj) => Equals(obj as PrivateEndpoint);
@@ -93,13 +94,13 @@ namespace Sisters.WudiLib.Posts
     public sealed class GroupEndpoint : Endpoint, IEquatable<GroupEndpoint>
     {
         /// 
-        public GroupEndpoint(long group) => this.GroupId = group;
+        public GroupEndpoint(long groupId) => this.GroupId = groupId;
 
         /// <summary>
         /// 群号。
         /// </summary>
         [JsonProperty("group_id")]
-        public long GroupId { get; private set; }
+        public long GroupId { get; }
 
         /// 
         public override bool Equals(object obj) => Equals(obj as GroupEndpoint);
@@ -124,13 +125,13 @@ namespace Sisters.WudiLib.Posts
     public sealed class DiscussEndpoint : Endpoint, IEquatable<DiscussEndpoint>
     {
         /// 
-        public DiscussEndpoint(long discuss) => this.DiscussId = discuss;
+        public DiscussEndpoint(long discussId) => this.DiscussId = discussId;
 
         /// <summary>
         /// 讨论组 ID。
         /// </summary>
         [JsonProperty("discuss_id")]
-        public long DiscussId { get; private set; }
+        public long DiscussId { get; }
 
         /// 
         public override bool Equals(object obj) => Equals(obj as DiscussEndpoint);
