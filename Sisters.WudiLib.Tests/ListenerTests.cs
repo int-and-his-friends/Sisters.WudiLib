@@ -54,7 +54,7 @@ namespace Sisters.WudiLib.Tests
             listener.FriendRequestEvent += (api, e) =>
             {
                 invo2 = true;
-                return new RequestResponse(false);
+                return new FriendRequestResponse { Approve = false };
             };
             listener.FriendRequestEvent += (api, e) =>
             {

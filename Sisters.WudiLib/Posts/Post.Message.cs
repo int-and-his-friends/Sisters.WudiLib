@@ -6,8 +6,17 @@ namespace Sisters.WudiLib.Posts
     [JsonObject(MemberSerialization.OptIn)]
     public abstract class Message : Post
     {
+        /// <summary>
+        /// 表示此消息为私聊消息。
+        /// </summary>
         public const string PrivateType = "private";
+        /// <summary>
+        /// 表示此消息为群聊消息。
+        /// </summary>
         public const string GroupType = "group";
+        /// <summary>
+        /// 表示此消息为讨论组消息。
+        /// </summary>
         public const string DiscussType = "discuss";
 
         internal new const string TypeField = "message_type";
@@ -15,6 +24,9 @@ namespace Sisters.WudiLib.Posts
         public Message()
             => _messageLazy = new Lazy<ReceivedMessage>(() => new ReceivedMessage(ObjMessage));
 
+        /// <summary>
+        /// 消息类型（群、私聊、讨论组）。不建议使用本属性判断类型，请使用 <c>is</c> 运算符进行判断。
+        /// </summary>
         [JsonProperty(TypeField)]
         public string MessageType { get; private set; }
         [JsonProperty("message_id")]

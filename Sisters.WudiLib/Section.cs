@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
 
@@ -85,7 +86,8 @@ namespace Sisters.WudiLib
             {
                 string type = jObject.Value<string>("type");
                 Type = type;
-                Data = jObject["data"].ToObject<ReadOnlyDictionary<string, string>>();
+                Data = jObject["data"].ToObject<ReadOnlyDictionary<string, string>>()
+                    ?? new ReadOnlyDictionary<string, string>(new Dictionary<string, string>());
             }
             catch (Exception exception)
             {
@@ -93,8 +95,12 @@ namespace Sisters.WudiLib
             }
         }
 
+        /// 
         public override bool Equals(object obj) => this.Equals(obj as Section);
 
+        /// <summary>
+        /// 确定给定消息段是否等于当前消息段。
+        /// </summary>
         public bool Equals(Section other)
         {
             if (other is null)
@@ -103,7 +109,7 @@ namespace Sisters.WudiLib
                 return false;
             if (this.Data.Count != other.Data.Count)
                 return false;
-            foreach (var param in this.Data)
+            foreach (var param in Data.OrderBy(p => p.Key))
             {
                 string key = param.Key;
                 if (other.Data.TryGetValue(key, out string otherValue))
