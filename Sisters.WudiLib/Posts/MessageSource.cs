@@ -23,12 +23,20 @@ namespace Sisters.WudiLib.Posts
             }
         }
 
+        /// <summary>
+        /// 消息发送者是否匿名。
+        /// </summary>
         public bool IsAnonymous { get; }
 
+        /// <summary>匿名用户名称。</summary>
         public string Anonymous { get; }
 
+        /// <summary>匿名用户 flag，在调用禁言 API 时需要传入。</summary>
         public string AnonymousFlag { get; }
 
+        /// <summary>
+        /// 发送者 QQ 号。
+        /// </summary>
         public long UserId { get; }
 
         /// 

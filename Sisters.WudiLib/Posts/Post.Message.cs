@@ -79,7 +79,7 @@ namespace Sisters.WudiLib.Posts
     public class AnonymousMessage : GroupMessage
     {
         [JsonProperty("anonymous")]
-        internal AnonymousInfo Anonymous { get; private set; }
+        public AnonymousInfo Anonymous { get; private set; }
 
         public override MessageSource Source => new MessageSource(UserId, Anonymous.Flag, Anonymous.Name, true);
     }

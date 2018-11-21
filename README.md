@@ -22,6 +22,17 @@ listener.StartListen();
 listener.AnonymousMessageEvent += ApiPostListener.RepeatAsync; // 复读匿名消息。
 ```
 
+### 发送图片、语音等消息
+可以通过 `SendingMessage` 的静态方法构造各种类型的消息，然后通过 `+` 连接。
+```C#
+// 网络图片消息。
+var netImage = SendingMessage.NetImage("https://your.image.url/file.jpg");
+// 文本消息。
+var textMessage = new SendingMessage("这是一条文本消息。");
+// 混合排版消息。
+var mixedMessage = netImage + textMessage;
+```
+
 ### Token 和 Secret
 #### Token
 由于历史原因，Token 使用静态属性设置，不同的客户端实例只能设置相同的 API Token。未来将会修改。
