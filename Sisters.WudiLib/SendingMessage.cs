@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace Sisters.WudiLib
@@ -90,9 +91,35 @@ namespace Sisters.WudiLib
         /// <summary>
         /// 构造包含本地图片的消息。
         /// </summary>
-        /// <param name="file">本地图片的路径。</param>
+        /// <param name="path">本地图片的路径。</param>
         /// <returns>构造的消息。</returns>
-        public static SendingMessage LocalImage(string file) => new SendingMessage(Section.LocalImage(file));
+        public static SendingMessage LocalImage(string path) => new SendingMessage(Section.LocalImage(path));
+
+        /// <summary>
+        /// 构造包含本地图片的消息。可以把文件转换成 base64 形式，以便在其他机器上发送。
+        /// </summary>
+        /// <param name="path">本地图片的路径。</param>
+        /// <param name="convertToBase64">是否要把图片消息转换为 base64 形式。</param>
+        /// <exception cref="Exception">详见 <see cref="File.ReadAllBytes(string)"/> 所引发的异常。</exception>
+        /// <returns>构造的消息。</returns>
+        public static SendingMessage LocalImage(string path, bool convertToBase64 = false)
+            => convertToBase64 ? ByteArrayImage(File.ReadAllBytes(path)) : LocalImage(path);
+
+        /// <summary>
+        /// 从 <see cref="byte"/> 数组构造消息。
+        /// </summary>
+        /// <param name="bytes">图片 <see cref="byte"/> 数组。</param>
+        /// <exception cref="ArgumentNullException"><c>bytes</c> 为 <c>null</c>。</exception>
+        /// <returns>构造的消息。</returns>
+        public static SendingMessage ByteArrayImage(byte[] bytes)
+        {
+            if (bytes is null)
+            {
+                throw new ArgumentNullException(nameof(bytes));
+            }
+
+            return new SendingMessage(Section.ByteArrayImage(bytes));
+        }
 
         /// <summary>
         /// 构造一条消息，包含来自网络的图片。
@@ -110,9 +137,20 @@ namespace Sisters.WudiLib
         public static SendingMessage NetImage(string url, bool noCache) =>
             new SendingMessage(Section.NetImage(url, noCache));
 
+        /// <summary>
+        /// 网络语音。
+        /// </summary>
+        /// <param name="url">网络语音 URL。</param>
+        /// <param name="noCache">是否不使用缓存（默认使用）。</param>
+        /// <returns>网络语音消息。</returns>
         public static SendingMessage NetRecord(string url, bool noCache) =>
             new SendingMessage(Section.NetRecord(url, noCache));
 
+        /// <summary>
+        /// 网络语音。
+        /// </summary>
+        /// <param name="url">网络语音 URL。</param>
+        /// <returns>网络语音消息。</returns>
         public static SendingMessage NetRecord(string url) => new SendingMessage(Section.NetRecord(url));
 
         /// <summary>
@@ -142,6 +180,9 @@ namespace Sisters.WudiLib
         public static SendingMessage MusicCustom(string introductionUrl, string audioUrl, string title)
             => new SendingMessage(Section.MusicCustom(introductionUrl, audioUrl, title, null, null));
 
+        /// <summary>
+        /// 戳一戳。
+        /// </summary>
         public static SendingMessage Shake() => new SendingMessage(Section.Shake());
 
         /// <summary>

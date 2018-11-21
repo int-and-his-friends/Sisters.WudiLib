@@ -168,6 +168,8 @@ namespace Sisters.WudiLib
         /// <returns></returns>
         internal static Section LocalImage(string file) => new Section(ImageType, ("file", "file://" + file));
 
+        internal static Section ByteArrayImage(byte[] bytes) => new Section(ImageType, ("file", $"base64://{Convert.ToBase64String(bytes)}"));
+
         /// <summary>
         /// 构造网络图片消息段。
         /// </summary>

@@ -6,7 +6,7 @@
 
 - 使转发功能支持设置 Secret。
 
-- 发送本地图片时，可以尝试先读取，再以 base64 的方式发送，以便多机使用。
+- 实现 `ReceivedMessage` 的判等。
 
 ## Future
 - 优化基础类，实现不同客户端使用不同 Token。
@@ -20,12 +20,15 @@
 - 优化 `Message` 类的继承结构。
 
     1. 可以实现 `IEnumerable` 等接口，这样应该可以直接序列化。
-	2. 设计 `IMessage` 接口，发消息时传入。暂定有 `Serializing` 一个属性。
-	3. 修改 `Post.Message` 类名，减少同时 `using` 两个命名空间时的麻烦。
+	2. 设计 `IMessage` 接口，发消息时传入。暂定有 `Serializing`、`Raw` 等属性。
+	3. 修改 `Post.Message` 类名，减少同时 `using` 两个命名空间时的麻烦。暂定一律改为 `PostContext`、`MessageContext` 等。
+	4. `Message` 类为构造的消息；`RawMessage` 类不变（但不再继承 `Message`，`ReceivedMessage` 也是）；取消冗余的 `SectionMessage` 和 `SendingMessage`；`ReceivedMessage` 保留 `Raw`、`Sections`（可能改为 `SectionMessage`，毕竟 `Message` 实现了 `IEnumerable`）等属性，可判等；其余的消息是否可判等我还没想好；均实现 `IMessage` 接口。
 
 - 支持异步的事件处理器。
 - 将一些 Type 改为枚举。使用 `EnumMember` 特性标记。
 - 反序列化时传入静态的 setting 或者 serializer，避免潜在的全局 setting 影响。
+
+- 加入运行平台选项，发送本地图片时，如果检测到和酷 Q 运行在不同的机器上，可以尝试先读取，再以 base64 的方式发送，以便多机使用。
 
 ## 已取消
 - 使得 `Post.AnonymousInfo` 可以比较。
