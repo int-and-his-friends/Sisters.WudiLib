@@ -19,50 +19,53 @@ namespace Sisters.WudiLib.Posts
 
         private readonly IReadOnlyList<Section> _sections;
 
-        public IReadOnlyList<Section> Sections
-        {
-            get
-            {
-                if (!_isString)
-                    return _sections;
-                int pos = 0;
-                var regex = CqCodeRegex;
-                var result = new List<Section>();
-                while (pos < _message.Length)
-                {
-                    var match = regex.Match(_message, pos);
-                    if (!match.Success)
-                    {
-                        result.Add(Section.Text(_message.Substring(pos).AfterReceive()));
-                        pos = _message.Length;
-                    }
-                    else
-                    {
-                        if (match.Index > pos)
-                        {
-                            result.Add(Section.Text(_message.Substring(pos, match.Index - pos)));
-                        }
-                        pos = match.Index + match.Length;
+        private readonly Lazy<IReadOnlyList<Section>> _sectionListLazy;
 
-                        string type = match.Groups[1].Value.AfterReceive();
-                        var paras = match.Groups[2].Captures.Cast<Capture>().Zip(
-                            match.Groups[3].Captures.Cast<Capture>(),
-                            (capKey, capVal) => (capKey.Value.AfterReceive(), capVal.Value.AfterReceive())
-                        ).ToArray();
-                        result.Add(new Section(type, paras));
-                    }
+        private IReadOnlyList<Section> SectionListFunction()
+        {
+            if (!_isString)
+                return _sections;
+            int pos = 0;
+            var regex = CqCodeRegex;
+            var result = new List<Section>();
+            while (pos < _message.Length)
+            {
+                var match = regex.Match(_message, pos);
+                if (!match.Success)
+                {
+                    result.Add(Section.Text(_message.Substring(pos).AfterReceive()));
+                    pos = _message.Length;
                 }
-                return result.AsReadOnly();
+                else
+                {
+                    if (match.Index > pos)
+                    {
+                        result.Add(Section.Text(_message.Substring(pos, match.Index - pos)));
+                    }
+                    pos = match.Index + match.Length;
+
+                    string type = match.Groups[1].Value.AfterReceive();
+                    var paras = match.Groups[2].Captures.Cast<Capture>().Zip(
+                        match.Groups[3].Captures.Cast<Capture>(),
+                        (capKey, capVal) => (capKey.Value.AfterReceive(), capVal.Value.AfterReceive())
+                    ).ToArray();
+                    result.Add(new Section(type, paras));
+                }
             }
+            return result.AsReadOnly();
         }
 
         /// <summary>
-        /// 
+        /// 获取 <see cref="Section"/> 列表。
         /// </summary>
+        public IReadOnlyList<Section> Sections => _sectionListLazy.Value;
+
         /// <exception cref="InvalidOperationException">传入参数不符合要求。</exception>
-        /// <param name="o"></param>
+        /// <param name="o">应为 <see cref="string"/> 类型或者 <see cref="JArray"/> 类型。</param>
         internal ReceivedMessage(object o)
         {
+            _sectionListLazy = new Lazy<IReadOnlyList<Section>>(SectionListFunction);
+
             if (o is string s)
             {
                 _isString = true;
@@ -70,10 +73,12 @@ namespace Sisters.WudiLib.Posts
                 return;
             }
 
-            if (!(o is JArray jObjectArray))
-                throw new InvalidOperationException("用于构造消息的对象即不是字符，也不是数组。可能是上报数据有错误。");
-            var sections = jObjectArray.Select(jo => new Section((JObject)jo));
-            _sections = sections.ToList().AsReadOnly();
+            if (o is JArray jObjectArray)
+            {
+                var sections = jObjectArray.Select(jo => new Section((JObject)jo));
+                _sections = sections.ToList().AsReadOnly();
+            }
+            throw new InvalidOperationException("用于构造消息的对象即不是字符，也不是数组。可能是上报数据有错误。");
         }
 
         public bool IsPlaintext
@@ -207,6 +212,7 @@ namespace Sisters.WudiLib.Posts
         /// 获取 <see cref="Section"/> 。
         /// </summary>
         /// <returns><see cref="Section"/> 列表。如果上报格式不是数组，则为 <c>null</c>。</returns>
+        [Obsolete("请使用 Sections 属性。")]
         public IReadOnlyList<Section> GetSections() => _isString ? null : new List<Section>(_sections);
     }
 }
