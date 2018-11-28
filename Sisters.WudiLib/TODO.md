@@ -24,11 +24,40 @@
 	3. 修改 `Post.Message` 类名，减少同时 `using` 两个命名空间时的麻烦。暂定一律改为 `PostContext`、`MessageContext` 等。
 	4. `Message` 类为构造的消息；`RawMessage` 类不变（但不再继承 `Message`，`ReceivedMessage` 也是）；取消冗余的 `SectionMessage` 和 `SendingMessage`；`ReceivedMessage` 保留 `Raw`、`Sections`（可能改为 `SectionMessage`，毕竟 `Message` 实现了 `IEnumerable`）等属性，可判等；其余的消息是否可判等我还没想好；均实现 `IMessage` 接口。
 
+- 优化 `Section` 类的序列化和反序列化过程。
+
+    1. 增加一个用于反序列化的构造方法，并做相应标注。
+	2. 测试构造方法和属性标注了同一字段名的特性时的工作情况。
+	3. 做完这些工作以后，考虑让 `ReceivedMessage` 直接反序列化。
+
 - 支持异步的事件处理器。
 - 将一些 Type 改为枚举。使用 `EnumMember` 特性标记。
 - 反序列化时传入静态的 setting 或者 serializer，避免潜在的全局 setting 影响。
 
 - 加入运行平台选项，发送本地图片时，如果检测到和酷 Q 运行在不同的机器上，可以尝试先读取，再以 base64 的方式发送，以便多机使用。
+
+- 把下面这种消息拼接方式抄过来
+```C#
+// 戳一戳
+_mahuaApi.SendPrivateMessage("472158246")
+    .Shake()
+    .Done();
+
+// 讨论组发送消息
+_mahuaApi.SendDiscussMessage("472158246")
+    .Text("嘤嘤嘤：")
+    .Newline()
+    .Text("文章无聊，不如来局游戏http://www.newbe.pro")
+    .Image(@"D:\logo.png")
+    .Done();
+
+// 群内at发送消息
+_mahuaApi.SendGroupMessage("610394020")
+    .At("472158246")
+    .Text("我想充钱")
+    .Newline()
+    .Done();
+```
 
 ## 已取消
 - 使得 `Post.AnonymousInfo` 可以比较。
