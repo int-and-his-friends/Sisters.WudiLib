@@ -9,12 +9,18 @@ using static Sisters.WudiLib.SectionMessage;
 
 namespace Sisters.WudiLib.Posts
 {
+    /// <summary>
+    /// 从上报中收到的消息。
+    /// </summary>
     public class ReceivedMessage : WudiLib.Message
     {
         private const string CqCodePattern = @"\[CQ:([\w\-\.]+?)(?:,([\w\-\.]+?)=(.+?))*\]";
         private static readonly Regex CqCodeRegex = new Regex(CqCodePattern, RegexOptions.Compiled);
 
         private readonly bool _isString;
+        /// <summary>
+        /// 如果上报格式是 string，则表示原始内容；否则为 <c>null</c>。
+        /// </summary>
         private readonly string _message;
 
         private readonly IReadOnlyList<Section> _sections;
@@ -81,6 +87,9 @@ namespace Sisters.WudiLib.Posts
             throw new InvalidOperationException("用于构造消息的对象即不是字符，也不是数组。可能是上报数据有错误。");
         }
 
+        /// <summary>
+        /// 获取消息是否是纯文本。
+        /// </summary>
         public bool IsPlaintext
         {
             get
@@ -96,6 +105,9 @@ namespace Sisters.WudiLib.Posts
 
         internal override object Serializing => this.Forward().Serializing;
 
+        /// <summary>
+        /// 获取不经处理的原始消息内容。
+        /// </summary>
         public override string Raw => _isString ? _message : GetRaw(_sections);
 
         /// <summary>
@@ -165,6 +177,9 @@ namespace Sisters.WudiLib.Posts
             }
         }
 
+        /// <summary>
+        /// 获取消息的文本部分。
+        /// </summary>
         public string Text
         {
             get
@@ -173,7 +188,29 @@ namespace Sisters.WudiLib.Posts
                     ? CqCodeRegex.Replace(_message, string.Empty).AfterReceive()
                     : string.Concat(_sections.Where(s => s.Type == Section.TextType)
                         .Select(s => s.Data[Section.TextParamName]));
+                // 下面是新方法，可能更快。
+                //string newText = _sections
+                //    .Where(s => s.Type == Section.TextType)
+                //    .Aggregate(
+                //        seed: new StringBuilder(),
+                //        func: (sb, s) => sb.Append(s.Data[Section.TextParamName]),
+                //        resultSelector: sb => sb.ToString());
             }
+        }
+
+        /// <summary>
+        /// 判断消息内容是否是纯文本，如果是纯文本，则获取此文本内容。使用 string
+        /// 上报类型时比查询两次属性快；array 上报类型时与先查询 <see cref="IsPlaintext"
+        /// /> 属性，再查询 <see cref="Text"/> 属性没有区别。
+        /// </summary>
+        /// <param name="text">如果是纯文本，则为文本内容；否则为 <c>null</c>。</param>
+        /// <returns>是否为纯文本。</returns>
+        public bool TryGetPlainText(out string text)
+        {
+            text = IsPlaintext
+                ? (_isString ? Raw.AfterReceive() : Text)
+                : null;
+            return !(text is null);
         }
 
         /// <summary>

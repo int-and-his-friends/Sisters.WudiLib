@@ -24,6 +24,10 @@
 	3. 修改 `Post.Message` 类名，减少同时 `using` 两个命名空间时的麻烦。暂定一律改为 `PostContext`、`MessageContext` 等。
 	4. `Message` 类为构造的消息；`RawMessage` 类不变（但不再继承 `Message`，`ReceivedMessage` 也是）；取消冗余的 `SectionMessage` 和 `SendingMessage`；`ReceivedMessage` 保留 `Raw`、`Sections`（可能改为 `SectionMessage`，毕竟 `Message` 实现了 `IEnumerable`）等属性，可判等；其余的消息是否可判等我还没想好；均实现 `IMessage` 接口。
 
+- `Message` 类的其他修改
+
+    1. 要么把本地图片文件删掉（改用 Byte 数组图片），要么改名，以 `ImageLocal`/`ImageRemote` 区分？
+
 - 优化 `Section` 类的序列化和反序列化过程。
 
     1. 增加一个用于反序列化的构造方法，并做相应标注。
