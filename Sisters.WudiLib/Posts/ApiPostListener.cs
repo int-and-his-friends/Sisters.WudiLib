@@ -126,12 +126,9 @@ namespace Sisters.WudiLib.Posts
 
                         object responseObject;
 
-                        requestContent = GetContent(request);
+                        requestContent = GetContentAndForward(request);
                         if (string.IsNullOrEmpty(requestContent))
                             return;
-
-                        // 转发
-                        ForwardAsync(requestContent);
 
                         // 响应
                         responseObject = ProcessPost(requestContent);
@@ -164,7 +161,7 @@ namespace Sisters.WudiLib.Posts
         /// </summary>
         /// <param name="request">收到的 Http 请求。</param>
         /// <returns>读取到的内容。</returns>
-        private string GetContent(HttpListenerRequest request)
+        private string GetContentAndForward(HttpListenerRequest request)
         {
             var ms = new MemoryStream();
             request.InputStream.CopyTo(ms);
@@ -178,6 +175,10 @@ namespace Sisters.WudiLib.Posts
             {
                 string requestContent;
                 requestContent = request.ContentEncoding.GetString(bytes);
+
+                // 转发
+                ForwardAsync(requestContent, signature);
+
                 return requestContent;
             }
 
@@ -185,10 +186,15 @@ namespace Sisters.WudiLib.Posts
             return null;
         }
 
+        /// <summary>
+        /// Secret 为 <c>null</c> 时直接返回 <c>true</c>。
+        /// </summary>
         private static bool Verify(byte[] secret, string signature, byte[] buffer, int offset, int length)
         {
             if (secret is null)
                 return true;
+            if (signature is null)
+                return false;
             using (var hmac = new HMACSHA1(secret))
             {
                 hmac.Initialize();
@@ -197,7 +203,7 @@ namespace Sisters.WudiLib.Posts
             }
         }
 
-        private async void ForwardAsync(string content)
+        private async void ForwardAsync(string content, string signature)
         {
             string to = ForwardTo;
             if (string.IsNullOrEmpty(to))
@@ -206,6 +212,10 @@ namespace Sisters.WudiLib.Posts
             {
                 using (var client = new HttpClient())
                 {
+                    if (signature != null)
+                    {
+                        client.DefaultRequestHeaders.Add("X-Signature", signature);
+                    }
                     var stringContent = new StringContent(content, Encoding.UTF8, "application/json");
                     using (await client.PostAsync(to, stringContent))
                     {
