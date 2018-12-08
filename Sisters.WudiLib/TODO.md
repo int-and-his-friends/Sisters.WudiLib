@@ -1,6 +1,4 @@
 ﻿## Recent
-- 使转发功能支持设置 Secret。
-
 - 实现 `ReceivedMessage` 的判等。
 
 ## Future
@@ -62,6 +60,8 @@ _mahuaApi.SendGroupMessage("610394020")
     .Newline()
     .Done();
 ```
+
+- 当前转发时会统一转换成 UTF-8 编码。如果上报编码不是 UTF-8 会导致 `byte` 数组发生变化，从而导致 `X-Signature` 头部不正确。如有必要，在未来版本中修复。
 
 ## 已取消
 - 使得 `Post.AnonymousInfo` 可以比较。
