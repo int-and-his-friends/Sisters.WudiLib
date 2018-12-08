@@ -4,13 +4,13 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using Sisters.WudiLib.Responses;
+using Sisters.WudiLib.Api;
 
 namespace Sisters.WudiLib
 {
     internal static class Utilities
     {
-        private static async Task<HttpApiResponse<T>> PostApiAsync<T>(string url, object data)
+        private static async Task<CqHttpApiResponse<T>> PostApiAsync<T>(string url, object data)
         {
             if (data is null)
                 throw new ArgumentNullException(nameof(data), "data不能为null");
@@ -28,7 +28,7 @@ namespace Sisters.WudiLib
                     using (var response = (await http.PostAsync(url, content)).EnsureSuccessStatusCode())
                     {
                         string responseContent = await response.Content.ReadAsStringAsync();
-                        var result = JsonConvert.DeserializeObject<HttpApiResponse<T>>(responseContent);
+                        var result = JsonConvert.DeserializeObject<CqHttpApiResponse<T>>(responseContent);
                         return result;
                     }
                 }
@@ -49,7 +49,7 @@ namespace Sisters.WudiLib
         public static async Task<T> PostAsync<T>(string url, object data)
         {
             var response = await PostApiAsync<T>(url, data);
-            return response.Retcode == HttpApiResponse.RetcodeOK ? response.Data : default(T);
+            return response.Retcode == CqHttpApiResponse.RetcodeOK ? response.Data : default(T);
         }
         
         /// <exception cref="ApiAccessException">网络错误等。</exception>
@@ -58,7 +58,7 @@ namespace Sisters.WudiLib
             try
             {
                 var response = await PostApiAsync<object>(url, data);
-                return response.Retcode == HttpApiResponse.RetcodeOK;
+                return response.Retcode == CqHttpApiResponse.RetcodeOK;
             }
             catch (AggregateException e)
             {
