@@ -22,6 +22,16 @@ namespace Sisters.WudiLib.Api
         /// <exception cref="CqHttpApiException">调用过程出现异常。</exception>
         public static async Task<CqHttpApiResponse<T>> CallAsync<T>(this ICqHttpClient cqHttpClient, string action, object args, bool throwsIfNotSucceed = false)
         {
+            return await cqHttpClient.CallPrivateAsync<CqHttpApiResponse<T>>(action, args, throwsIfNotSucceed);
+        }
+
+        internal static async Task<CqHttpApiResponse> CallNoDataAsync(this ICqHttpClient cqHttpClient, string action, object args, bool throwsIfNotSucceed = false)
+        {
+            return await cqHttpClient.CallPrivateAsync<CqHttpApiResponse>(action, args, throwsIfNotSucceed);
+        }
+
+        private static async Task<T> CallPrivateAsync<T>(this ICqHttpClient cqHttpClient, string action, object args, bool throwsIfNotSucceed) where T : CqHttpApiResponse
+        {
             if (cqHttpClient == null)
             {
                 throw new ArgumentNullException(nameof(cqHttpClient));
@@ -30,7 +40,7 @@ namespace Sisters.WudiLib.Api
             try
             {
                 string response = await cqHttpClient.CallAsync(action ?? string.Empty, args ?? new object());
-                var result = JsonConvert.DeserializeObject<CqHttpApiResponse<T>>(response);
+                var result = JsonConvert.DeserializeObject<T>(response);
                 if (throwsIfNotSucceed && !result.IsAcceptableStatus)
                 {
                     throw new CqHttpApiException(result.Status);
