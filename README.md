@@ -73,3 +73,6 @@ using MessageContext = Sisters.WudiLib.Posts.Message;
 - 优化了多次获取 `ReceivedMessage.Sections` 属性时的性能。
 - 增加 `ReceivedMessage.TryGetPlainText(out string text)` 方法
 - 现在转发时将保持头部中的 `X-Signature` 不变。
+
+## `Sisters.WudiLib.Api`
+`Sisters.WudiLib.Api` 命名空间是新 API，还在开发，请不要使用。
