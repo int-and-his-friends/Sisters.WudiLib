@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Sisters.WudiLib.Api.Responses;
 
 namespace Sisters.WudiLib.Api
 {
@@ -39,13 +40,13 @@ namespace Sisters.WudiLib.Api
 
             try
             {
-                string response = await cqHttpClient.CallAsync(action ?? string.Empty, args ?? new object());
-                var result = JsonConvert.DeserializeObject<T>(response);
-                if (throwsIfNotSucceed && !result.IsAcceptableStatus)
+                string responseJson = await cqHttpClient.CallAsync(action ?? string.Empty, args ?? new object());
+                var response = JsonConvert.DeserializeObject<T>(responseJson);
+                if (throwsIfNotSucceed && !response.IsAcceptableStatus)
                 {
-                    throw new CqHttpApiException(result.Status);
+                    throw new CqHttpApiException(response.Status, response);
                 }
-                return result;
+                return response;
             }
             catch (Exception e) when (!(e is CqHttpApiException))
             {

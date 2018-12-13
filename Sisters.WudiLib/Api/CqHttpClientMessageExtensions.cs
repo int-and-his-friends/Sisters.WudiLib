@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Sisters.WudiLib.Api.Responses;
 
 namespace Sisters.WudiLib.Api
 {
@@ -11,8 +12,8 @@ namespace Sisters.WudiLib.Api
         /// </summary>
         /// <param name="userId">对方 QQ 号。</param>
         /// <param name="message">要发送的内容（文本）。</param>
-        /// <returns>包含消息 ID 的响应数据。</returns>
-        public static async Task SendPrivateMessageAsync(this ICqHttpClient cqHttpClient, long userId, string message)
+        /// <returns>包含消息 ID 的响应数据。如果发送失败，则为 <c>null</c>。</returns>
+        public static async Task<MessageResponseData> SendPrivateMessageAsync(this ICqHttpClient cqHttpClient, long userId, string message, bool throwsIfNotSucceed = false)
         {
             var data = new
             {
@@ -20,8 +21,8 @@ namespace Sisters.WudiLib.Api
                 message,
                 auto_escape = true,
             };
-            var result = await cqHttpClient.CallNoDataAsync(PrivatePath, data);
-            //return result;
+            var result = await cqHttpClient.CallAsync<MessageResponseData>(PrivatePath, data);
+            return result.IsOk ? result.Data : null;
         }
     }
 }

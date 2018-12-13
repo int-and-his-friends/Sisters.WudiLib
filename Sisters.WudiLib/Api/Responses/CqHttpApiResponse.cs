@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Newtonsoft.Json;
 
-namespace Sisters.WudiLib.Api
+namespace Sisters.WudiLib.Api.Responses
 {
     /// <summary>
     /// 包含泛型的响应。

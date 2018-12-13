@@ -4,7 +4,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using Sisters.WudiLib.Api;
+using Sisters.WudiLib.Api.Responses;
 
 namespace Sisters.WudiLib
 {
