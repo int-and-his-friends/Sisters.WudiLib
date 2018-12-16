@@ -1,7 +1,12 @@
 ﻿using System;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Sisters.WudiLib.Api.Responses;
 using Sisters.WudiLib.Responses;
 
 namespace Sisters.WudiLib
@@ -119,7 +124,7 @@ namespace Sisters.WudiLib
                 message,
                 auto_escape = true,
             };
-            var result = await Utilities.PostAsync<SendPrivateMessageResponseData>(PrivateUrl, data);
+            var result = await PostAsync<SendPrivateMessageResponseData>(PrivateUrl, data);
             return result;
         }
 
@@ -136,7 +141,7 @@ namespace Sisters.WudiLib
                 user_id = qq,
                 message = message.Serializing,
             };
-            var result = await Utilities.PostAsync<SendPrivateMessageResponseData>(PrivateUrl, data);
+            var result = await PostAsync<SendPrivateMessageResponseData>(PrivateUrl, data);
             return result;
         }
 
@@ -154,7 +159,7 @@ namespace Sisters.WudiLib
                 message,
                 auto_escape = true,
             };
-            var result = await Utilities.PostAsync<SendGroupMessageResponseData>(GroupUrl, data);
+            var result = await PostAsync<SendGroupMessageResponseData>(GroupUrl, data);
             return result;
         }
 
@@ -171,7 +176,7 @@ namespace Sisters.WudiLib
                 group_id = groupId,
                 message = message.Serializing,
             };
-            var result = await Utilities.PostAsync<SendGroupMessageResponseData>(GroupUrl, data);
+            var result = await PostAsync<SendGroupMessageResponseData>(GroupUrl, data);
             return result;
         }
 
@@ -189,7 +194,7 @@ namespace Sisters.WudiLib
                 message,
                 auto_escape = true,
             };
-            var result = await Utilities.PostAsync<SendDiscussMessageResponseData>(DiscussUrl, data);
+            var result = await PostAsync<SendDiscussMessageResponseData>(DiscussUrl, data);
             return result;
         }
 
@@ -206,7 +211,7 @@ namespace Sisters.WudiLib
                 discuss_id = discussId,
                 message = message.Serializing,
             };
-            var result = await Utilities.PostAsync<SendDiscussMessageResponseData>(DiscussUrl, data);
+            var result = await PostAsync<SendDiscussMessageResponseData>(DiscussUrl, data);
             return result;
         }
 
@@ -220,7 +225,7 @@ namespace Sisters.WudiLib
         {
             var data = JObject.FromObject(endpoint);
             data["message"] = JToken.FromObject(message.Serializing);
-            var result = await Utilities.PostAsync<SendMessageResponseData>(MessageUrl, data);
+            var result = await PostAsync<SendMessageResponseData>(MessageUrl, data);
             return result;
         }
 
@@ -235,7 +240,7 @@ namespace Sisters.WudiLib
             var data = JObject.FromObject(endpoint);
             data["message"] = JToken.FromObject(message);
             data["auto_escape"] = true;
-            var result = await Utilities.PostAsync<SendMessageResponseData>(MessageUrl, data);
+            var result = await PostAsync<SendMessageResponseData>(MessageUrl, data);
             return result;
         }
 
@@ -252,7 +257,7 @@ namespace Sisters.WudiLib
                 group_id = groupId,
                 user_id = userId,
             };
-            var success = await Utilities.PostAsync(KickGroupMemberUrl, data);
+            var success = await PostAsync(KickGroupMemberUrl, data);
             return success;
         }
 
@@ -274,7 +279,7 @@ namespace Sisters.WudiLib
         public async Task<bool> RecallMessageAsync(int messageId)
         {
             var data = new { message_id = messageId };
-            var success = await Utilities.PostAsync(RecallUrl, data);
+            var success = await PostAsync(RecallUrl, data);
             return success;
         }
 
@@ -294,7 +299,7 @@ namespace Sisters.WudiLib
                 user_id = userId,
                 duration,
             };
-            return await Utilities.PostAsync(BanGroupMemberUrl, data);
+            return await PostAsync(BanGroupMemberUrl, data);
         }
 
         /// <summary>
@@ -312,7 +317,7 @@ namespace Sisters.WudiLib
                 user_id = userId,
                 card,
             };
-            return await Utilities.PostAsync(SetGroupCardUrl, data);
+            return await PostAsync(SetGroupCardUrl, data);
         }
 
         /// <summary>
@@ -322,7 +327,7 @@ namespace Sisters.WudiLib
         public async Task<LoginInfo> GetLoginInfoAsync()
         {
             var data = new object();
-            var result = await Utilities.PostAsync<LoginInfo>(LoginInfoUrl, data);
+            var result = await PostAsync<LoginInfo>(LoginInfoUrl, data);
             return result;
         }
 
@@ -340,7 +345,7 @@ namespace Sisters.WudiLib
                 user_id = qq,
                 no_cache = true,
             };
-            var result = await Utilities.PostAsync<GroupMemberInfo>(GroupMemberInfoUrl, data);
+            var result = await PostAsync<GroupMemberInfo>(GroupMemberInfoUrl, data);
             return result;
         }
 
@@ -355,7 +360,7 @@ namespace Sisters.WudiLib
             {
                 group_id = group,
             };
-            var result = await Utilities.PostAsync<GroupMemberInfo[]>(GroupMemberListUrl, data);
+            var result = await PostAsync<GroupMemberInfo[]>(GroupMemberListUrl, data);
             return result;
         }
 
@@ -364,6 +369,65 @@ namespace Sisters.WudiLib
         /// </summary>
         /// <returns></returns>
         public async Task CleanImageData()
-            => await Utilities.PostAsync(CleanUrl, new { data_dir = "image" });
+            => await PostAsync(CleanUrl, new { data_dir = "image" });
+        #region Utilities
+
+        private static async Task<CqHttpApiResponse<T>> PostApiAsync<T>(string url, object data)
+        {
+            if (data is null)
+                throw new ArgumentNullException(nameof(data), "data不能为null");
+            try
+            {
+                string json = JsonConvert.SerializeObject(data);
+                using (HttpContent content = new StringContent(json, Encoding.UTF8, "application/json"))
+                using (var http = new HttpClient())
+                {
+                    if (!string.IsNullOrEmpty(HttpApiClient.AccessToken))
+                    {
+                        //content.Headers.Add("Authorization", "Token " + HttpApiClient.AccessToken);
+                        http.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse("Token " + HttpApiClient.AccessToken);
+                    }
+                    using (var response = (await http.PostAsync(url, content)).EnsureSuccessStatusCode())
+                    {
+                        string responseContent = await response.Content.ReadAsStringAsync();
+                        var result = JsonConvert.DeserializeObject<CqHttpApiResponse<T>>(responseContent);
+                        return result;
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                throw new ApiAccessException("访问 API 时出现错误。", e);
+            }
+        }
+
+        /// <summary>
+        /// 通过 POST 请求访问API，返回数据
+        /// </summary>
+        /// <typeparam name="T">返回的数据类型</typeparam>
+        /// <param name="url">API请求地址</param>
+        /// <param name="data">请求参数</param>
+        /// <returns>从 HTTP API 返回的数据</returns>
+        private static async Task<T> PostAsync<T>(string url, object data)
+        {
+            var response = await PostApiAsync<T>(url, data);
+            return response.Retcode == CqHttpApiResponse.RetcodeOK ? response.Data : default(T);
+        }
+
+        /// <exception cref="ApiAccessException">网络错误等。</exception>
+        private static async Task<bool> PostAsync(string url, object data)
+        {
+            try
+            {
+                var response = await PostApiAsync<object>(url, data);
+                return response.Retcode == CqHttpApiResponse.RetcodeOK;
+            }
+            catch (AggregateException e)
+            {
+                throw e.InnerException;
+            }
+        }
+
+        #endregion
     }
 }
