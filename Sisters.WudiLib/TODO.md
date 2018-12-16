@@ -2,10 +2,8 @@
 - 实现 `ReceivedMessage` 的判等。
 
 ## Future
-- 优化基础类，实现不同客户端使用不同 Token。
+- 优化基础类
 
-    1. 将 `Utilities` 类的大部分代码移到 Client 类中。改为实例方法，这样就可以读取 Token 了。
-	2. 给 API 设计一个基类，大部分 API 调用放在基类，具体再传给一个虚方法。这个虚方法将在子类里重写，这样可以实现 WebSocket 调用 API。
 	3. 将转义移到别的合适的类。
 	4. 不再使用 `Utilities` 类。
 

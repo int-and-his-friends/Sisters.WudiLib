@@ -35,9 +35,9 @@ var mixedMessage = netImage + textMessage;
 
 ### Token 和 Secret
 #### Token
-由于历史原因，Token 使用静态属性设置，不同的客户端实例只能设置相同的 API Token。未来将会修改。
+可以为每个客户端设置不同的 AccessToken。
 ```C#
-HttpApiClient.AccessToken = "this-is-your-token";
+httpApi.AccessToken = "this-is-your-token";
 ```
 #### Secret
 可以为每个监听实例设置不同的 Secret。
@@ -58,7 +58,7 @@ listener.ForwardTo = "http://[::1]:10202"; // 转发路径，监听到的事件�
 ## Nuget 包
 Nuget 包[在此](https://www.nuget.org/packages/Sisters.WudiLib/)。
 
-注意：虽然本项目已经几近完成，但依然有少量细节需要完善。目前建议您直接添加项目引用，这样您就可以按自己的需要修改代码。此外，等到本项目功能添加得差不多的时候，可能将迎来一个不兼容的新版本，以提高使用体验，暂定版本号为 0.1.x（目前是 0.0.x）。0.0.x 在此之后应该会继续维护一段时间。
+注意：虽然本项目已经几近完成，但依然有少量细节需要完善。目前建议您直接添加项目引用，这样您就可以按自己的需要修改代码。此外，等到本项目功能添加得差不多的时候，可能将迎来一个不兼容的新版本，以提高使用体验，暂定版本号为 0.1.x（目前是 0.0.x）。0.0.x 在此之后应该会继续维护一段时间。*新版本计划咕咕了，请继续使用此版本。*
 
 ## 小建议
 由于 `Sisters.WudiLib.Message` 和 `Sisters.WudiLib.Posts.Message` 类的类名相同（设计问题，以后会改），使用起来有诸多不便，建议您在每个**新**代码文件开头添加下列 `using`：
@@ -75,4 +75,4 @@ using MessageContext = Sisters.WudiLib.Posts.Message;
 - 现在转发时将保持头部中的 `X-Signature` 不变。
 
 ## `Sisters.WudiLib.Api`
-`Sisters.WudiLib.Api` 命名空间是新 API，还在开发，请不要使用。
+`Sisters.WudiLib.Api` 命名空间是新 API，还在开发，请不要使用。*咕咕了。*

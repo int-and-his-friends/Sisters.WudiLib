@@ -42,7 +42,7 @@ namespace Sisters.WudiLib
         /// <summary>
         /// API 访问 token。请详见插件文档。
         /// </summary>
-        public static string AccessToken { get; set; }
+        public string AccessToken { get; set; }
     }
 
     /// <summary>
@@ -372,32 +372,39 @@ namespace Sisters.WudiLib
             => await PostAsync(CleanUrl, new { data_dir = "image" });
         #region Utilities
 
-        private static async Task<CqHttpApiResponse<T>> PostApiAsync<T>(string url, object data)
+        private async Task<CqHttpApiResponse<T>> PostApiAsync<T>(string url, object data)
         {
             if (data is null)
                 throw new ArgumentNullException(nameof(data), "data不能为null");
             try
             {
                 string json = JsonConvert.SerializeObject(data);
-                using (HttpContent content = new StringContent(json, Encoding.UTF8, "application/json"))
-                using (var http = new HttpClient())
-                {
-                    if (!string.IsNullOrEmpty(HttpApiClient.AccessToken))
-                    {
-                        //content.Headers.Add("Authorization", "Token " + HttpApiClient.AccessToken);
-                        http.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse("Token " + HttpApiClient.AccessToken);
-                    }
-                    using (var response = (await http.PostAsync(url, content)).EnsureSuccessStatusCode())
-                    {
-                        string responseContent = await response.Content.ReadAsStringAsync();
-                        var result = JsonConvert.DeserializeObject<CqHttpApiResponse<T>>(responseContent);
-                        return result;
-                    }
-                }
+                string responseContent;
+                responseContent = await CallRawAsync(url, json);
+                var result = JsonConvert.DeserializeObject<CqHttpApiResponse<T>>(responseContent);
+                return result;
             }
             catch (Exception e)
             {
                 throw new ApiAccessException("访问 API 时出现错误。", e);
+            }
+        }
+
+        protected virtual async Task<string> CallRawAsync(string url, string json)
+        {
+            using (HttpContent content = new StringContent(json, Encoding.UTF8, "application/json"))
+            using (var http = new HttpClient())
+            {
+                var accessToken = AccessToken;
+                if (!string.IsNullOrEmpty(accessToken))
+                {
+                    //content.Headers.Add("Authorization", "Token " + HttpApiClient.AccessToken);
+                    http.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse("Token " + accessToken);
+                }
+                using (var response = (await http.PostAsync(url, content)).EnsureSuccessStatusCode())
+                {
+                    return await response.Content.ReadAsStringAsync();
+                }
             }
         }
 
@@ -408,14 +415,14 @@ namespace Sisters.WudiLib
         /// <param name="url">API请求地址</param>
         /// <param name="data">请求参数</param>
         /// <returns>从 HTTP API 返回的数据</returns>
-        private static async Task<T> PostAsync<T>(string url, object data)
+        private async Task<T> PostAsync<T>(string url, object data)
         {
             var response = await PostApiAsync<T>(url, data);
             return response.Retcode == CqHttpApiResponse.RetcodeOK ? response.Data : default(T);
         }
 
         /// <exception cref="ApiAccessException">网络错误等。</exception>
-        private static async Task<bool> PostAsync(string url, object data)
+        private async Task<bool> PostAsync(string url, object data)
         {
             try
             {
