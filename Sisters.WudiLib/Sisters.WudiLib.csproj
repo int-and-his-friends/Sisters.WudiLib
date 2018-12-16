@@ -7,11 +7,11 @@
     <Authors>bleatingsheep</Authors>
     <Copyright>bleatingsheep</Copyright>
     <Company>bleatingsheep</Company>
-    <PackageTags>cqhttp coolq-http-api coolq qq qqbot qqrobot</PackageTags>
+    <PackageTags>cqhttp coolq-http-api coolq qq qqbot qqrobot 酷Q</PackageTags>
     <PackageProjectUrl>https://github.com/int-and-his-friends/Sisters.WudiLib</PackageProjectUrl>
-    <PackageIconUrl>https://github.com/int-and-his-friends/Sisters.WudiLib/blob/master/LICENSE</PackageIconUrl>
+    <PackageIconUrl></PackageIconUrl>
     <Description>酷Q HTTP API .NET</Description>
-    <PackageLicenseUrl>https://github.com/int-and-his-friends/Sisters.WudiLib/blob/master/README.md</PackageLicenseUrl>
+    <PackageLicenseUrl>https://github.com/int-and-his-friends/Sisters.WudiLib/blob/master/LICENSE</PackageLicenseUrl>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
