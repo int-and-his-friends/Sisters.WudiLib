@@ -3,7 +3,7 @@ using Sisters.WudiLib.Api.Responses;
 
 namespace Sisters.WudiLib.Api
 {
-    public static class CqHttpClientMessageExtensions
+    public partial class CqHttpClientExtensions
     {
         private const string PrivatePath = "send_private_msg";
 
@@ -21,7 +21,7 @@ namespace Sisters.WudiLib.Api
                 message,
                 auto_escape = true,
             };
-            var result = await cqHttpClient.CallAsync<MessageResponseData>(PrivatePath, data);
+            var result = await cqHttpClient.CallAsync<MessageResponseData>(PrivatePath, data, throwsIfNotSucceed);
             return result.IsOk ? result.Data : null;
         }
     }

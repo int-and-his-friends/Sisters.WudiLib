@@ -8,7 +8,7 @@ namespace Sisters.WudiLib.Api
     /// <summary>
     /// <see cref="ICqHttpClient"/> 的扩展方法。
     /// </summary>
-    public static class CqHttpClientExtensions
+    public static partial class CqHttpClientExtensions
     {
         /// <summary>
         /// 调用指定 API，并指定返回数据。可以在调用失败时引发异常。

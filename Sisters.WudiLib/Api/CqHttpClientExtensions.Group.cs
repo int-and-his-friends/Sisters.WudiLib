@@ -2,7 +2,7 @@
 
 namespace Sisters.WudiLib.Api
 {
-    public static class CqHttpClientGroupExtensions
+    public partial class CqHttpClientExtensions
     {
         private const string KickGroupMemberAction = "set_group_kick";
 
