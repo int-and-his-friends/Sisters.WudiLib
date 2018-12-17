@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Sisters.WudiLib
@@ -7,10 +8,15 @@ namespace Sisters.WudiLib
     {
         protected SectionMessage() => SectionsBase = new List<Section>();
 
+        /// <exception cref="ArgumentNullException"></exception>
         protected SectionMessage(IEnumerable<Section> sections)
             => this.SectionsBase = new List<Section>(sections);
 
-        protected readonly IList<Section> SectionsBase;
+        /// <exception cref="ArgumentNullException"></exception>
+        protected SectionMessage(params Section[] sections) : this(sections as IEnumerable<Section>)
+        { }
+
+        protected virtual IReadOnlyList<Section> SectionsBase { get; }
 
         public override string Raw => GetRaw(SectionsBase);
 

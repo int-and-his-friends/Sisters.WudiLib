@@ -19,7 +19,7 @@ namespace Sisters.WudiLib
             "share",
         };
 
-        internal IList<Section> Sections => SectionsBase;
+        internal IReadOnlyList<Section> Sections => SectionsBase;
 
         internal override object Serializing => SectionsBase;
 
@@ -49,7 +49,8 @@ namespace Sisters.WudiLib
         /// 从文本构造新的消息实例。
         /// </summary>
         /// <param name="text">消息内容文本。</param>
-        public SendingMessage(string text) : this() => SectionsBase.Add(Section.Text(text));
+        public SendingMessage(string text) : base(Section.Text(text))
+        { }
 
         /// <summary>
         /// 从两个 <see cref="SendingMessage"/> 实例创建消息。
@@ -70,10 +71,8 @@ namespace Sisters.WudiLib
         /// 从 <see cref="Section"/> 实例创建消息。
         /// </summary>
         /// <param name="section">包含的消息段。</param>
-        private SendingMessage(Section section) : this()
-        {
-            SectionsBase.Add(section);
-        }
+        public SendingMessage(Section section) : base(section)
+        { }
 
         /// <summary>
         /// 构造 At 群、讨论组成员消息。

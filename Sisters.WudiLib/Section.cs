@@ -70,6 +70,31 @@ namespace Sisters.WudiLib
             return atMember;
         }
 
+        [JsonConstructor]
+        public Section(string type, IReadOnlyDictionary<string, string> data)
+        {
+            Type = type;
+            Data = ConvertToReadOnly(data);
+        }
+
+        private static IReadOnlyDictionary<TKey, TValue> ConvertToReadOnly<TKey, TValue>(IReadOnlyDictionary<TKey, TValue> dictionary)
+        {
+            IReadOnlyDictionary<TKey, TValue> result;
+            switch (dictionary)
+            {
+                case ReadOnlyDictionary<TKey, TValue> dic:
+                    result = dic;
+                    break;
+                case IDictionary<TKey, TValue> dic:
+                    result = new ReadOnlyDictionary<TKey, TValue>(dic);
+                    break;
+                default:
+                    result = new ReadOnlyDictionary<TKey, TValue>(dictionary.ToDictionary(p => p.Key, p => p.Value));
+                    break;
+            }
+            return result;
+        }
+
         internal Section(string type, params (string key, string value)[] p)
         {
             this.Type = type;
