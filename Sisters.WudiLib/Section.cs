@@ -69,44 +69,32 @@ namespace Sisters.WudiLib
             );
             return atMember;
         }
-
+        
+        /// <exception cref="ArgumentNullException"><c>data</c> or <c>type</c> was null.</exception>
         [JsonConstructor]
         public Section(string type, IReadOnlyDictionary<string, string> data)
         {
-            Type = type;
-            Data = ConvertToReadOnly(data);
-        }
-
-        private static IReadOnlyDictionary<TKey, TValue> ConvertToReadOnly<TKey, TValue>(IReadOnlyDictionary<TKey, TValue> dictionary)
-        {
-            IReadOnlyDictionary<TKey, TValue> result;
-            switch (dictionary)
+            if (data == null)
             {
-                case ReadOnlyDictionary<TKey, TValue> dic:
-                    result = dic;
-                    break;
-                case IDictionary<TKey, TValue> dic:
-                    result = new ReadOnlyDictionary<TKey, TValue>(dic);
-                    break;
-                default:
-                    result = new ReadOnlyDictionary<TKey, TValue>(dictionary.ToDictionary(p => p.Key, p => p.Value));
-                    break;
+                throw new ArgumentNullException(nameof(data));
             }
-            return result;
-        }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="type"></param>
-        /// <param name="p"></param>
-        /// <exception cref="ArgumentNullException"><c>p</c> was null.</exception>
-        public Section(string type, params (string key, string value)[] p)
+            Type = type ?? throw new ArgumentNullException(nameof(type));
+            Data = data.ToDictionary(p => p.Key, p => p.Value);
+        }
+        
+        /// <exception cref="ArgumentNullException"><c>data</c> or <c>type</c> was null.</exception>
+        public Section(string type, params (string key, string value)[] data)
         {
-            this.Type = type;
-            var data = new SortedDictionary<string, string>();
-            Array.ForEach(p, pa => data.Add(pa.key, pa.value));
-            this.Data = new ReadOnlyDictionary<string, string>(data);
+            if (data == null)
+            {
+                throw new ArgumentNullException(nameof(data));
+            }
+
+            this.Type = type ?? throw new ArgumentNullException(nameof(type));
+            var dataDictionary = new SortedDictionary<string, string>();
+            Array.ForEach(data, pa => dataDictionary.Add(pa.key, pa.value));
+            this.Data = new ReadOnlyDictionary<string, string>(dataDictionary);
         }
 
         /// <exception cref="InvalidOperationException"></exception>
