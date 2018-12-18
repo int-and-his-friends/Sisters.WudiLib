@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Xunit;
 
@@ -15,6 +16,11 @@ namespace Sisters.WudiLib.Tests
             var msg1 = new SendingMessage(message);
             Assert.Equal(raw, msg1.Raw);
             //Assert.Equal(message, msg1.ToString());
+
+            var atSection = new Section("at", ("qq", "all"));
+            var atMsg = SendingMessage.AtAll();
+            Section atMsgSingleSection = atMsg.Sections.Single();
+            Assert.Equal(atSection, atMsgSingleSection);
         }
     }
 }

@@ -6,11 +6,11 @@ namespace Sisters.WudiLib
 {
     public abstract class SectionMessage : Message
     {
-        protected SectionMessage() => SectionsBase = new List<Section>();
+        protected SectionMessage() => SectionsBase = new List<Section>().AsReadOnly();
 
         /// <exception cref="ArgumentNullException"></exception>
         protected SectionMessage(IEnumerable<Section> sections)
-            => this.SectionsBase = new List<Section>(sections);
+            => this.SectionsBase = new List<Section>(sections).AsReadOnly();
 
         /// <exception cref="ArgumentNullException"></exception>
         protected SectionMessage(params Section[] sections) : this(sections as IEnumerable<Section>)

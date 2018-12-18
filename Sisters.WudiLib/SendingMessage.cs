@@ -19,7 +19,7 @@ namespace Sisters.WudiLib
             "share",
         };
 
-        internal IReadOnlyList<Section> Sections => SectionsBase;
+        public IReadOnlyList<Section> Sections => SectionsBase;
 
         internal override object Serializing => SectionsBase;
 
