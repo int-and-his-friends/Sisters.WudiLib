@@ -95,7 +95,13 @@ namespace Sisters.WudiLib
             return result;
         }
 
-        internal Section(string type, params (string key, string value)[] p)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="p"></param>
+        /// <exception cref="ArgumentNullException"><c>p</c> was null.</exception>
+        public Section(string type, params (string key, string value)[] p)
         {
             this.Type = type;
             var data = new SortedDictionary<string, string>();
