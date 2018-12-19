@@ -6,7 +6,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Sisters.WudiLib.Api.Responses;
 using Sisters.WudiLib.Responses;
 
 namespace Sisters.WudiLib
