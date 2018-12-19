@@ -58,6 +58,18 @@ namespace Sisters.WudiLib.Tests
         }
 
         [Fact]
+        public void Constructor_ArgIllegal()
+        {
+            new Section("m.0_-", ("key", "value"));
+            Assert.Throws<ArgumentException>("type", () => new Section("m.0_- "));
+            Assert.Throws<ArgumentException>("type", () => new Section(""));
+            Assert.Throws<ArgumentException>("type", () => new Section(" "));
+            Assert.Throws<ArgumentException>("data", () => new Section("sss", ("!", "123")));
+            Assert.Throws<ArgumentException>("data", () => new Section("sss", ("", "233")));
+            Assert.Throws<ArgumentException>("data", () => new Section("sss", (" ", "233")));
+        }
+
+        [Fact]
         public void Data_CheckReadOnly()
         {
             var data = new NotReadOnlyDictionary<string, string>(new Dictionary<string, string>

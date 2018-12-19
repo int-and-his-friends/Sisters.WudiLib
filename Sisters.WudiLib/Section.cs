@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 
 namespace Sisters.WudiLib
@@ -69,8 +70,31 @@ namespace Sisters.WudiLib
             );
             return atMember;
         }
-        
+
+        /// <summary>
+        /// 被 <see cref="Posts.ReceivedMessage.CqCodePattern"/> 包含。
+        /// </summary>
+        private const string CqCodeTypePattern = @"[\w\-\.]+";
+        private const string CqCodeTypeStrictPattern = "^" + CqCodeTypePattern + "$";
+        private static readonly Regex CqCodeTypeCheckRegex = new Regex(CqCodeTypeStrictPattern, RegexOptions.Compiled);
+
+        /// <exception cref="ArgumentException">类型或key不符合CQ码规范。</exception>
+        private void CheckArguments(string typeParamName, string dataParamName)
+        {
+            const string Message = @"CQ码中的function（功能名）与key（参数名），仅支持大小写字母、数字、短横线（-）、下划线（_）及点号（.）。
+详见：https://d.cqp.me/Pro/CQ码";
+            if (!CqCodeTypeCheckRegex.IsMatch(Type))
+            {
+                throw new ArgumentException(Message, typeParamName);
+            }
+            if (!Data.Keys.All(k => CqCodeTypeCheckRegex.IsMatch(k)))
+            {
+                throw new ArgumentException(Message, dataParamName);
+            }
+        }
+
         /// <exception cref="ArgumentNullException"><c>data</c> or <c>type</c> was null.</exception>
+        /// <exception cref="ArgumentException">类型或key不符合CQ码规范。</exception>
         [JsonConstructor]
         public Section(string type, IReadOnlyDictionary<string, string> data)
         {
@@ -81,9 +105,11 @@ namespace Sisters.WudiLib
 
             Type = type ?? throw new ArgumentNullException(nameof(type));
             Data = data.ToDictionary(p => p.Key, p => p.Value);
+            CheckArguments(nameof(type), nameof(data));
         }
-        
+
         /// <exception cref="ArgumentNullException"><c>data</c> or <c>type</c> was null.</exception>
+        /// <exception cref="ArgumentException">类型或key不符合CQ码规范。</exception>
         public Section(string type, params (string key, string value)[] data)
         {
             if (data == null)
@@ -95,6 +121,8 @@ namespace Sisters.WudiLib
             var dataDictionary = new SortedDictionary<string, string>();
             Array.ForEach(data, pa => dataDictionary.Add(pa.key, pa.value));
             this.Data = new ReadOnlyDictionary<string, string>(dataDictionary);
+
+            CheckArguments(nameof(type), nameof(data));
         }
 
         /// <exception cref="InvalidOperationException"></exception>

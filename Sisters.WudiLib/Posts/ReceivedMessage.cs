@@ -14,6 +14,9 @@ namespace Sisters.WudiLib.Posts
     /// </summary>
     public class ReceivedMessage : WudiLib.Message
     {
+        /// <summary>
+        /// 也在 <see cref="Section.CqCodeTypePattern"/> 中提到。
+        /// </summary>
         private const string CqCodePattern = @"\[CQ:([\w\-\.]+?)(?:,([\w\-\.]+?)=(.+?))*\]";
         private static readonly Regex CqCodeRegex = new Regex(CqCodePattern, RegexOptions.Compiled);
 
