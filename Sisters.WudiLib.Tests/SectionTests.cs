@@ -15,7 +15,12 @@ namespace Sisters.WudiLib.Tests
             var atAll = SendingMessage.AtAll();
             Assert.Equal("[CQ:at,qq=all]", atAll.Raw);
 
-            var section = new Section(Section.MusicType, ("type", "cus"), ("source", "test"));
+            //var section = new Section(Section.MusicType, ("type", "cus"), ("source", "test"));
+            var section = new Section(Section.MusicType, new Dictionary<string, string>
+            {
+                { "type", "cus" },
+                { "source", "test" },
+            });
             var section2 = new Section(Section.MusicType, ("source", "test"), ("type", "cus"));
             var json = JsonConvert.SerializeObject(section);
             var jObj = JsonConvert.DeserializeObject<JObject>(json);

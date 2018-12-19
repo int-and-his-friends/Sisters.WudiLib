@@ -172,7 +172,7 @@ namespace Sisters.WudiLib
         {
             var hashCode = -628614918;
             hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(this.Type);
-            foreach (var param in Data)
+            foreach (var param in Data.OrderBy(p => p.Key))
             {
                 hashCode = hashCode * -1521134295 +
                            EqualityComparer<KeyValuePair<string, string>>.Default.GetHashCode(param);
