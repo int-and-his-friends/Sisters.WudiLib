@@ -106,7 +106,7 @@ namespace Sisters.WudiLib.Posts
             }
         }
 
-        internal override object Serializing => this.Forward().Serializing;
+        protected internal override object Serializing => this.Forward().Serializing;
 
         /// <summary>
         /// 获取不经处理的原始消息内容。

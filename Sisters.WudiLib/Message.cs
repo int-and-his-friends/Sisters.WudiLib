@@ -5,14 +5,17 @@
     /// </summary>
     public abstract class Message
     {
-        private protected Message()
+        /// <summary>
+        /// 构造 <see cref="Message"/> 实例必须运行的方法。
+        /// </summary>
+        protected Message()
         {
         }
 
         /// <summary>
         /// 返回发送时要序列化的对象。
         /// </summary>
-        internal abstract object Serializing { get; }
+        protected internal abstract object Serializing { get; }
 
         /// <summary>
         /// 用字符串表示的原始消息。

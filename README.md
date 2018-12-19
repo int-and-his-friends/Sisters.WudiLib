@@ -74,5 +74,16 @@ using MessageContext = Sisters.WudiLib.Posts.Message;
 - 增加 `ReceivedMessage.TryGetPlainText(out string text)` 方法
 - 现在转发时将保持头部中的 `X-Signature` 不变。
 
-## `Sisters.WudiLib.Api`
-`Sisters.WudiLib.Api` 命名空间是新 API，还在开发，请不要使用。*咕咕了。*
+### 0.0.3（尚未发布）
+#### API
+- 将 API 访问网络的方法移到 `HttpApiClient` 类，并提取 `CallRawAsync()` 方法，方便重载。
+#### `Section`
+- 为 `Section` 增加 `Raw` 属性，方便查看其字符串形式。
+- 为 `Section` 增加几个构造方法，方便构造自己的消息段。
+- 修复 `Section` 在参数顺序不同时 `GetHashCode()` 返回不同结果的 bug。现在参数顺序不分先后。*潜在可能影响现有代码行为，但目前未找到真正有影响的情况。*
+#### `Message` 及其子类
+- `Message` 类的构造方法改为 `protected`，`Serializing` 属性改为 `protected internal abstract`（原来是 `internal abstract`）。所以你可以继承并实现自己的 Message。
+- 修改了现有的 `Message` 子类 `Serializing` 属性的修饰符，以配合上一项。
+- 为 `SendingMessage` 增加 `Sections` 属性，返回类型为 `IReadOnlyList<Section>`。
+#### `Message` 及其子类不兼容的更改 **(注意：不向后兼容)**
+- 修改了 `SectionMesssage` 的大部分内容。现在 `SectionMessage` 的构造方法均被限制，也就是说，无法从外部继承。可能在以后重新开放。

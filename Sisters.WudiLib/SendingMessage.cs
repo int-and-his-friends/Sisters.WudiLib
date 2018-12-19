@@ -21,7 +21,7 @@ namespace Sisters.WudiLib
 
         public IReadOnlyList<Section> Sections => SectionsBase;
 
-        internal override object Serializing => SectionsBase;
+        protected internal override object Serializing => SectionsBase;
 
         /// <summary>
         /// 指示此 <see cref="SendingMessage"/> 是否可以与其他 <see cref="SendingMessage"/> 连接。
