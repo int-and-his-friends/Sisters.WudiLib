@@ -77,6 +77,7 @@ using MessageContext = Sisters.WudiLib.Posts.Message;
 ### 0.0.3（尚未发布）
 #### API
 - 将 API 访问网络的方法移到 `HttpApiClient` 类，并提取 `CallRawAsync()` 方法，方便重载。
+- 增加 `HttpApiClient.CallAsync()` 方法，方便调用本类库没提供的 API。可以使用继承或扩展方法的方式封装。
 #### `Section`
 - 为 `Section` 增加 `Raw` 属性，方便查看其字符串形式。
 - 为 `Section` 增加几个构造方法，方便构造自己的消息段。
@@ -87,3 +88,5 @@ using MessageContext = Sisters.WudiLib.Posts.Message;
 - 为 `SendingMessage` 增加 `Sections` 属性，返回类型为 `IReadOnlyList<Section>`。
 #### `Message` 及其子类不兼容的更改 **(注意：不向后兼容)**
 - 修改了 `SectionMesssage` 的大部分内容。现在 `SectionMessage` 的构造方法均被限制，也就是说，无法从外部继承。可能在以后重新开放。
+#### 框架
+- 支持 .NET Framework 4.5。

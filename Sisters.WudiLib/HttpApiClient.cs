@@ -438,6 +438,27 @@ namespace Sisters.WudiLib
             }
         }
 
+        /// <summary>
+        /// 调用指定 API，并指定返回数据。
+        /// </summary>
+        /// <typeparam name="T">返回数据类型。</typeparam>
+        /// <param name="action">要调用的 API 功能。</param>
+        /// <param name="data">参数数据。</param>
+        /// <returns>返回数据。如果不成功（但不是网络错误），则为 <c>default</c>。</returns>
+        /// <exception cref="ApiAccessException">网络错误等。</exception>
+        /// <exception cref="ArgumentNullException"><c>data</c> was null.</exception>
+        public async Task<T> CallAsync<T>(string action, object data) => await PostAsync<T>(_apiAddress + action, data);
+
+        /// <summary>
+        /// 调用指定 API，返回是否成功。
+        /// </summary>
+        /// <param name="action">要调用的 API 功能。</param>
+        /// <param name="data">参数数据。</param>
+        /// <returns>是否成功（RetCode 为 0）。</returns>
+        /// <exception cref="ApiAccessException">网络错误等。</exception>
+        /// <exception cref="ArgumentNullException"><c>data</c> was null.</exception>
+        public async Task<bool> CallAsync(string action, object data) => await PostAsync(_apiAddress + action, data);
+
         #endregion
     }
 }
