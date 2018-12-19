@@ -4,16 +4,19 @@ using System.Linq;
 
 namespace Sisters.WudiLib
 {
+    /// <summary>
+    /// 旧设计，正计划修改。
+    /// </summary>
     public abstract class SectionMessage : Message
     {
-        protected SectionMessage() => SectionsBase = new List<Section>().AsReadOnly();
+        private protected SectionMessage() => SectionsBase = new List<Section>().AsReadOnly();
 
         /// <exception cref="ArgumentNullException"></exception>
-        protected SectionMessage(IEnumerable<Section> sections)
+        private protected SectionMessage(IEnumerable<Section> sections)
             => this.SectionsBase = new List<Section>(sections).AsReadOnly();
 
         /// <exception cref="ArgumentNullException"></exception>
-        protected SectionMessage(params Section[] sections) : this(sections as IEnumerable<Section>)
+        private protected SectionMessage(params Section[] sections) : this(sections as IEnumerable<Section>)
         { }
 
         protected virtual IReadOnlyList<Section> SectionsBase { get; }

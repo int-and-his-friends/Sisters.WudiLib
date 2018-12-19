@@ -415,6 +415,8 @@ namespace Sisters.WudiLib
         /// <param name="url">API请求地址</param>
         /// <param name="data">请求参数</param>
         /// <returns>从 HTTP API 返回的数据</returns>
+        /// <exception cref="ApiAccessException">网络错误等。</exception>
+        /// <exception cref="ArgumentNullException"><c>data</c> was null.</exception>
         private async Task<T> PostAsync<T>(string url, object data)
         {
             var response = await PostApiAsync<T>(url, data);
@@ -422,6 +424,7 @@ namespace Sisters.WudiLib
         }
 
         /// <exception cref="ApiAccessException">网络错误等。</exception>
+        /// <exception cref="ArgumentNullException"><c>data</c> was null.</exception>
         private async Task<bool> PostAsync(string url, object data)
         {
             try
@@ -431,6 +434,7 @@ namespace Sisters.WudiLib
             }
             catch (AggregateException e)
             {
+                // will it happen?
                 throw e.InnerException;
             }
         }
