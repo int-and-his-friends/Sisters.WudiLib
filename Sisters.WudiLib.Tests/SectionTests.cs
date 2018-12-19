@@ -32,6 +32,7 @@ namespace Sisters.WudiLib.Tests
             Assert.Equal(section.GetHashCode(), desSection.GetHashCode());
             Assert.Equal(section.GetHashCode(), section2.GetHashCode());
             Assert.Equal(desSection.GetHashCode(), section2.GetHashCode());
+            Assert.NotEqual(section.Raw, section2.Raw);
         }
 
         [Fact]

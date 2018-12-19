@@ -34,7 +34,7 @@ namespace Sisters.WudiLib
         public IReadOnlyDictionary<string, string> GetData() => Data;
 
         [JsonIgnore]
-        internal string Raw
+        public string Raw
         {
             get
             {
@@ -118,7 +118,7 @@ namespace Sisters.WudiLib
             }
 
             this.Type = type ?? throw new ArgumentNullException(nameof(type));
-            var dataDictionary = new SortedDictionary<string, string>();
+            var dataDictionary = new Dictionary<string, string>();
             Array.ForEach(data, pa => dataDictionary.Add(pa.key, pa.value));
             this.Data = new ReadOnlyDictionary<string, string>(dataDictionary);
 
