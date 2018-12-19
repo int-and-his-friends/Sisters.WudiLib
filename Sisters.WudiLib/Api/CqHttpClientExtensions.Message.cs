@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 using Sisters.WudiLib.Api.Responses;
 
 namespace Sisters.WudiLib.Api
@@ -6,6 +7,9 @@ namespace Sisters.WudiLib.Api
     public partial class CqHttpClientExtensions
     {
         private const string PrivatePath = "send_private_msg";
+        private const string GroupPath = "send_group_msg";
+        private const string DiscussPath = "send_discuss_msg";
+        private const string MessagePath = "send_msg";
 
         /// <summary>
         /// 发送私聊消息。
@@ -21,7 +25,44 @@ namespace Sisters.WudiLib.Api
                 message,
                 auto_escape = true,
             };
-            var result = await cqHttpClient.CallAsync<MessageResponseData>(PrivatePath, data, throwsIfNotSucceed);
+            return await cqHttpClient.GetResponse(PrivatePath, data, throwsIfNotSucceed);
+        }
+
+        ///
+        public static async Task<MessageResponseData> SendGroupMessageAsync(this ICqHttpClient cqHttpClient, long groupId, string message, bool throwsIfNotSucceed = false)
+        {
+            var data = new
+            {
+                group_id = groupId,
+                message,
+                auto_escape = true,
+            };
+            return await cqHttpClient.GetResponse(PrivatePath, data, throwsIfNotSucceed);
+        }
+
+        ///
+        public static async Task<MessageResponseData> SendDiscussMessageAsync(this ICqHttpClient cqHttpClient, long discussId, string message, bool throwsIfNotSucceed = false)
+        {
+            var data = new
+            {
+                discuss_id = discussId,
+                message,
+                auto_escape = true,
+            };
+            return await cqHttpClient.GetResponse(PrivatePath, data, throwsIfNotSucceed);
+        }
+
+        public static async Task<MessageResponseData> SendMessageAsync(this ICqHttpClient cqHttpClient, Posts.Endpoint endpoint, string message, bool throwsIfNotSucceed = false)
+        {
+            var data = JObject.FromObject(endpoint);
+            data["message"] = JToken.FromObject(message);
+            data["auto_escape"] = true;
+            return await cqHttpClient.GetResponse(MessagePath, data, throwsIfNotSucceed);
+        }
+
+        private static async Task<MessageResponseData> GetResponse(this ICqHttpClient cqHttpClient, string path, object data, bool throws)
+        {
+            var result = await cqHttpClient.CallAsync<MessageResponseData>(path, data, throws);
             return result.IsOk ? result.Data : null;
         }
     }
