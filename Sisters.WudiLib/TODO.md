@@ -1,5 +1,6 @@
 ﻿## Recent
 - 实现 `ReceivedMessage` 的判等。
+- `SectionMessage` 中的属性改为抽象，在子类实现。`GetRaw()` 移到 `Section` 类？
 
 ## Future
 - 优化基础类
