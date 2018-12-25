@@ -378,8 +378,7 @@ namespace Sisters.WudiLib
             try
             {
                 string json = JsonConvert.SerializeObject(data);
-                string responseContent;
-                responseContent = await CallRawAsync(url, json);
+                string responseContent = await CallRawAsync(url, json);
                 var result = JsonConvert.DeserializeObject<CqHttpApiResponse<T>>(responseContent);
                 return result;
             }
