@@ -360,7 +360,7 @@ namespace Sisters.WudiLib.Posts
             {
                 case GroupRequest.Add:
                     return GroupRequestHappen(groupRequest);
-                case GroupRequest.Invate:
+                case GroupRequest.Invite:
                     return GroupInviteHappen(groupRequest);
             }
 

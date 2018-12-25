@@ -70,7 +70,7 @@ namespace Sisters.WudiLib.Posts
     public class GroupRequest : Request
     {
         internal const string Add = "add";
-        internal const string Invate = "invite";
+        internal const string Invite = "invite";
 
         internal GroupRequest()
         {
