@@ -34,7 +34,7 @@ namespace Sisters.WudiLib.Posts
         private static Message GetMessagePost(JObject jObject)
         {
             Message result = null;
-            switch (jObject[Message.TypeField].ToString())
+            switch (jObject[Message.TypeField].ToObject<string>())
             {
                 case Message.PrivateType:
                     result = jObject.ToObject<PrivateMessage>();
@@ -55,7 +55,7 @@ namespace Sisters.WudiLib.Posts
         private static Notice GetNoticePost(JObject jObject)
         {
             Notice result = null;
-            switch (jObject[Notice.TypeField].ToString())
+            switch (jObject[Notice.TypeField].ToObject<string>())
             {
                 case Notice.FriendAdd:
                     result = jObject.ToObject<FriendAddNotice>();
@@ -84,7 +84,7 @@ namespace Sisters.WudiLib.Posts
         private static Request GetRequestPost(JObject jObject)
         {
             Request result;
-            switch (jObject[Request.TypeField].ToString())
+            switch (jObject[Request.TypeField].ToObject<string>())
             {
                 case Request.Friend:
                     result = jObject.ToObject<FriendRequest>();
