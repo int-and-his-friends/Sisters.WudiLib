@@ -559,7 +559,7 @@ namespace Sisters.WudiLib.Posts
         /// <param name="groupRequest"></param>
         /// <returns></returns>
         public static GroupRequestResponse ApproveAllGroupRequests(HttpApiClient api, GroupRequest groupRequest)
-            => new GroupRequestResponse {Approve = true};
+            => new GroupRequestResponse { Approve = true };
 
         /// <summary>
         /// 同意全部好友请求的事件处理器。
