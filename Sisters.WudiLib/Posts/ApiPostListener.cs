@@ -89,7 +89,7 @@ namespace Sisters.WudiLib.Posts
         /// <summary>
         /// 开始监听上报。
         /// </summary>
-        public void StartListen()
+        public virtual void StartListen()
         {
             lock (_listenerLock)
             {
@@ -203,7 +203,7 @@ namespace Sisters.WudiLib.Posts
             }
         }
 
-        private async void ForwardAsync(string content, string signature)
+        protected async void ForwardAsync(string content, string signature)
         {
             string to = ForwardTo;
             if (string.IsNullOrEmpty(to))

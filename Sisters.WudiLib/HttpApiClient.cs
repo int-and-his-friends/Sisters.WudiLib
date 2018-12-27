@@ -377,10 +377,8 @@ namespace Sisters.WudiLib
                 throw new ArgumentNullException(nameof(data), "data不能为null");
             try
             {
-                string json = JsonConvert.SerializeObject(data);
-                string responseContent;
-                responseContent = await CallRawAsync(url, json);
-                var result = JsonConvert.DeserializeObject<CqHttpApiResponse<T>>(responseContent);
+                var responseJObject = await CallRawJObjectAsync(url.Substring(url.LastIndexOf('/') + 1), data);
+                var result = responseJObject.ToObject<CqHttpApiResponse<T>>();
                 return result;
             }
             catch (Exception e)
@@ -389,7 +387,24 @@ namespace Sisters.WudiLib
             }
         }
 
-        protected virtual async Task<string> CallRawAsync(string url, string json)
+        protected virtual async Task<JObject> CallRawJObjectAsync(string action, object data)
+        {
+            string json = JsonConvert.SerializeObject(data);
+            string responseContent;
+            responseContent = await CallRawAsync(action, json);
+            var result = JsonConvert.DeserializeObject<JObject>(responseContent);
+            return result;
+        }
+
+        /// <summary>
+        /// 调用 API，返回响应字符串。是最底层的方法，被
+        /// <see cref="CallRawJObjectAsync(string, object)"/> 使用。如果重写
+        /// <see cref="CallRawJObjectAsync(string, object)"/>，也可以不调用此方法。
+        /// </summary>
+        /// <param name="action">调用的 API，如 <c>send_msg</c>。</param>
+        /// <param name="json">序列化过的 JSON 参数。</param>
+        /// <returns></returns>
+        protected virtual async Task<string> CallRawAsync(string action, string json)
         {
             using (HttpContent content = new StringContent(json, Encoding.UTF8, "application/json"))
             using (var http = new HttpClient())
@@ -400,7 +415,7 @@ namespace Sisters.WudiLib
                     //content.Headers.Add("Authorization", "Token " + HttpApiClient.AccessToken);
                     http.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse("Token " + accessToken);
                 }
-                using (var response = (await http.PostAsync(url, content)).EnsureSuccessStatusCode())
+                using (var response = (await http.PostAsync(_apiAddress + action, content)).EnsureSuccessStatusCode())
                 {
                     return await response.Content.ReadAsStringAsync();
                 }
