@@ -57,6 +57,8 @@ namespace Sisters.WudiLib.Posts
         internal string SubType { get; private set; }
         [JsonProperty("group_id")]
         public long GroupId { get; private set; }
+        [JsonProperty("sender")]
+        public SenderInfo Sender { get; private set; }
 
         public override Endpoint Endpoint => new GroupEndpoint(GroupId);
     }
@@ -91,5 +93,20 @@ namespace Sisters.WudiLib.Posts
         internal long DiscussId { get; private set; }
 
         public override Endpoint Endpoint => new DiscussEndpoint(DiscussId);
+    }
+    
+    [JsonObject]
+    public class SenderInfo
+    {
+        [JsonProperty("user_id")] public long UserId { get; private set; }
+        [JsonProperty("sex")] public string Sex { get; private set; }
+        [JsonProperty("nickname")] public string Nickname { get; private set; }
+        [JsonProperty("age")] public int Age { get; private set; }
+
+        [JsonProperty("card")] public string Card { get; private set; }
+        [JsonProperty("area")] public string Area { get; private set; }
+        [JsonProperty("level")] public string Level { get; private set; }
+        [JsonProperty("role")] public string Role { get; private set; }
+        [JsonProperty("title")] public string Title { get; private set; }
     }
 }

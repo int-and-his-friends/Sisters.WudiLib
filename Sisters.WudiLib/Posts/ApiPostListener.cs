@@ -98,7 +98,7 @@ namespace Sisters.WudiLib.Posts
                 string prefix = PostAddress;
                 _listener.Prefixes.Add(prefix);
                 _listener.Start();
-                _listenTask = Task.Run((Action)Listening);
+                _listenTask = Task.Run((Action) Listening);
             }
         }
 
@@ -216,6 +216,7 @@ namespace Sisters.WudiLib.Posts
                     {
                         client.DefaultRequestHeaders.Add("X-Signature", signature);
                     }
+
                     var stringContent = new StringContent(content, Encoding.UTF8, "application/json");
                     using (await client.PostAsync(to, stringContent))
                     {
@@ -237,6 +238,7 @@ namespace Sisters.WudiLib.Posts
         /// 处理上报中发生了异常。可能是业务逻辑中的异常，也可能是数据传输或解析过程中的异常。
         /// </summary>
         public event Action<Exception> OnException;
+
         /// <summary>
         /// 处理上报中发生了异常。可能是业务逻辑中的异常，也可能是数据传输或解析过程中的异常。此事件会包含上报的原始数据。
         /// </summary>
@@ -274,6 +276,19 @@ namespace Sisters.WudiLib.Posts
         /// <returns>由处理器返回的数据。</returns>
         public Response ProcessPost(string content)
         {
+            /*Post p = GetPost(content);
+            if (p is null)
+                return null;
+            if (p is Message)
+            {
+            }
+            else if (p is Notice)
+            {
+            }
+            else if (p is Request)
+            {
+            }*///这样？
+
             if (string.IsNullOrEmpty(content))
                 return null;
 
@@ -360,7 +375,7 @@ namespace Sisters.WudiLib.Posts
             {
                 case GroupRequest.Add:
                     return GroupRequestHappen(groupRequest);
-                case GroupRequest.Invate:
+                case GroupRequest.Invite:
                     return GroupInviteHappen(groupRequest);
             }
 
@@ -478,6 +493,7 @@ namespace Sisters.WudiLib.Posts
         /// 加入新群时发生的事件。注意此事件没有 <see cref="GroupMemberChangeNotice.OperatorId"/> 的数据（至少 Invite 没有，Approve 不清楚）。
         /// </summary>
         public event Action<HttpApiClient, GroupMemberIncreaseNotice> GroupAddedEvent;
+
         #endregion
 
         #region Request
@@ -487,27 +503,31 @@ namespace Sisters.WudiLib.Posts
         /// </summary>
         public event GroupRequestEventHandler GroupRequestEvent;
 
-        private RequestResponse GroupRequestHappen(GroupRequest request) => GetFirstResponseOrDefault(GroupRequestEvent, h => h.Invoke(ApiClient, request));
+        private RequestResponse GroupRequestHappen(GroupRequest request) =>
+            GetFirstResponseOrDefault(GroupRequestEvent, h => h.Invoke(ApiClient, request));
 
         /// <summary>
         /// 收到加群邀请事件。此时 <see cref="Request.Comment"/> 并不存在。
         /// </summary>
         public event GroupRequestEventHandler GroupInviteEvent;
 
-        private RequestResponse GroupInviteHappen(GroupRequest request) => GetFirstResponseOrDefault(GroupInviteEvent, h => h.Invoke(ApiClient, request));
+        private RequestResponse GroupInviteHappen(GroupRequest request) =>
+            GetFirstResponseOrDefault(GroupInviteEvent, h => h.Invoke(ApiClient, request));
 
         /// <summary>
         /// 收到好友请求事件。
         /// </summary>
         public event FriendRequestEventHandler FriendRequestEvent;
 
-        private RequestResponse FriendRequestHappen(FriendRequest request) => GetFirstResponseOrDefault(FriendRequestEvent, h => h.Invoke(ApiClient, request));
+        private RequestResponse FriendRequestHappen(FriendRequest request) =>
+            GetFirstResponseOrDefault(FriendRequestEvent, h => h.Invoke(ApiClient, request));
 
-        private static TResponse GetFirstResponseOrDefault<TResponse, THandler>(THandler handler, Func<THandler, TResponse> invoker)
+        private static TResponse GetFirstResponseOrDefault<TResponse, THandler>(THandler handler,
+            Func<THandler, TResponse> invoker)
             where THandler : Delegate
             where TResponse : class
-                => handler?.GetInvocationList().Cast<THandler>().Select(invoker)
-                            .FirstOrDefault(response => response != null);
+            => handler?.GetInvocationList().Cast<THandler>().Select(invoker)
+                .FirstOrDefault(response => response != null);
 
         #endregion
 
@@ -548,7 +568,7 @@ namespace Sisters.WudiLib.Posts
         /// <param name="friendRequest"></param>
         /// <returns></returns>
         public static FriendRequestResponse ApproveAllFriendRequests(HttpApiClient api, FriendRequest friendRequest)
-            => new FriendRequestResponse { Approve = true };
+            => new FriendRequestResponse {Approve = true};
 
         /// <summary>
         /// 复读的事件处理器。并没有什么卵用。
