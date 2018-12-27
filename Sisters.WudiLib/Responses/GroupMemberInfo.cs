@@ -73,14 +73,14 @@ namespace Sisters.WudiLib.Responses
             Leader = 3,
         }
 
-        private class AuthorityConverter : JsonConverter
+        internal class AuthorityConverter : JsonConverter
         {
             private static readonly IReadOnlyDictionary<string, GroupMemberAuthority> List =
                 new Dictionary<string, GroupMemberAuthority>
                 {
-                    {"member", GroupMemberAuthority.Normal},
-                    {"admin", GroupMemberAuthority.Manager},
-                    {"owner", GroupMemberAuthority.Leader},
+                    { "member", GroupMemberAuthority.Normal },
+                    { "admin", GroupMemberAuthority.Manager },
+                    { "owner", GroupMemberAuthority.Leader },
                 };
 
             public override bool CanConvert(Type objectType) => objectType == typeof(GroupMemberAuthority);
