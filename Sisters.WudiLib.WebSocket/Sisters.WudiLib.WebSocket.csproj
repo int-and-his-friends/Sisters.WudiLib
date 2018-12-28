@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFrameworks>netcoreapp2.1</TargetFrameworks>
-    <Version>0.0.4-alpha3</Version>
+    <Version>0.0.4-alpha3.1</Version>
     <Authors>bleatingsheep</Authors>
     <Copyright>bleatingsheep</Copyright>
     <Company>bleatingsheep</Company>
@@ -10,6 +10,10 @@
     <PackageProjectUrl>https://github.com/int-and-his-friends/Sisters.WudiLib</PackageProjectUrl>
     <Description>酷Q HTTP API .NET</Description>
     <PackageLicenseUrl>https://github.com/int-and-his-friends/Sisters.WudiLib/blob/master/LICENSE</PackageLicenseUrl>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netcoreapp2.1|AnyCPU'">
+    <DocumentationFile>Sisters.WudiLib.WebSocket.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>

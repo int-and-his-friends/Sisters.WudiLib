@@ -39,7 +39,7 @@ namespace Sisters.WudiLib.WebSocket
         public string Uri { get; }
 
         /// <summary>
-        /// 获取当前是否能收到上报事件。注意自动重连时此项为 <c>false</c>，但无法再次通过 <see cref="StartListen"/> 连接。
+        /// 获取当前是否能收到上报事件。注意自动重连时此项为 <c>false</c>，但无法再次通过 <see cref="StartListen()"/> 或 <see cref="StartListen(CancellationToken)"/> 连接。
         /// </summary>
         public override bool IsListening => WebSocket?.State == WebSocketState.Open;
 
@@ -126,9 +126,11 @@ namespace Sisters.WudiLib.WebSocket
                     {
                         cancellationToken.ThrowIfCancellationRequested();
                     }
+                    ms = new MemoryStream();
                     continue;
                 }
 
+                ms = new MemoryStream();
                 _ = Task.Run(() =>
                 {
                     ForwardAsync(eventContent, null);
