@@ -89,6 +89,7 @@ namespace Sisters.WudiLib.Posts
         /// <summary>
         /// 开始监听上报。
         /// </summary>
+        /// <exception cref="Exception">启动时出现错误。</exception>
         public virtual void StartListen()
         {
             lock (_listenerLock)
@@ -203,6 +204,11 @@ namespace Sisters.WudiLib.Posts
             }
         }
 
+        /// <summary>
+        /// 异步通过 HTTP 转发上报事件。转发失败时不会有任何提示。
+        /// </summary>
+        /// <param name="content">转发内容。</param>
+        /// <param name="signature">HTTP 头部的签名。</param>
         protected async void ForwardAsync(string content, string signature)
         {
             string to = ForwardTo;
@@ -244,7 +250,12 @@ namespace Sisters.WudiLib.Posts
         /// </summary>
         public event Action<Exception, string> OnExceptionWithRawContent;
 
-        private void LogException(Exception e, string content)
+        /// <summary>
+        /// 触发 <see cref="OnException"/> 和 <see cref="OnExceptionWithRawContent"/> 事件。
+        /// </summary>
+        /// <param name="e">异常。</param>
+        /// <param name="content">上报内容。</param>
+        protected void LogException(Exception e, string content)
         {
             try
             {
@@ -274,6 +285,7 @@ namespace Sisters.WudiLib.Posts
         /// </summary>
         /// <param name="content">收到的 JSON 数据。</param>
         /// <returns>由处理器返回的数据。</returns>
+        /// <exception cref="Exception">处理时发生异常。</exception>
         public Response ProcessPost(string content)
         {
             /*Post p = GetPost(content);
