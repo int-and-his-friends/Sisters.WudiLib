@@ -29,7 +29,7 @@ namespace Sisters.WudiLib.Posts
         /// <summary>
         /// 获取或设置 HTTP API 的上报地址。如果已经开始监听，则设置无效。
         /// </summary>
-        public string PostAddress
+        public virtual string PostAddress
         {
             get => _postAddress;
             set
@@ -63,7 +63,7 @@ namespace Sisters.WudiLib.Posts
         /// <summary>
         /// 获取当前是否监听 HTTP API 的上报数据。
         /// </summary>
-        public bool IsListening => _listener.IsListening;
+        public virtual bool IsListening => _listener.IsListening;
 
         /// 
         public ApiPostListener()
