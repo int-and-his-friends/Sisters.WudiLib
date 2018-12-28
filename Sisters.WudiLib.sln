@@ -9,7 +9,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sisters.WudiLibTest", "Sist
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sisters.WudiLib.Tests", "Sisters.WudiLib.Tests\Sisters.WudiLib.Tests.csproj", "{FCF0066E-4326-4F89-8283-DC6FCE223C1A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sisters.WudiLib.WebSocket", "Sisters.WudiLib.WebSocket\Sisters.WudiLib.WebSocket.csproj", "{ECF56FB2-EA27-4E27-B866-EC0A430190DA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sisters.WudiLib.WebSocket", "Sisters.WudiLib.WebSocket\Sisters.WudiLib.WebSocket.csproj", "{ECF56FB2-EA27-4E27-B866-EC0A430190DA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sisters.WudiLib.WebSocket.Test", "Sisters.WudiLib.WebSocket.Test\Sisters.WudiLib.WebSocket.Test.csproj", "{5045CE29-004E-451C-86BE-70A8F48DEA1B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{ECF56FB2-EA27-4E27-B866-EC0A430190DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ECF56FB2-EA27-4E27-B866-EC0A430190DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ECF56FB2-EA27-4E27-B866-EC0A430190DA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5045CE29-004E-451C-86BE-70A8F48DEA1B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5045CE29-004E-451C-86BE-70A8F48DEA1B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5045CE29-004E-451C-86BE-70A8F48DEA1B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5045CE29-004E-451C-86BE-70A8F48DEA1B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
