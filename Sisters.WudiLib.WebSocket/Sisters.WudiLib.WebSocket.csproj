@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netcoreapp2.1</TargetFrameworks>
+    <Version>0.0.4-alpha3</Version>
+    <Authors>bleatingsheep</Authors>
+    <Copyright>bleatingsheep</Copyright>
+    <Company>bleatingsheep</Company>
+    <PackageTags>cqhttp coolq-http-api coolq qq qqbot qqrobot 酷Q</PackageTags>
+    <PackageProjectUrl>https://github.com/int-and-his-friends/Sisters.WudiLib</PackageProjectUrl>
+    <Description>酷Q HTTP API .NET</Description>
+    <PackageLicenseUrl>https://github.com/int-and-his-friends/Sisters.WudiLib/blob/master/LICENSE</PackageLicenseUrl>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Sisters.WudiLib" Version="0.0.4-alpha3" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'net45'">
+    <Reference Include="System.Web" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'net47'">
+    <Reference Include="System.Web" />
+  </ItemGroup>
+
+</Project>

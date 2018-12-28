@@ -90,3 +90,9 @@ using MessageContext = Sisters.WudiLib.Posts.Message;
 - 修改了 `SectionMesssage` 的大部分内容。现在 `SectionMessage` 的构造方法均被限制，也就是说，无法从外部继承。可能在以后重新开放。
 #### 框架
 - 支持 .NET Framework 4.5。
+
+### 0.0.4（开发中，包含计划中的更新）
+- 修改 `HttpApiClient` 类中的部分虚方法，以便更好地支持 WebSocket。*如果您重载过 `CallRawAsync` 方法，您需要修改代码以确保代码正常运行。*
+- `GroupMemberInfo` 中的属性被补齐。
+- 增加 `SenderInfo` 类。
+- `ApiPostListener` 的 `StartListen` 方法改为虚的，方便实现 WebSocket。
