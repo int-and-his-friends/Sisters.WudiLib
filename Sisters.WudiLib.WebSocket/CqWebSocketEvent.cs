@@ -17,6 +17,7 @@ namespace Sisters.WudiLib.WebSocket
         private readonly string _accessToken;
         private CancellationToken _cancellationToken;
         private readonly object _listenLock = new object();
+        private Task _listenTask;
 
         /// <summary>
         /// 当前连接的 WebSocket 客户端。如果发生断线重连，则可能改变。
@@ -83,7 +84,7 @@ namespace Sisters.WudiLib.WebSocket
                 _cancellationToken = cancellationToken;
                 InitializeWebSocket(cancellationToken);
             }
-            Listening(cancellationToken);
+            _listenTask = Listening(cancellationToken);
         }
 
         private void InitializeWebSocket(CancellationToken cancellationToken)
@@ -94,7 +95,7 @@ namespace Sisters.WudiLib.WebSocket
             WebSocket = clientWebSocket;
         }
 
-        private async void Listening(CancellationToken cancellationToken)
+        private async Task Listening(CancellationToken cancellationToken)
         {
             byte[] buffer = new byte[1024];
             var ms = new MemoryStream();

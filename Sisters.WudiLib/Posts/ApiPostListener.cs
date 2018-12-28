@@ -587,7 +587,15 @@ namespace Sisters.WudiLib.Posts
         /// <param name="api"></param>
         /// <param name="message"></param>
         public static async void RepeatAsync(HttpApiClient api, Message message)
-            => await api?.SendMessageAsync(message.Endpoint, message.Content);
+        {
+            try
+            {
+                await api?.SendMessageAsync(message.Endpoint, message.Content);
+            }
+            catch (Exception)
+            {
+            }
+        }
 
         /// <summary>
         /// 当收到消息时，在同一处发送指定内容消息的事件处理器。并没有什么卵用。
