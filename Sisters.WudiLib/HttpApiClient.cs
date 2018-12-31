@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Sisters.WudiLib.Posts;
 using Sisters.WudiLib.Responses;
 
 namespace Sisters.WudiLib
@@ -49,6 +50,26 @@ namespace Sisters.WudiLib
     /// </summary>
     public partial class HttpApiClient
     {
+        /// <summary>
+        /// 构造 <see cref="HttpApiClient"/> 的实例。
+        /// </summary>
+        public HttpApiClient()
+        {
+
+        }
+
+        /// <summary>
+        /// 构造 <see cref="HttpApiClient"/> 的实例，并指定 <see cref="ApiAddress"/>。
+        /// </summary>
+        /// <param name="apiAddress"></param>
+        public HttpApiClient(string apiAddress) => ApiAddress = apiAddress;
+
+        /// <summary>
+        /// 构造 <see cref="HttpApiClient"/> 的实例，并指定 <see cref="ApiAddress"/> 和 <see cref="AccessToken"/>。
+        /// </summary>
+        public HttpApiClient(string apiAddress, string accessToken) : this(apiAddress)
+            => AccessToken = accessToken;
+
         private int _isReadyToCleanData;
 
         /// <summary>
@@ -302,6 +323,77 @@ namespace Sisters.WudiLib
         }
 
         /// <summary>
+        /// 自动识别发送者类型（普通/匿名）并禁言。
+        /// </summary>
+        /// <param name="groupId">群号。</param>
+        /// <param name="messageSource">群消息上报的 <see cref="Posts.Message.Source"/> 属性。</param>
+        /// <param name="duration">禁言时长，单位秒，0 表示取消禁言，无法取消匿名用户禁言。</param>
+        /// <returns>如果操作成功，返回 <c>true</c>。</returns>
+        public Task<bool> BanMessageSource(long groupId, MessageSource messageSource, int duration)
+        {
+#warning 需要测试智能禁言功能。
+            if (messageSource is null)
+            {
+                throw new ArgumentNullException(nameof(messageSource));
+            }
+
+            return messageSource.IsAnonymous
+                ? BanAnonymousMember(groupId, messageSource.AnonymousFlag, duration)
+                : BanGroupMember(groupId, messageSource.UserId, duration);
+        }
+
+        /// <summary>
+        /// 群组匿名用户禁言。
+        /// </summary>
+        /// <param name="groupId">群号。</param>
+        /// <param name="flag">要禁言的匿名用户的 flag。</param>
+        /// <param name="duration">禁言时长，单位秒，无法取消匿名用户禁言。</param>
+        /// <returns>如果操作成功，返回 <c>true</c>。</returns>
+        public async Task<bool> BanAnonymousMember(long groupId, string flag, int duration)
+        {
+            var data = new
+            {
+                group_id = groupId,
+                anonymous_flag = flag,
+                duration,
+            };
+            return await CallAsync("set_group_anonymous_ban", data);
+        }
+
+        /// <summary>
+        /// 群组匿名用户禁言。
+        /// </summary>
+        /// <param name="groupId">群号。</param>
+        /// <param name="anonymousInfo">要禁言的匿名用户对象（<see cref="AnonymousMessage.Anonymous"/> 属性）。</param>
+        /// <param name="duration">禁言时长，单位秒，无法取消匿名用户禁言。</param>
+        /// <returns>如果操作成功，返回 <c>true</c>。</returns>
+        public Task<bool> BanAnonymousMember(long groupId, AnonymousInfo anonymousInfo, int duration)
+        {
+            if (anonymousInfo == null)
+            {
+                throw new ArgumentNullException(nameof(anonymousInfo));
+            }
+
+            return BanAnonymousMember(groupId, anonymousInfo.Flag, duration);
+        }
+
+        /// <summary>
+        /// 群组全员禁言。
+        /// </summary>
+        /// <param name="groupId"></param>
+        /// <param name="enable"></param>
+        /// <returns></returns>
+        public Task<bool> BanWholeGroup(long groupId, bool enable)
+        {
+            var data = new
+            {
+                group_id = groupId,
+                enable,
+            };
+            return CallAsync("set_group_whole_ban", data);
+        }
+
+        /// <summary>
         /// 设置群名片。
         /// </summary>
         /// <param name="groupId">群号。</param>
@@ -369,24 +461,17 @@ namespace Sisters.WudiLib
         /// <returns></returns>
         public async Task CleanImageData()
             => await PostAsync(CleanUrl, new { data_dir = "image" });
-        #region Utilities
 
-        private async Task<CqHttpApiResponse<T>> PostApiAsync<T>(string url, object data)
-        {
-            if (data is null)
-                throw new ArgumentNullException(nameof(data), "data不能为null");
-            try
-            {
-                var responseJObject = await CallRawJObjectAsync(url.Substring(url.LastIndexOf('/') + 1), data);
-                var result = responseJObject.ToObject<CqHttpApiResponse<T>>();
-                return result;
-            }
-            catch (Exception e)
-            {
-                throw new ApiAccessException("访问 API 时出现错误。", e);
-            }
-        }
+        #region 值得重载的基础方法。
 
+        /// <summary>
+        /// 调用 API，并返回反序列化后的 <see cref="JObject"/> 对象。默认情况下会调用
+        /// <see cref="CallRawAsync(string, string)"/>，重写后也可以不调用。
+        /// </summary>
+        /// <param name="action">调用的 API，如 <c>send_msg</c>。</param>
+        /// <param name="data">参数对象。</param>
+        /// <exception cref="Exception">所有异常应由调用方处理。</exception>
+        /// <returns>由响应字符串反序列化成的 <see cref="JObject"/> 对象。</returns>
         protected virtual async Task<JObject> CallRawJObjectAsync(string action, object data)
         {
             string json = JsonConvert.SerializeObject(data);
@@ -403,7 +488,8 @@ namespace Sisters.WudiLib
         /// </summary>
         /// <param name="action">调用的 API，如 <c>send_msg</c>。</param>
         /// <param name="json">序列化过的 JSON 参数。</param>
-        /// <returns></returns>
+        /// <exception cref="Exception">所有异常应由调用方处理。</exception>
+        /// <returns>响应的 JSON 字符串。</returns>
         protected virtual async Task<string> CallRawAsync(string action, string json)
         {
             using (HttpContent content = new StringContent(json, Encoding.UTF8, "application/json"))
@@ -420,6 +506,18 @@ namespace Sisters.WudiLib
                     return await response.Content.ReadAsStringAsync();
                 }
             }
+        }
+
+        #endregion
+
+        #region Old Utilities (Use URL)
+
+        private async Task<CqHttpApiResponse<T>> PostApiAsync<T>(string url, object data)
+        {
+            if (data is null)
+                throw new ArgumentNullException(nameof(data), "data不能为null");
+            var action = url.Substring(url.LastIndexOf('/') + 1);
+            return await CallApiAsync<T>(action, data);
         }
 
         /// <summary>
@@ -449,7 +547,44 @@ namespace Sisters.WudiLib
             catch (AggregateException e)
             {
                 // will it happen?
+                System.Diagnostics.Debug.Fail("PostAsync throws an AggregateException.");
                 throw e.InnerException;
+            }
+        }
+
+        #endregion
+
+        #region New Utilities (Use Action string)
+
+        /// <summary>
+        /// 传入 <c>action</c> 和 <c>data</c> 的方法。
+        /// </summary>
+        private async Task<CqHttpApiResponse<T>> CallApiAsync<T>(string action, object data)
+        {
+            if (action is null)
+            {
+                throw new ArgumentNullException(nameof(action));
+            }
+
+            if (string.IsNullOrWhiteSpace(action))
+            {
+                throw new ArgumentException("message", nameof(action));
+            }
+
+            if (data is null)
+            {
+                throw new ArgumentNullException(nameof(data));
+            }
+
+            try
+            {
+                var responseJObject = await CallRawJObjectAsync(action, data);
+                var result = responseJObject.ToObject<CqHttpApiResponse<T>>();
+                return result;
+            }
+            catch (Exception e)
+            {
+                throw new ApiAccessException("访问 API 时出现错误。", e);
             }
         }
 
@@ -461,18 +596,26 @@ namespace Sisters.WudiLib
         /// <param name="data">参数数据。</param>
         /// <returns>返回数据。如果不成功（但不是网络错误），则为 <c>default</c>。</returns>
         /// <exception cref="ApiAccessException">网络错误等。</exception>
-        /// <exception cref="ArgumentNullException"><c>data</c> was null.</exception>
-        public async Task<T> CallAsync<T>(string action, object data) => await PostAsync<T>(_apiAddress + action, data);
+        /// <exception cref="ArgumentNullException"><c>data</c> was null -or- <c>action</c> was null.</exception>
+        public async Task<T> CallAsync<T>(string action, object data)
+        {
+            var response = await CallApiAsync<T>(action, data);
+            return response.Retcode == CqHttpApiResponse.RetcodeOK ? response.Data : default;
+        }
 
         /// <summary>
         /// 调用指定 API，返回是否成功。
         /// </summary>
         /// <param name="action">要调用的 API 功能。</param>
         /// <param name="data">参数数据。</param>
-        /// <returns>是否成功（RetCode 为 0）。</returns>
+        /// <returns>是否成功（<see cref="CqHttpApiResponse.IsAcceptableStatus"/> 为 <c>true</c>）。</returns>
         /// <exception cref="ApiAccessException">网络错误等。</exception>
-        /// <exception cref="ArgumentNullException"><c>data</c> was null.</exception>
-        public async Task<bool> CallAsync(string action, object data) => await PostAsync(_apiAddress + action, data);
+        /// <exception cref="ArgumentNullException"><c>data</c> was null -or- <c>action</c> was null.</exception>
+        public async Task<bool> CallAsync(string action, object data)
+        {
+            var response = await CallApiAsync<object>(action, data);
+            return response.IsAcceptableStatus;
+        }
 
         #endregion
     }
