@@ -10,7 +10,7 @@ using Sisters.WudiLib.Posts;
 namespace Sisters.WudiLib.WebSocket
 {
     /// <summary>
-    /// 事件上报的 WebSocket 客户端。
+    /// 事件上报的 WebSocket 客户端。请注意，WebSocket 客户端暂不支持直接通过返回值响应。
     /// </summary>
     public class CqWebSocketEvent : ApiPostListener
     {
@@ -40,9 +40,14 @@ namespace Sisters.WudiLib.WebSocket
         public string Uri { get; }
 
         /// <summary>
-        /// 获取当前是否能收到上报事件。注意自动重连时此项为 <c>false</c>，但无法再次通过 <see cref="StartListen()"/> 或 <see cref="StartListen(CancellationToken)"/> 连接。
+        /// 指示当前是否已启动监听。若要检查当前是否可用，请使用 <see cref="IsAvailable"/> 属性。
         /// </summary>
-        public override bool IsListening => WebSocket?.State == WebSocketState.Open;
+        public override bool IsListening => _listenTask?.IsCompleted == false;
+
+        /// <summary>
+        /// 获取当前是否能收到上报事件。注意自动重连过程中此项为 <c>false</c>，但无法再次通过 <see cref="StartListen()"/> 或 <see cref="StartListen(CancellationToken)"/> 连接。
+        /// </summary>
+        public virtual bool IsAvailable => WebSocket?.State == WebSocketState.Open;
 
         /// <summary>
         /// 构造通过 WebSocket 获取上报的监听客户端。
@@ -85,14 +90,6 @@ namespace Sisters.WudiLib.WebSocket
                 InitializeWebSocket(cancellationToken);
             }
             _listenTask = Listening(cancellationToken);
-        }
-
-        private void InitializeWebSocket(CancellationToken cancellationToken)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-            Uri uri = CreateUri(Uri, _accessToken);
-            ClientWebSocket clientWebSocket = CreateWebSocket(uri, cancellationToken).GetAwaiter().GetResult();
-            WebSocket = clientWebSocket;
         }
 
         private async Task Listening(CancellationToken cancellationToken)
@@ -148,6 +145,14 @@ namespace Sisters.WudiLib.WebSocket
                     }
                 });
             }
+        }
+
+        private void InitializeWebSocket(CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            Uri uri = CreateUri(Uri, _accessToken);
+            ClientWebSocket clientWebSocket = CreateWebSocket(uri, cancellationToken).GetAwaiter().GetResult();
+            WebSocket = clientWebSocket;
         }
 
         private static Uri CreateUri(string url, string accessToken)
