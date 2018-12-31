@@ -8,7 +8,7 @@ namespace Sisters.WudiLib.WebSocket.Test
     {
         static void Main(string[] args)
         {
-            var cqWebSocketEvent = new CqWebSocketEvent("");
+            var cqWebSocketEvent = new CqHttpWebSocketEvent("");
             var httpApiClient = new HttpApiClient();
             cqWebSocketEvent.ApiClient = httpApiClient;
             cqWebSocketEvent.MessageEvent += (api, e) =>

@@ -12,7 +12,7 @@ namespace Sisters.WudiLib.WebSocket
     /// <summary>
     /// 事件上报的 WebSocket 客户端。请注意，WebSocket 客户端暂不支持直接通过返回值响应。
     /// </summary>
-    public class CqWebSocketEvent : ApiPostListener
+    public class CqHttpWebSocketEvent : ApiPostListener
     {
         private readonly string _accessToken;
         private CancellationToken _cancellationToken;
@@ -53,14 +53,14 @@ namespace Sisters.WudiLib.WebSocket
         /// 构造通过 WebSocket 获取上报的监听客户端。
         /// </summary>
         /// <param name="uri">以 <c>ws://</c> 或者 <c>wss://</c> 开头的 uri，用于连接 WebSocket。</param>
-        public CqWebSocketEvent(string uri) => Uri = uri;
+        public CqHttpWebSocketEvent(string uri) => Uri = uri;
 
         /// <summary>
         /// 构造通过 WebSocket 获取上报的监听客户端。
         /// </summary>
         /// <param name="uri">以 <c>ws://</c> 或者 <c>wss://</c> 开头的 uri，用于连接 WebSocket。</param>
         /// <param name="accessToken">Access Token.</param>
-        public CqWebSocketEvent(string uri, string accessToken)
+        public CqHttpWebSocketEvent(string uri, string accessToken)
             : this(uri) => _accessToken = accessToken;
 
         /// <summary>
