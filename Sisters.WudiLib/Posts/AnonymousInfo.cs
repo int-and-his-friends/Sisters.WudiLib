@@ -1,7 +1,5 @@
-﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Globalization;
+using Newtonsoft.Json;
 
 namespace Sisters.WudiLib.Posts
 {
@@ -19,5 +17,7 @@ namespace Sisters.WudiLib.Posts
         /// <summary>匿名用户名称。</summary>
         [JsonProperty("name")]
         public string Name { get; private set; }
+
+        public override string ToString() => Name ?? Flag ?? Id.ToString(CultureInfo.InvariantCulture);
     }
 }
