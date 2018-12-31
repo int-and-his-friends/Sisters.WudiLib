@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Sisters.WudiLib.Responses;
 using static Sisters.WudiLib.Responses.GroupMemberInfo;
 
 namespace Sisters.WudiLib.Posts
@@ -8,8 +9,8 @@ namespace Sisters.WudiLib.Posts
     {
         /// <summary>发送者 QQ 号。</summary>
         [JsonProperty("user_id")] public long UserId { get; private set; }
-        ///// <summary>性别，male 或 female 或 unknown。可能会在以后改为枚举。</summary>
-        //[JsonProperty("sex")] public string Sex { get; private set; }
+        /// <summary>性别。可能会在以后改为枚举。</summary>
+        [JsonProperty("sex")] public Sex Sex { get; private set; }
 
         /// <summary>昵称。</summary>
         [JsonProperty("nickname")] public string Nickname { get; private set; }

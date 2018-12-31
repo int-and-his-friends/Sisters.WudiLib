@@ -1,13 +1,14 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using System.Text;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+
+#pragma warning disable CS1591
 
 namespace Sisters.WudiLib.Responses
 {
+    [JsonObject(MemberSerialization.OptIn)]
     public sealed class GroupMemberInfo
     {
         [JsonProperty("group_id")]
@@ -19,11 +20,20 @@ namespace Sisters.WudiLib.Responses
         [JsonProperty("card")]
         public string InGroupName { get; internal set; }
 
-        // sex
+        public string DisplayName => string.IsNullOrEmpty(InGroupName) ? Nickname : InGroupName;
+
+        /// <summary>
+        /// 性别。
+        /// </summary>
+        [JsonProperty("sex"), JsonConverter(typeof(StringEnumConverter))]
+        public Sex Sex { get; private set; }
 
         [JsonProperty("age")]
         public int Age { get; internal set; }
 
+        /// <summary>
+        /// 地区。<see cref="HttpApiClient.GetGroupMemberListAsync(long)"/> 中无法获取。
+        /// </summary>
         [JsonProperty("area")]
         public string Area { get; internal set; }
 
@@ -33,13 +43,24 @@ namespace Sisters.WudiLib.Responses
         [JsonProperty("last_sent_time"), JsonConverter(typeof(UnixDateTimeConverter))]
         public DateTimeOffset LastSendTime { get; internal set; }
 
-        // level （？）
+        /// <summary>
+        /// 成员等级。<see cref="HttpApiClient.GetGroupMemberListAsync(long)"/> 中无法获取。
+        /// </summary>
+        [JsonProperty("level")]
+        public string Level { get; private set; }
 
         [JsonProperty("role"), JsonConverter(typeof(AuthorityConverter))]
         public GroupMemberAuthority Authority { get; internal set; }
 
-        // unfriendly
+        /// <summary>
+        /// 是否不良记录成员。
+        /// </summary>
+        [JsonProperty("unfriendly")]
+        public bool IsUnfriendly { get; private set; }
 
+        /// <summary>
+        /// 专属头衔。<see cref="HttpApiClient.GetGroupMemberListAsync(long)"/> 中无法获取。
+        /// </summary>
         [JsonProperty("title")]
         public string Title { get; internal set; }
 
@@ -48,23 +69,8 @@ namespace Sisters.WudiLib.Responses
         [JsonProperty("card_changeable")]
         public bool IsCardChangeable { get; internal set; }
 
-        /*
-        public int age { get; set; }
-        public string area { get; set; }
-        public string card { get; set; }
-        public bool card_changeable { get; set; }
-        public long group_id { get; set; }
-        public int join_time { get; set; }
-        public int last_sent_time { get; set; }
-        public string level { get; set; }
-        public string nickname { get; set; }
-        public string role { get; set; }
-        public string sex { get; set; }
-        public string title { get; set; }
-        public int title_expire_time { get; set; }
-        public bool unfriendly { get; set; }
-        public long user_id { get; set; }
-         */
+        public override string ToString() => DisplayName;
+
         public enum GroupMemberAuthority
         {
             Unknown = 0,
@@ -102,26 +108,7 @@ namespace Sisters.WudiLib.Responses
                 else writer.WriteValue(result.First());
             }
         }
-
-        //private class EnumConverter<T> : JsonConverter where T : IDictionaryProvider
-        //{
-        //    public override bool CanConvert(Type objectType) => throw new NotImplementedException();
-        //    public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
-        //    {
-        //        if (reader.TokenType != JsonToken.String)
-        //            return T.Default;
-        //    }
-
-        //    public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer) => throw new NotImplementedException();
-        //}
-
-        //private interface IDictionaryProvider
-        //{
-        //    object Default { get; }
-
-        //    IReadOnlyDictionary<string, object> Values { get; }
-
-
-        //}
     }
 }
+
+#pragma warning restore CS1591
