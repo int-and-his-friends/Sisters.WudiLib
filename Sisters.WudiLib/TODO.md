@@ -1,7 +1,9 @@
 ﻿## Recent
 - 实现 `ReceivedMessage` 的判等。
 - `SectionMessage` 中的属性改为抽象，在子类实现。`GetRaw()` 移到 `Section` 类？
-- 补齐 `GroupMemberInfo` 中的属性。
+
+- WS可选去除首次连接必须成功的限制。
+- WS支持从返回值响应请求。
 
 ## Future
 - 优化基础类
@@ -29,6 +31,7 @@
 
 	3. 做完这些工作以后，考虑让 `ReceivedMessage` 直接反序列化。
 
+- `Section` 的 `Data` 改为 `NameValueCollection`。
 - 支持异步的事件处理器。
 - 将一些 Type 改为枚举。使用 `EnumMember` 特性标记。
 - 反序列化时传入静态的 setting 或者 serializer，避免潜在的全局 setting 影响。
