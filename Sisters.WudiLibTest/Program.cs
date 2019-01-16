@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using System.Threading.Tasks;
 using Sisters.WudiLib;
 using Sisters.WudiLib.Posts;
 
@@ -121,6 +122,17 @@ namespace Sisters.WudiLibTest
             CultureInfo.DefaultThreadCurrentUICulture = culture;
             CultureInfo.CurrentCulture = culture;
             CultureInfo.CurrentUICulture = culture;
+
+            var httpApiClient = new HttpApiClient();
+
+            var groupMemberInfo = httpApiClient.GetGroupMemberInfoAsync(661021255, 962549599).GetAwaiter().GetResult();
+            //var groupMemberInfos = httpApiClient.GetGroupMemberListAsync(641236878).GetAwaiter().GetResult();
+
+            var banResult = httpApiClient.BanAnonymousMember(72318078, "AAAAAAAPQl8ADMfHwK2hpMSqtvvDyQAoAHXUxZeiC+YKi480g3ERUrpzM+o20KsUJ0mm1xxoobOEtwYU+3KqiA==", 60).GetAwaiter().GetResult();
+
+            banResult = httpApiClient.BanWholeGroup(72318078, true).GetAwaiter().GetResult();
+            Task.Delay(TimeSpan.FromSeconds(10)).Wait();
+            banResult = httpApiClient.BanWholeGroup(72318078, false).GetAwaiter().GetResult();
 
             var postListener = new ApiPostListener(8876);
             PrintNoticeAndRequests(postListener);

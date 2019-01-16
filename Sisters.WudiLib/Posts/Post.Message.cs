@@ -57,6 +57,9 @@ namespace Sisters.WudiLib.Posts
         internal string SubType { get; private set; }
         [JsonProperty("group_id")]
         public long GroupId { get; private set; }
+        /// <summary>
+        /// 发送人信息。需要 CoolQ HTTP API 插件版本 >= 4.5.0，部分字段需要 >= 4.7.0。
+        /// </summary>
         [JsonProperty("sender")]
         public SenderInfo Sender { get; private set; }
 

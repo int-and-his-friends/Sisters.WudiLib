@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Sisters.WudiLib.Posts;
 
 namespace Sisters.WudiLib.WebSocket.Test
 {
@@ -13,8 +14,13 @@ namespace Sisters.WudiLib.WebSocket.Test
             cqWebSocketEvent.ApiClient = httpApiClient;
             cqWebSocketEvent.MessageEvent += (api, e) =>
             {
-                Console.WriteLine(e.Content.Text);
+                Console.WriteLine(e.Content.Raw);
                 Console.WriteLine(api is null);
+            };
+            cqWebSocketEvent.AnonymousMessageEvent += (api, e) =>
+            {
+                Console.WriteLine("id|name|flag:{0}|{1}|{2}", e.Anonymous.Id, e.Anonymous.Name, e.Anonymous.Flag);
+                api.BanMessageSource(e.GroupId, e.Source, 1);
             };
             Task.Run(async () =>
             {

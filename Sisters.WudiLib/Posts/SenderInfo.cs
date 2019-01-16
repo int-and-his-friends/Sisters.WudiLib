@@ -4,7 +4,7 @@ using static Sisters.WudiLib.Responses.GroupMemberInfo;
 
 namespace Sisters.WudiLib.Posts
 {
-    /// <summary>群消息发送人信息。</summary>
+    /// <summary>群消息发送人信息。需要 CoolQ HTTP API 插件版本 >= 4.5.0，部分字段需要 >= 4.7.0。</summary>
     public sealed class SenderInfo
     {
         /// <summary>发送者 QQ 号。</summary>
@@ -19,16 +19,16 @@ namespace Sisters.WudiLib.Posts
 
         /// <summary>群名片／备注。</summary>
         [JsonProperty("card")] public string InGroupName { get; private set; }
-        /// <summary>地区。</summary>
+        /// <summary>地区。需要 CoolQ HTTP API 插件版本 >= 4.7.0。</summary>
         [JsonProperty("area")] public string Area { get; private set; }
-        /// <summary>成员等级。</summary>
+        /// <summary>成员等级。需要 CoolQ HTTP API 插件版本 >= 4.7.0。</summary>
         [JsonProperty("level")] public string Level { get; private set; }
 
-        /// <summary>角色。</summary>
+        /// <summary>角色。需要 CoolQ HTTP API 插件版本 >= 4.7.0。</summary>
         [JsonProperty("role"), JsonConverter(typeof(AuthorityConverter))]
         public GroupMemberAuthority Authority { get; private set; }
 
-        /// <summary>专属头衔。</summary>
+        /// <summary>专属头衔。需要 CoolQ HTTP API 插件版本 >= 4.7.0。</summary>
         [JsonProperty("title")] public string Title { get; private set; }
     }
 }

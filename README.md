@@ -91,8 +91,10 @@ using MessageContext = Sisters.WudiLib.Posts.Message;
 #### 框架
 - 支持 .NET Framework 4.5。
 
-### 0.0.4（开发中，包含计划中的更新）
-- 修改 `HttpApiClient` 类中的部分虚方法，以便更好地支持 WebSocket。*如果您重载过 `CallRawAsync` 方法，您需要修改代码以确保代码正常运行。*
+### 0.0.4
+- 修改 `HttpApiClient` 类中的部分虚方法，以便更好地支持 WebSocket。主要更改是把 `url` 参数改为了 `action`。*如果您重载过 `CallRawAsync` 方法，您需要修改代码以确保代码正常运行。*
 - `GroupMemberInfo` 中的属性被补齐。
-- 增加 `SenderInfo` 类。
-- `ApiPostListener` 的 `StartListen` 方法改为虚的，方便实现 WebSocket。
+- 增加禁言匿名成员、禁言发送人（通过 `MessageSource` 自动识别是不是匿名成员）、全体禁言的 API。
+- `ApiPostListener` 的 `StartListen` 方法、`PostAddress` 和 `IsListening` 属性改为 `virtual`，方便实现 WebSocket。
+- `ApiPostListener.RepeatAsync` 方法使用 try-catch 包围，以免发生异常导致程序崩溃。
+- 增加 `SenderInfo` 类。`GroupMessage` 类中增加 `Sender` 字段（需要 CoolQ HTTP API 插件版本 >= 4.7.0）。
