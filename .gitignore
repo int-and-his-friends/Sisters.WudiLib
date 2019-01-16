@@ -260,3 +260,4 @@ paket-files/
 __pycache__/
 *.pyc
 /Sisters.WudiLib/Sisters.WudiLib.xml
+/Sisters.WudiLib.WebSocket/Sisters.WudiLib.WebSocket.xml
