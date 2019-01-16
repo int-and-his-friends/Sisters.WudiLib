@@ -331,7 +331,6 @@ namespace Sisters.WudiLib
         /// <returns>如果操作成功，返回 <c>true</c>。</returns>
         public Task<bool> BanMessageSource(long groupId, MessageSource messageSource, int duration)
         {
-#warning 需要测试智能禁言功能。
             if (messageSource is null)
             {
                 throw new ArgumentNullException(nameof(messageSource));
@@ -369,7 +368,6 @@ namespace Sisters.WudiLib
         /// <returns>如果操作成功，返回 <c>true</c>。</returns>
         public Task<bool> BanAnonymousMember(long groupId, AnonymousInfo anonymousInfo, int duration)
         {
-#warning 需要测试传 AnonymousInfo 禁言功能。
             if (anonymousInfo == null)
             {
                 throw new ArgumentNullException(nameof(anonymousInfo));
