@@ -66,5 +66,21 @@ namespace Sisters.WudiLib.Tests
             Assert.True(invo2);
             Assert.False(invo3);
         }
+
+        [Fact]
+        public void ArrayMessage_Normal()
+        {
+            string json = "{\"anonymous\":null,\"font\":236846192,\"group_id\":123456789,\"message\":[{\"data\":{\"text\":\"去2\"},\"type\":\"text\"}],\"message_id\":282,\"message_type\":\"group\",\"post_type\":\"message\",\"raw_message\":\"去2\",\"self_id\":1131545658,\"sender\":{\"age\":21,\"area\":\"青岛\",\"card\":\"\",\"level\":\"冒泡\",\"nickname\":\"ymy😂/pch\",\"role\":\"owner\",\"sex\":\"female\",\"title\":\"\",\"user_id\":962549599},\"sub_type\":\"normal\",\"time\":1547742375,\"user_id\":962549599}";
+            var listener = new ApiPostListener();
+            Posts.Message context = null;
+            listener.MessageEvent += (api, e) =>
+            {
+                context = e;
+            };
+            listener.ProcessPost(json);
+
+            Assert.IsType<GroupMessage>(context);
+            Assert.Equal(1, context.Content.Sections.Count);
+        }
     }
 }

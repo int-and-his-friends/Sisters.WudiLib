@@ -82,12 +82,16 @@ namespace Sisters.WudiLib.Posts
                 return;
             }
 
-            if (o is JArray jObjectArray)
+            else if (o is JArray jObjectArray)
             {
                 var sections = jObjectArray.Select(jo => new Section((JObject)jo));
                 _sections = sections.ToList().AsReadOnly();
+                return;
             }
-            throw new InvalidOperationException("用于构造消息的对象即不是字符，也不是数组。可能是上报数据有错误。");
+            else
+            {
+                throw new InvalidOperationException("用于构造消息的对象即不是字符，也不是数组。可能是上报数据有错误。");
+            }
         }
 
         /// <summary>
