@@ -58,7 +58,7 @@ listener.SetSecret("this-is-your-secret");
 ### 特性
 使用 WebSocket 监听上报，与 HTTP 方式并没有很大不同。需要注意的一点是，第一次调用 `StartListen` 方法必须成功连接，否则会引发异常。此后如果连接断开，会自动尝试重连。你可以通过传入 `CancellationToken` 进行终止。具体请参见示例。
 
-目前仅支持通过 WebSocket 监听上报，并且遭遇请求类事件时无法直接通过返回值进行响应。请与 HTTP 方式结合使用。
+目前仅支持通过 WebSocket 监听上报（暂不支持通过 WebSocket 进行 API 访问，请使用 HTTP）。请求类事件将通过 API 响应，必须设置了 `ApiClient` 属性才可以。请与 HTTP 方式结合使用。
 
 ### 示例
 此示例包含了简单的事件监听和处理，并对
@@ -74,6 +74,14 @@ cqWebSocketEvent.MessageEvent += (api, e) =>
 {
     Console.WriteLine(e.Content.Text);
 };
+cqWebSocketEvent.FriendRequestEvent += (api, e) =>
+{
+    return true;
+};
+cqWebSocketEvent.GroupInviteEvent += (api, e) =>
+{
+    return true;
+}; // 可以通过 return 的方式响应请求，与使用 HTTP 时没有差别。
 
 // 每秒打印 WebSocket 状态。
 Task.Run(async () =>
@@ -153,3 +161,7 @@ using MessageContext = Sisters.WudiLib.Posts.Message;
 - `ApiPostListener` 的 `StartListen` 方法、`PostAddress` 和 `IsListening` 属性改为 `virtual`，方便实现 WebSocket。
 - `ApiPostListener.RepeatAsync` 方法使用 try-catch 包围，以免发生异常导致程序崩溃。
 - 增加 `SenderInfo` 类。`GroupMessage` 类中增加 `Sender` 字段（需要 CoolQ HTTP API 插件版本 >= 4.7.0）。
+
+### 0.0.4.2
+- 修复使用 `array` 上报类型时，访问 `Content` 出错的问题。
+- 细节特性更新。
