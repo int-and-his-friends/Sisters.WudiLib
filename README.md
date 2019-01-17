@@ -51,6 +51,61 @@ listener.SetSecret("this-is-your-secret");
 ```
 设置后，每次收到上报都会验证上报数据的哈希。如果验证失败，将忽略此次上报。
 
+## WebSocket 和其他通信方式
+### 通过 WebSocket 监听上报
+您可以在此找到 WebSocket 通信的 nuget 包：[Sisters.WudiLib.WebSocket](https://www.nuget.org/packages/Sisters.WudiLib.WebSocket/)。
+
+### 特性
+使用 WebSocket 监听上报，与 HTTP 方式并没有很大不同。需要注意的一点是，第一次调用 `StartListen` 方法必须成功连接，否则会引发异常。此后如果连接断开，会自动尝试重连。你可以通过传入 `CancellationToken` 进行终止。具体请参见示例。
+
+目前仅支持通过 WebSocket 监听上报，并且遭遇请求类事件时无法直接通过返回值进行响应。请与 HTTP 方式结合使用。
+
+### 示例
+此示例包含了简单的事件监听和处理，并对
+```C#
+var cqWebSocketEvent = new CqHttpWebSocketEvent(
+    "wss://your-ws-address/event",
+    "your-access-token"); // 创建 WebSocket 事件监听客户端。
+var httpApiClient = new HttpApiClient(); // 创建 HTTP 通信客户端。
+cqWebSocketEvent.ApiClient = httpApiClient;
+
+// 订阅事件。
+cqWebSocketEvent.MessageEvent += (api, e) =>
+{
+    Console.WriteLine(e.Content.Text);
+};
+
+// 每秒打印 WebSocket 状态。
+Task.Run(async () =>
+{
+    while (true)
+    {
+        await Task.Delay(1000);
+        Console.WriteLine("Available: {0}, Listening {1}", cqWebSocketEvent.IsAvailable, cqWebSocketEvent.IsListening);
+    }
+});
+
+// 连接前等待 3 秒观察状态。
+Task.Delay(TimeSpan.FromSeconds(3)).Wait();
+
+// 连接（开始监听上报）。
+var cancellationTokenSource = new CancellationTokenSource();
+cqWebSocketEvent.StartListen(cancellationTokenSource.Token); // 首次连接必须成功。
+
+// 按下回车会在 2 秒后断开，再过 3 秒使用新的 CancellationTokenSource 重连。
+// 您可以先断开网络，观察自动重连，再继续执行后面的代码。
+Console.ReadLine();
+cancellationTokenSource.CancelAfter(TimeSpan.FromSeconds(2));
+Task.Delay(TimeSpan.FromSeconds(5)).Wait();
+cancellationTokenSource.Dispose();
+cancellationTokenSource = new CancellationTokenSource();
+cqWebSocketEvent.StartListen(cancellationTokenSource.Token);
+Task.Delay(-1).Wait();
+```
+
+### 其他通信方式
+从 0.0.4 版本开始，WudiLib 的某些基础方法已使用 `virtual` 标记，也就是说，您可以继承并重载相关的类，以实现 WebSocket 监听上报和访问 API。
+
 ### 与现有代码共同使用
 WudiLib 支持将收到的上报数据转发到另一处，相当于有两个上报地址，使得以前的代码可以继续运行，降低迁移成本。
 ```C#
