@@ -17,6 +17,14 @@ namespace Sisters.WudiLib.WebSocket.Test
                 Console.WriteLine(e.Content.Raw);
                 Console.WriteLine(api is null);
             };
+            cqWebSocketEvent.FriendRequestEvent += (api, e) =>
+            {
+                return true;
+            };
+            cqWebSocketEvent.GroupInviteEvent += (api, e) =>
+            {
+                return true;
+            };
             cqWebSocketEvent.AnonymousMessageEvent += (api, e) =>
             {
                 Console.WriteLine("id|name|flag:{0}|{1}|{2}", e.Anonymous.Id, e.Anonymous.Name, e.Anonymous.Flag);

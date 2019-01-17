@@ -68,10 +68,7 @@ namespace Sisters.WudiLib.WebSocket
         /// </summary>
         /// <exception cref="Exception">连接失败等。</exception>
         public override void StartListen()
-        {
-            var cancellationToken = new CancellationToken();
-            StartListen(cancellationToken);
-        }
+            => StartListen(default(CancellationToken));
 
         /// <summary>
         /// 开始从 WebSocket 监听上报。

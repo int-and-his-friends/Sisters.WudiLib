@@ -7,6 +7,7 @@ namespace Sisters.WudiLib.Posts
     /// <summary>
     /// 上报响应数据。
     /// </summary>
+    [JsonObject(MemberSerialization.OptIn)]
     public abstract class Response
     {
         /// <summary>
@@ -63,6 +64,18 @@ namespace Sisters.WudiLib.Posts
         [JsonProperty("reason", DefaultValueHandling = DefaultValueHandling.Ignore, NullValueHandling = NullValueHandling.Ignore)]
         [DefaultValue("")]
         public string Reason { get; set; }
+
+        /// <summary>
+        /// 从 <see cref="bool"/> 转换 <see cref="GroupRequestResponse"/>。
+        /// </summary>
+        /// <param name="approve"></param>
+        public static implicit operator GroupRequestResponse(bool approve)
+        {
+            return new GroupRequestResponse
+            {
+                Approve = approve,
+            };
+        }
     }
 
     /// <summary>
@@ -71,11 +84,40 @@ namespace Sisters.WudiLib.Posts
     public sealed class FriendRequestResponse : RequestResponse
     {
         /// <summary>
+        /// 构造加好友响应。
+        /// </summary>
+        public FriendRequestResponse()
+        {
+        }
+
+        /// <summary>
+        /// 构造接受请求响应。
+        /// </summary>
+        /// <param name="remark">好友备注。</param>
+        public FriendRequestResponse(string remark)
+        {
+            Approve = true;
+            Remark = remark;
+        }
+
+        /// <summary>
         /// 添加后的好友备注（仅在同意时有效）。
         /// </summary>
         [JsonProperty("remark", DefaultValueHandling = DefaultValueHandling.Ignore, NullValueHandling = NullValueHandling.Ignore)]
         [DefaultValue("")]
         public string Remark { get; set; }
+
+        /// <summary>
+        /// 从 <see cref="bool"/> 转换 <see cref="FriendRequestResponse"/>。
+        /// </summary>
+        /// <param name="approve"></param>
+        public static implicit operator FriendRequestResponse(bool approve)
+        {
+            return new FriendRequestResponse
+            {
+                Approve = approve,
+            };
+        }
     }
 
     internal class MessageResponse : Response
