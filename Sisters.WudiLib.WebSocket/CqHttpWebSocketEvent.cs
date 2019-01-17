@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Sisters.WudiLib.Posts;
 
 namespace Sisters.WudiLib.WebSocket
@@ -126,7 +128,7 @@ namespace Sisters.WudiLib.WebSocket
                 }
 
                 ms = new MemoryStream();
-                _ = Task.Run(() =>
+                _ = Task.Run(async () =>
                 {
                     ForwardAsync(eventContent, null);
                     if (string.IsNullOrEmpty(eventContent))
@@ -134,7 +136,25 @@ namespace Sisters.WudiLib.WebSocket
 
                     try
                     {
-                        ProcessPost(eventContent);
+                        var response = ProcessPost(eventContent);
+                        var apiClient = ApiClient;
+                        if (response is RequestResponse && !(apiClient is null))
+                        {
+                            JObject data;
+                            data = JsonConvert.DeserializeObject<JObject>(eventContent);
+                            data.Merge(JObject.FromObject(response));
+                            switch (response)
+                            {
+                                case FriendRequestResponse friend:
+                                    await apiClient.HandleFriendRequestInternalAsync(data);
+                                    break;
+                                case GroupRequestResponse group:
+                                    await apiClient.HandleGroupRequestInternalAsync(data);
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
                     }
                     catch (Exception e)
                     {

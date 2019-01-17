@@ -38,8 +38,11 @@ namespace Sisters.WudiLib.WebSocket
 
             var data = JObject.FromObject(response);
             data["flag"] = request.Flag;
-            return httpApiClient.CallAsync("set_friend_add_request", data);
+            return httpApiClient.HandleFriendRequestInternalAsync(data);
         }
+
+        internal static Task<bool> HandleFriendRequestInternalAsync(this HttpApiClient httpApiClient, JObject data)
+            => httpApiClient.CallAsync("set_friend_add_request", data);
 
         /// <summary>
         /// 处理加群请求／邀请。
@@ -70,7 +73,10 @@ namespace Sisters.WudiLib.WebSocket
             var data = JObject.FromObject(request);
             var responseData = JObject.FromObject(response);
             data.Merge(responseData);
-            return httpApiClient.CallAsync("set_group_add_request", data);
+            return httpApiClient.HandleGroupRequestInternalAsync(data);
         }
+
+        internal static Task<bool> HandleGroupRequestInternalAsync(this HttpApiClient httpApiClient, JObject data)
+            => httpApiClient.CallAsync("set_group_add_request", data);
     }
 }
