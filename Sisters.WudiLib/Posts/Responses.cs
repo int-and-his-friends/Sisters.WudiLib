@@ -23,6 +23,7 @@ namespace Sisters.WudiLib.Posts
     public class RequestResponse : Response
     {
         /// 
+        [JsonConstructor]
         public RequestResponse()
         {
         }
@@ -43,6 +44,7 @@ namespace Sisters.WudiLib.Posts
     public sealed class GroupRequestResponse : RequestResponse
     {
         /// 
+        [JsonConstructor]
         public GroupRequestResponse()
         {
 
@@ -86,6 +88,7 @@ namespace Sisters.WudiLib.Posts
         /// <summary>
         /// 构造加好友响应。
         /// </summary>
+        [JsonConstructor]
         public FriendRequestResponse()
         {
         }
