@@ -1,9 +1,7 @@
 ﻿## Recent
-- 实现 `ReceivedMessage` 的判等。
 - `SectionMessage` 中的属性改为抽象，在子类实现。`GetRaw()` 移到 `Section` 类？
 
 - WS可选去除首次连接必须成功的限制。
-- WS支持从返回值响应请求。
 
 ## Future
 - 优化基础类
@@ -25,7 +23,7 @@
 
 - `Message` 类的其他修改
 
-    1. 要么把本地图片文件删掉（改用 Byte 数组图片），要么改名，以 `ImageLocal`/`ImageRemote` 区分？
+    1. 要么把本地图片文件删掉（改用 Byte 数组图片），要么改名，以 `ImageLocal`/`ImageRemote` 区分？ // `Image_Local`/`Image_Remote`
 
 - 优化 `Section` 类的序列化和反序列化过程。
 
@@ -65,3 +63,4 @@ _mahuaApi.SendGroupMessage("610394020")
 
 ## 已取消
 - 使得 `Post.AnonymousInfo` 可以比较。
+- 实现 `ReceivedMessage` 的判等。（请先判等 `RawMessage` 字段，再调用 `Content.Fix()` 并判等）

@@ -39,10 +39,29 @@ namespace Sisters.WudiLib
         private string GroupMemberListUrl => _apiAddress + GroupMemberListPath;
         private string CleanUrl => _apiAddress + CleanPath;
 
+        private HttpClient _httpClient = new HttpClient();
+        private string _accessToken;
+
         /// <summary>
         /// API 访问 token。请详见插件文档。
         /// </summary>
-        public string AccessToken { get; set; }
+        public virtual string AccessToken
+        {
+            get => _accessToken;
+            set
+            {
+                if (_accessToken != value)
+                {
+                    var http = new HttpClient();
+                    if (!string.IsNullOrEmpty(value))
+                    {
+                        http.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse("Token " + value);
+                    }
+                    _httpClient = http;
+                    _accessToken = value;
+                }
+            }
+        }
     }
 
     /// <summary>
@@ -455,13 +474,15 @@ namespace Sisters.WudiLib
         }
 
         /// <summary>
-        /// 清理数据目录中的图片。
+        /// 清理数据目录中的图片。经测试可能无效。
         /// </summary>
         /// <returns></returns>
         public async Task CleanImageData()
             => await PostAsync(CleanUrl, new { data_dir = "image" });
 
         #region 值得重载的基础方法。
+
+        protected virtual HttpClient HttpClient => _httpClient;
 
         /// <summary>
         /// 调用 API，并返回反序列化后的 <see cref="JObject"/> 对象。默认情况下会调用
@@ -492,14 +513,8 @@ namespace Sisters.WudiLib
         protected virtual async Task<string> CallRawAsync(string action, string json)
         {
             using (HttpContent content = new StringContent(json, Encoding.UTF8, "application/json"))
-            using (var http = new HttpClient())
             {
-                var accessToken = AccessToken;
-                if (!string.IsNullOrEmpty(accessToken))
-                {
-                    //content.Headers.Add("Authorization", "Token " + HttpApiClient.AccessToken);
-                    http.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse("Token " + accessToken);
-                }
+                var http = HttpClient;
                 using (var response = (await http.PostAsync(_apiAddress + action, content)).EnsureSuccessStatusCode())
                 {
                     return await response.Content.ReadAsStringAsync();
