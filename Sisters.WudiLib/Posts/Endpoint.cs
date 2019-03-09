@@ -28,6 +28,8 @@ namespace Sisters.WudiLib.Posts
             }
         }
 
+        private protected abstract long EndpointId { get; }
+
         internal static Endpoint FromMessage(Message message)
         {
             switch (message)
@@ -53,6 +55,12 @@ namespace Sisters.WudiLib.Posts
         /// 
         public abstract override int GetHashCode();
 
+        /// <summary>
+        /// 获取形如 {EndpointType}/{Id} 的字符串。
+        /// </summary>
+        /// <returns>形如 {EndpointType}/{Id} 的字符串。</returns>
+        public override string ToString() => $"{MessageType}/{EndpointId}";
+
         /// 
         public static bool operator ==(Endpoint endpoint1, Endpoint endpoint2) => EqualityComparer<Endpoint>.Default.Equals(endpoint1, endpoint2);
         /// 
@@ -70,6 +78,7 @@ namespace Sisters.WudiLib.Posts
         /// </summary>
         [JsonProperty("user_id")]
         public long UserId { get; }
+        private protected override long EndpointId => UserId;
 
         /// 
         public override bool Equals(object obj) => Equals(obj as PrivateEndpoint);
@@ -101,6 +110,7 @@ namespace Sisters.WudiLib.Posts
         /// </summary>
         [JsonProperty("group_id")]
         public long GroupId { get; }
+        private protected override long EndpointId => GroupId;
 
         /// 
         public override bool Equals(object obj) => Equals(obj as GroupEndpoint);
@@ -132,6 +142,7 @@ namespace Sisters.WudiLib.Posts
         /// </summary>
         [JsonProperty("discuss_id")]
         public long DiscussId { get; }
+        private protected override long EndpointId => DiscussId;
 
         /// 
         public override bool Equals(object obj) => Equals(obj as DiscussEndpoint);

@@ -39,6 +39,8 @@ namespace Sisters.WudiLib.Posts
         /// </summary>
         public long UserId { get; }
 
+        public override string ToString() => IsAnonymous ? Anonymous : UserId.ToString();
+
         /// 
         public override bool Equals(object obj) => this.Equals(obj as MessageSource);
 
