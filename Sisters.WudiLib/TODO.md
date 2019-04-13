@@ -14,6 +14,7 @@
     2. 分离数据传输、反序列化及业务逻辑的代码，使得在不同阶段发生的异常可以由不同事件处理。
 
 - 修改异常、客户端和上报监听器的类名，使其更符合逻辑。暂定 `CqHttpClient`/`CqHttpListener`/`CqHttpException`
+- 新增虚函数 `OnSendingRequest`，减少无效重写。
 - 优化 `Message` 类的继承结构。
 
     1. 可以实现 `IEnumerable` 等接口，这样应该可以直接序列化。

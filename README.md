@@ -131,6 +131,9 @@ using MessageContext = Sisters.WudiLib.Posts.Message;
 ```
 这样，就可以用 `MessageContext` 表示收到的消息上报，用 `Message` 表示要发送的消息了。
 
+## 帮助
+如果您需要帮助，请联系 QQ：962549599，注明“WudiLib”。
+
 ## 更新日志（部分）
 ### 0.0.2
 - 优化了多次获取 `ReceivedMessage.Sections` 属性时的性能。
