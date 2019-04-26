@@ -441,6 +441,13 @@ namespace Sisters.WudiLib
         }
 
         /// <summary>
+        /// 获取群列表。
+        /// </summary>
+        /// <returns></returns>
+        public Task<GroupInfo[]> GetGroupListAsync()
+            => CallAsync<GroupInfo[]>("get_group_list", new object());
+
+        /// <summary>
         /// 获取群成员信息。
         /// </summary>
         /// <param name="group">群号。</param>
