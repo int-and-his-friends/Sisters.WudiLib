@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
@@ -178,7 +179,7 @@ namespace Sisters.WudiLib.Posts
                 requestContent = request.ContentEncoding.GetString(bytes);
 
                 // 转发
-                ForwardAsync(requestContent, signature);
+                ForwardAsync(bytes, request.ContentEncoding, signature);
 
                 return requestContent;
             }
@@ -209,7 +210,23 @@ namespace Sisters.WudiLib.Posts
         /// </summary>
         /// <param name="content">转发内容。</param>
         /// <param name="signature">HTTP 头部的签名。</param>
-        protected async void ForwardAsync(string content, string signature)
+        [Obsolete]
+        protected void ForwardAsync(string content, string signature)
+        {
+            string to = ForwardTo;
+            if (string.IsNullOrEmpty(to))
+                return;
+
+            ForwardAsync(Encoding.UTF8.GetBytes(content), Encoding.UTF8, signature);
+        }
+
+        /// <summary>
+        /// 异步通过 HTTP 转发上报事件。转发失败时不会有任何提示。
+        /// </summary>
+        /// <param name="content">转发内容。</param>
+        /// <param name="encoding">字符编码。</param>
+        /// <param name="signature">HTTP 头部的签名。</param>
+        protected async void ForwardAsync(byte[] content, Encoding encoding, string signature)
         {
             string to = ForwardTo;
             if (string.IsNullOrEmpty(to))
@@ -223,8 +240,12 @@ namespace Sisters.WudiLib.Posts
                         client.DefaultRequestHeaders.Add("X-Signature", signature);
                     }
 
-                    var stringContent = new StringContent(content, Encoding.UTF8, "application/json");
-                    using (await client.PostAsync(to, stringContent))
+                    var byteArrayContent = new ByteArrayContent(content);
+                    var headerValue = new MediaTypeHeaderValue("application/json");
+                    headerValue.CharSet = encoding.WebName;
+
+                    byteArrayContent.Headers.ContentType = headerValue;
+                    using (await client.PostAsync(to, byteArrayContent))
                     {
                         // ignored
                     }
