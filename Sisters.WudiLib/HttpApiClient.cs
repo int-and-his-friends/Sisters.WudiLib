@@ -481,6 +481,13 @@ namespace Sisters.WudiLib
         }
 
         /// <summary>
+        /// 获取插件运行状态。
+        /// </summary>
+        /// <returns></returns>
+        public Task<Status> GetStatusAsync()
+            => CallAsync<Status>("get_status", new object());
+
+        /// <summary>
         /// 清理数据目录中的图片。经测试可能无效。
         /// </summary>
         /// <returns></returns>
