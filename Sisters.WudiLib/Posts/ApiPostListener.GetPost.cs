@@ -26,6 +26,9 @@ namespace Sisters.WudiLib.Posts
                 case Post.Request:
                     result = GetRequestPost(contentObject);
                     break;
+                case Post.MetaEvent:
+                    // TODO
+                    break;
             }
 
             return result;
@@ -72,8 +75,6 @@ namespace Sisters.WudiLib.Posts
                 case Notice.GroupUpload:
                     result = jObject.ToObject<GroupFileNotice>();
                     break;
-                case Notice.Request:
-                //TODO:?what?
                 default:
                     throw new Exception("通知事件TypeField错误");
             }

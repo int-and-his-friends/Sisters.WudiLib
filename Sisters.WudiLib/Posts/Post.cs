@@ -10,6 +10,7 @@ namespace Sisters.WudiLib.Posts
         internal const string Message = "message";
         internal const string Notice = "notice";
         internal const string Request = "request";
+        internal const string MetaEvent = "meta_event";
 
         internal const string TypeField = "post_type";
         internal const string SubTypeField = "sub_type";
