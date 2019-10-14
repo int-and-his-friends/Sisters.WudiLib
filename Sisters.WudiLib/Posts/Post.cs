@@ -43,17 +43,25 @@ namespace Sisters.WudiLib.Posts
 
         internal new const string TypeField = "request_type";
 
+        private readonly Lazy<ReceivedMessage> _commentLazy;
+        private readonly Lazy<string> _commentTextLazy;
+
         internal Request()
         {
-            // ignored
+            _commentLazy = new Lazy<ReceivedMessage>(() => new ReceivedMessage(ObjComment));
+            _commentTextLazy = new Lazy<string>(() => CommentMessage.Text);
         }
+
+        [JsonProperty("comment")]
+        private object ObjComment { get; set; }
 
         [JsonProperty(TypeField)]
         internal string RequestType { get; private set; }
         [JsonProperty("flag")]
         public string Flag { get; private set; }
-        [JsonProperty("comment")]
-        public string Comment { get; private set; }
+        public string Comment => _commentTextLazy.Value;
+
+        public ReceivedMessage CommentMessage => _commentLazy.Value;
     }
 
     [JsonObject(MemberSerialization.OptIn)]
