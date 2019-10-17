@@ -438,6 +438,10 @@ namespace Sisters.WudiLib.Posts
                 case Notice.FriendAdd:
                     FriendAddedEvent?.Invoke(ApiClient, contentObject.ToObject<FriendAddNotice>());
                     break;
+                case Notice.GroupBan:
+                    // TODO: 此处代码未测试。
+                    GroupBanEvent?.Invoke(ApiClient, contentObject.ToObject<GroupBanNotice>());
+                    break;
                 default:
                     // TODO: Logging
                     break;
@@ -526,6 +530,11 @@ namespace Sisters.WudiLib.Posts
         /// 加入新群时发生的事件。注意此事件没有 <see cref="GroupMemberChangeNotice.OperatorId"/> 的数据（至少 Invite 没有，Approve 不清楚）。
         /// </summary>
         public event Action<HttpApiClient, GroupMemberIncreaseNotice> GroupAddedEvent;
+
+        /// <summary>
+        /// 群禁言事件。包括禁言和解除禁言。
+        /// </summary>
+        public event Action<HttpApiClient, GroupBanNotice> GroupBanEvent;
 
         #endregion
 

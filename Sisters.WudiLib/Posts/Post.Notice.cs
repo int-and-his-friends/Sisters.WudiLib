@@ -8,6 +8,7 @@ namespace Sisters.WudiLib.Posts
         internal const string GroupAdmin = "group_admin";
         internal const string GroupDecrease = "group_decrease";
         internal const string GroupIncrease = "group_increase";
+        internal const string GroupBan = "group_ban";
         internal const string FriendAdd = "friend_add";
 
         internal new const string TypeField = "notice_type";
@@ -28,6 +29,27 @@ namespace Sisters.WudiLib.Posts
         public long GroupId { get; private set; }
 
         public override Endpoint Endpoint => new GroupEndpoint(GroupId);
+    }
+
+    /// <summary>
+    /// 群组禁言事件。
+    /// </summary>
+    public sealed class GroupBanNotice : GroupNotice
+    {
+        /// <summary>
+        /// 禁言类型（禁言或解除禁言）。
+        /// </summary>
+        [JsonProperty("sub_type")]
+        public GroupBanType Type { get; private set; }
+
+        [JsonProperty("operator_id")]
+        public long OperatorId { get; private set; }
+
+        /// <summary>
+        /// 禁言时长（秒）。
+        /// </summary>
+        [JsonProperty("duration")]
+        public int Duration { get; private set; }
     }
 
     public sealed class GroupFileNotice : GroupNotice
