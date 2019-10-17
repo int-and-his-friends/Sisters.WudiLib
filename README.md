@@ -168,3 +168,11 @@ using MessageContext = Sisters.WudiLib.Posts.Message;
 ### 0.0.4.2
 - 修复使用 `array` 上报类型时，访问 `Content` 出错的问题。
 - 细节特性更新。
+
+### 0.0.5
+- 新增 `get_status`、`get_group_list` 和 `get_friend_list` API。
+- 新增群禁言事件。
+- 处理了加群、好友等请求时，请求消息含有 CQ 码的情况。
+- 增加了 `Endpoint` 和 `MessageSource` 的 `ToString()` 方法重载。
+- `HttpClient` 改为单例模式。
+- 减少了转发时的重新编码损耗。
