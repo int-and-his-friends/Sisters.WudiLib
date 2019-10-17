@@ -441,6 +441,13 @@ namespace Sisters.WudiLib
         }
 
         /// <summary>
+        /// 获取好友列表。
+        /// </summary>
+        /// <returns>好友数组。</returns>
+        public Task<Friend[]> GetFriendListAsync()
+            => CallAsync<Friend[]>("get_friend_list", new object());
+
+        /// <summary>
         /// 获取群列表。
         /// </summary>
         /// <returns></returns>

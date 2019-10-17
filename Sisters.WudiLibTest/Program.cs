@@ -125,6 +125,9 @@ namespace Sisters.WudiLibTest
 
             var httpApiClient = new HttpApiClient();
 
+            var friendList = httpApiClient.GetFriendListAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+            // test for get_friend_list ha kokomade.
+
             var groupMemberInfo = httpApiClient.GetGroupMemberInfoAsync(661021255, 962549599).GetAwaiter().GetResult();
             //var groupMemberInfos = httpApiClient.GetGroupMemberListAsync(641236878).GetAwaiter().GetResult();
 
