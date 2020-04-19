@@ -3,10 +3,12 @@ using System.Globalization;
 using System.Threading.Tasks;
 using Sisters.WudiLib;
 using Sisters.WudiLib.Posts;
+using Message = Sisters.WudiLib.SendingMessage;
+using MessageContext = Sisters.WudiLib.Posts.Message;
 
 namespace Sisters.WudiLibTest
 {
-    class Program
+    internal static class Program
     {
         private static void PrintNoticeAndRequests(ApiPostListener apiPostListener)
         {
@@ -115,7 +117,7 @@ namespace Sisters.WudiLibTest
             };
         }
 
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             var culture = CultureInfo.GetCultureInfo("zh-CN");
             CultureInfo.DefaultThreadCurrentCulture = culture;
@@ -221,7 +223,7 @@ namespace Sisters.WudiLibTest
 
         private static async void RecordTestAsync(HttpApiClient httpApi)
         {
-            var record = SendingMessage.NetRecord("https://b.ppy.sh/preview/758101.mp3");
+            var record = Message.NetRecord("https://b.ppy.sh/preview/758101.mp3");
             await httpApi.SendPrivateMessageAsync(962549599, record);
         }
 
@@ -258,7 +260,7 @@ namespace Sisters.WudiLibTest
             };
         }
 
-        private static void PrintRaw(HttpApiClient api, WudiLib.Posts.Message message)
+        private static void PrintRaw(HttpApiClient api, MessageContext message)
         {
             Console.WriteLine(message.Content.Raw);
         }

@@ -620,7 +620,7 @@ namespace Sisters.WudiLib.Posts
         {
             try
             {
-                await api?.SendMessageAsync(message.Endpoint, message.Content);
+                await api.SendMessageAsync(message.Endpoint, message.Content).ConfigureAwait(false);
             }
             catch (Exception)
             {
@@ -633,7 +633,7 @@ namespace Sisters.WudiLib.Posts
         /// <param name="something"></param>
         /// <returns></returns>
         public static MessageEventHandler Say(string something)
-            => async (api, message) => await api?.SendMessageAsync(message.Endpoint, something);
+            => (api, message) => api?.SendMessageAsync(message.Endpoint, something);
 
         //public static void Print(HttpApiClient api, GroupMessage notice)
         //    => Console.WriteLine(notice.Content);
