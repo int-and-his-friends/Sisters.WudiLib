@@ -1,3 +1,5 @@
+<div lang="zh-CN">
+
 # 无敌lib
 为方便 C# 调用酷 Q [HTTP API](https://github.com/richardchien/coolq-http-api) 插件而开发的lib。
 
@@ -176,3 +178,5 @@ using MessageContext = Sisters.WudiLib.Posts.Message;
 - 增加了 `Endpoint` 和 `MessageSource` 的 `ToString()` 方法重载。
 - `HttpClient` 改为单例模式。
 - 减少了转发时的重新编码损耗。
+
+</div>
