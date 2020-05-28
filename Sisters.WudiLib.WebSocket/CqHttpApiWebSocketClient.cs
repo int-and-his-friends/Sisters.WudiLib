@@ -29,7 +29,7 @@ namespace Sisters.WudiLib.WebSocket
             {
                 var ws = new ClientWebSocket();
                 var source = new CancellationTokenSource();
-                await ws.ConnectAsync(new Uri("wss://api.bleatingsheep.org/ws"), source.Token);
+                await ws.ConnectAsync(new Uri("wss://api.bleatingsheep.org/ws"), source.Token).ConfigureAwait(false);
             }
         }
 

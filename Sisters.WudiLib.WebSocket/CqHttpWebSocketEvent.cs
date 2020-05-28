@@ -102,7 +102,7 @@ namespace Sisters.WudiLib.WebSocket
                 byte[] eventArray; // 保留以供以后支持转发时计算签名。
                 try
                 {
-                    var receiveResult = await WebSocket.ReceiveAsync(buffer, cancellationToken);
+                    var receiveResult = await WebSocket.ReceiveAsync(buffer, cancellationToken).ConfigureAwait(false);
                     ms.Write(buffer, 0, receiveResult.Count);
                     if (!receiveResult.EndOfMessage) continue;
                     eventArray = ms.ToArray();
@@ -192,7 +192,7 @@ namespace Sisters.WudiLib.WebSocket
         private static async Task<ClientWebSocket> CreateWebSocket(Uri uri, CancellationToken cancellationToken)
         {
             var clientWebSocket = new ClientWebSocket();
-            await clientWebSocket.ConnectAsync(uri, cancellationToken);
+            await clientWebSocket.ConnectAsync(uri, cancellationToken).ConfigureAwait(false);
             return clientWebSocket;
         }
     }

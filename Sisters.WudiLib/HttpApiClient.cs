@@ -155,7 +155,7 @@ namespace Sisters.WudiLib
         /// <param name="userId">对方 QQ 号。</param>
         /// <param name="message">要发送的内容（文本）。</param>
         /// <returns>包含消息 ID 的响应数据。</returns>
-        public async Task<SendPrivateMessageResponseData> SendPrivateMessageAsync(long userId, string message)
+        public Task<SendPrivateMessageResponseData> SendPrivateMessageAsync(long userId, string message)
         {
             var data = new
             {
@@ -163,8 +163,7 @@ namespace Sisters.WudiLib
                 message,
                 auto_escape = true,
             };
-            var result = await PostAsync<SendPrivateMessageResponseData>(PrivateUrl, data);
-            return result;
+            return PostAsync<SendPrivateMessageResponseData>(PrivateUrl, data);
         }
 
         /// <summary>
@@ -173,15 +172,14 @@ namespace Sisters.WudiLib
         /// <param name="qq">对方 QQ 号。</param>
         /// <param name="message">要发送的内容。</param>
         /// <returns>包含消息 ID 的响应数据。</returns>
-        public async Task<SendPrivateMessageResponseData> SendPrivateMessageAsync(long qq, Message message)
+        public Task<SendPrivateMessageResponseData> SendPrivateMessageAsync(long qq, Message message)
         {
             var data = new
             {
                 user_id = qq,
                 message = message.Serializing,
             };
-            var result = await PostAsync<SendPrivateMessageResponseData>(PrivateUrl, data);
-            return result;
+            return PostAsync<SendPrivateMessageResponseData>(PrivateUrl, data);
         }
 
         /// <summary>
@@ -190,7 +188,7 @@ namespace Sisters.WudiLib
         /// <param name="groupId">群号。</param>
         /// <param name="message">要发送的内容（文本）。</param>
         /// <returns>包含消息 ID 的响应数据。</returns>
-        public async Task<SendGroupMessageResponseData> SendGroupMessageAsync(long groupId, string message)
+        public Task<SendGroupMessageResponseData> SendGroupMessageAsync(long groupId, string message)
         {
             var data = new
             {
@@ -198,8 +196,7 @@ namespace Sisters.WudiLib
                 message,
                 auto_escape = true,
             };
-            var result = await PostAsync<SendGroupMessageResponseData>(GroupUrl, data);
-            return result;
+            return PostAsync<SendGroupMessageResponseData>(GroupUrl, data);
         }
 
         /// <summary>
@@ -208,15 +205,14 @@ namespace Sisters.WudiLib
         /// <param name="groupId">群号。</param>
         /// <param name="message">要发送的内容。</param>
         /// <returns>包含消息 ID 的响应数据。</returns>
-        public async Task<SendGroupMessageResponseData> SendGroupMessageAsync(long groupId, Message message)
+        public Task<SendGroupMessageResponseData> SendGroupMessageAsync(long groupId, Message message)
         {
             var data = new
             {
                 group_id = groupId,
                 message = message.Serializing,
             };
-            var result = await PostAsync<SendGroupMessageResponseData>(GroupUrl, data);
-            return result;
+            return PostAsync<SendGroupMessageResponseData>(GroupUrl, data);
         }
 
         /// <summary>
@@ -225,7 +221,7 @@ namespace Sisters.WudiLib
         /// <param name="discussId">讨论组 ID。</param>
         /// <param name="message">要发送的内容（文本）。</param>
         /// <returns>包含消息 ID 的响应数据。</returns>
-        public async Task<SendDiscussMessageResponseData> SendDiscussMessageAsync(long discussId, string message)
+        public Task<SendDiscussMessageResponseData> SendDiscussMessageAsync(long discussId, string message)
         {
             var data = new
             {
@@ -233,8 +229,7 @@ namespace Sisters.WudiLib
                 message,
                 auto_escape = true,
             };
-            var result = await PostAsync<SendDiscussMessageResponseData>(DiscussUrl, data);
-            return result;
+            return PostAsync<SendDiscussMessageResponseData>(DiscussUrl, data);
         }
 
         /// <summary>
@@ -243,15 +238,14 @@ namespace Sisters.WudiLib
         /// <param name="discussId">讨论组 ID。</param>
         /// <param name="message">要发送的内容。</param>
         /// <returns>包含消息 ID 的响应数据。</returns>
-        public async Task<SendDiscussMessageResponseData> SendDiscussMessageAsync(long discussId, Message message)
+        public Task<SendDiscussMessageResponseData> SendDiscussMessageAsync(long discussId, Message message)
         {
             var data = new
             {
                 discuss_id = discussId,
                 message = message.Serializing,
             };
-            var result = await PostAsync<SendDiscussMessageResponseData>(DiscussUrl, data);
-            return result;
+            return PostAsync<SendDiscussMessageResponseData>(DiscussUrl, data);
         }
 
         /// <summary>
@@ -260,12 +254,11 @@ namespace Sisters.WudiLib
         /// <param name="endpoint">要发送到的终结点。</param>
         /// <param name="message">要发送的消息。</param>
         /// <returns>包含消息 ID 的响应数据。</returns>
-        public async Task<SendMessageResponseData> SendMessageAsync(Posts.Endpoint endpoint, Message message)
+        public Task<SendMessageResponseData> SendMessageAsync(Posts.Endpoint endpoint, Message message)
         {
             var data = JObject.FromObject(endpoint);
             data["message"] = JToken.FromObject(message.Serializing);
-            var result = await PostAsync<SendMessageResponseData>(MessageUrl, data);
-            return result;
+            return PostAsync<SendMessageResponseData>(MessageUrl, data);
         }
 
         /// <summary>
@@ -274,13 +267,12 @@ namespace Sisters.WudiLib
         /// <param name="endpoint">要发送到的终结点。</param>
         /// <param name="message">要发送的消息（文本）。</param>
         /// <returns>包含消息 ID 的响应数据。</returns>
-        public async Task<SendMessageResponseData> SendMessageAsync(Posts.Endpoint endpoint, string message)
+        public Task<SendMessageResponseData> SendMessageAsync(Posts.Endpoint endpoint, string message)
         {
             var data = JObject.FromObject(endpoint);
             data["message"] = JToken.FromObject(message);
             data["auto_escape"] = true;
-            var result = await PostAsync<SendMessageResponseData>(MessageUrl, data);
-            return result;
+            return PostAsync<SendMessageResponseData>(MessageUrl, data);
         }
 
         /// <summary>
@@ -289,15 +281,14 @@ namespace Sisters.WudiLib
         /// <param name="groupId">群号。</param>
         /// <param name="userId">要踢的 QQ 号。</param>
         /// <returns>是否成功。注意：酷 Q 未处理错误，所以无论是否成功都会返回<c>true</c>。</returns>
-        public async Task<bool> KickGroupMemberAsync(long groupId, long userId)
+        public Task<bool> KickGroupMemberAsync(long groupId, long userId)
         {
             var data = new
             {
                 group_id = groupId,
                 user_id = userId,
             };
-            var success = await PostAsync(KickGroupMemberUrl, data);
-            return success;
+            return PostAsync(KickGroupMemberUrl, data);
         }
 
         /// <summary>
@@ -305,21 +296,18 @@ namespace Sisters.WudiLib
         /// </summary>
         /// <param name="message">消息返回值。</param>
         /// <returns>是否成功。</returns>
-        public async Task<bool> RecallMessageAsync(SendMessageResponseData message)
-        {
-            return await RecallMessageAsync(message.MessageId);
-        }
+        public Task<bool> RecallMessageAsync(SendMessageResponseData message)
+            => RecallMessageAsync(message.MessageId);
 
         /// <summary>
         /// 撤回消息（需要Pro）
         /// </summary>
         /// <param name="messageId">消息 ID。</param>
         /// <returns>是否成功。</returns>
-        public async Task<bool> RecallMessageAsync(int messageId)
+        public Task<bool> RecallMessageAsync(int messageId)
         {
             var data = new { message_id = messageId };
-            var success = await PostAsync(RecallUrl, data);
-            return success;
+            return PostAsync(RecallUrl, data);
         }
 
         /// <summary>
@@ -330,7 +318,7 @@ namespace Sisters.WudiLib
         /// <param name="duration">禁言时长，单位秒，0 表示取消禁言。</param>
         /// <exception cref="ApiAccessException"></exception>
         /// <returns>如果操作成功，返回 <c>true</c>。</returns>
-        public async Task<bool> BanGroupMember(long groupId, long userId, int duration)
+        public Task<bool> BanGroupMember(long groupId, long userId, int duration)
         {
             var data = new
             {
@@ -338,7 +326,7 @@ namespace Sisters.WudiLib
                 user_id = userId,
                 duration,
             };
-            return await PostAsync(BanGroupMemberUrl, data);
+            return PostAsync(BanGroupMemberUrl, data);
         }
 
         /// <summary>
@@ -367,7 +355,7 @@ namespace Sisters.WudiLib
         /// <param name="flag">要禁言的匿名用户的 flag。</param>
         /// <param name="duration">禁言时长，单位秒，无法取消匿名用户禁言。</param>
         /// <returns>如果操作成功，返回 <c>true</c>。</returns>
-        public async Task<bool> BanAnonymousMember(long groupId, string flag, int duration)
+        public Task<bool> BanAnonymousMember(long groupId, string flag, int duration)
         {
             var data = new
             {
@@ -375,7 +363,7 @@ namespace Sisters.WudiLib
                 anonymous_flag = flag,
                 duration,
             };
-            return await CallAsync("set_group_anonymous_ban", data);
+            return CallAsync("set_group_anonymous_ban", data);
         }
 
         /// <summary>
@@ -418,7 +406,7 @@ namespace Sisters.WudiLib
         /// <param name="userId">要设置的 QQ 号。</param>
         /// <param name="card">群名片内容，不填或空字符串表示删除群名片。</param>
         /// <returns>是否成功。</returns>
-        public async Task<bool> SetGroupCard(long groupId, long userId, string card)
+        public Task<bool> SetGroupCard(long groupId, long userId, string card)
         {
             var data = new
             {
@@ -426,18 +414,17 @@ namespace Sisters.WudiLib
                 user_id = userId,
                 card,
             };
-            return await PostAsync(SetGroupCardUrl, data);
+            return PostAsync(SetGroupCardUrl, data);
         }
 
         /// <summary>
         /// 获取登录信息。
         /// </summary>
         /// <returns>登录信息。</returns>
-        public async Task<LoginInfo> GetLoginInfoAsync()
+        public Task<LoginInfo> GetLoginInfoAsync()
         {
             var data = new object();
-            var result = await PostAsync<LoginInfo>(LoginInfoUrl, data);
-            return result;
+            return PostAsync<LoginInfo>(LoginInfoUrl, data);
         }
 
         /// <summary>
@@ -460,7 +447,7 @@ namespace Sisters.WudiLib
         /// <param name="group">群号。</param>
         /// <param name="qq">QQ 号（不可以是登录号）。</param>
         /// <returns>获取到的成员信息。</returns>
-        public async Task<GroupMemberInfo> GetGroupMemberInfoAsync(long group, long qq)
+        public Task<GroupMemberInfo> GetGroupMemberInfoAsync(long group, long qq)
         {
             var data = new
             {
@@ -468,8 +455,7 @@ namespace Sisters.WudiLib
                 user_id = qq,
                 no_cache = true,
             };
-            var result = await PostAsync<GroupMemberInfo>(GroupMemberInfoUrl, data);
-            return result;
+            return PostAsync<GroupMemberInfo>(GroupMemberInfoUrl, data);
         }
 
         /// <summary>
@@ -477,14 +463,13 @@ namespace Sisters.WudiLib
         /// </summary>
         /// <param name="group">群号。</param>
         /// <returns>响应内容为数组，每个元素的内容和上面的 GetGroupMemberInfoAsync() 方法相同，但对于同一个群组的同一个成员，获取列表时和获取单独的成员信息时，某些字段可能有所不同，例如 area、title 等字段在获取列表时无法获得，具体应以单独的成员信息为准。</returns>
-        public async Task<GroupMemberInfo[]> GetGroupMemberListAsync(long group)
+        public Task<GroupMemberInfo[]> GetGroupMemberListAsync(long group)
         {
             var data = new
             {
                 group_id = group,
             };
-            var result = await PostAsync<GroupMemberInfo[]>(GroupMemberListUrl, data);
-            return result;
+            return PostAsync<GroupMemberInfo[]>(GroupMemberListUrl, data);
         }
 
         /// <summary>
@@ -498,8 +483,8 @@ namespace Sisters.WudiLib
         /// 清理数据目录中的图片。经测试可能无效。
         /// </summary>
         /// <returns></returns>
-        public async Task CleanImageData()
-            => await PostAsync(CleanUrl, new { data_dir = "image" });
+        public Task CleanImageData()
+            => PostAsync(CleanUrl, new { data_dir = "image" });
 
         #region 值得重载的基础方法。
 
@@ -516,8 +501,7 @@ namespace Sisters.WudiLib
         protected virtual async Task<JObject> CallRawJObjectAsync(string action, object data)
         {
             string json = JsonConvert.SerializeObject(data);
-            string responseContent;
-            responseContent = await CallRawAsync(action, json);
+            string responseContent = await CallRawAsync(action, json).ConfigureAwait(false);
             var result = JsonConvert.DeserializeObject<JObject>(responseContent);
             return result;
         }
@@ -533,26 +517,22 @@ namespace Sisters.WudiLib
         /// <returns>响应的 JSON 字符串。</returns>
         protected virtual async Task<string> CallRawAsync(string action, string json)
         {
-            using (HttpContent content = new StringContent(json, Encoding.UTF8, "application/json"))
-            {
-                var http = HttpClient;
-                using (var response = (await http.PostAsync(_apiAddress + action, content)).EnsureSuccessStatusCode())
-                {
-                    return await response.Content.ReadAsStringAsync();
-                }
-            }
+            using HttpContent content = new StringContent(json, Encoding.UTF8, "application/json");
+            var http = HttpClient;
+            using var response = (await http.PostAsync(_apiAddress + action, content).ConfigureAwait(false)).EnsureSuccessStatusCode();
+            return await response.Content.ReadAsStringAsync().ConfigureAwait(false);
         }
 
         #endregion
 
         #region Old Utilities (Use URL)
 
-        private async Task<CqHttpApiResponse<T>> PostApiAsync<T>(string url, object data)
+        private Task<CqHttpApiResponse<T>> PostApiAsync<T>(string url, object data)
         {
             if (data is null)
                 throw new ArgumentNullException(nameof(data), "data不能为null");
             var action = url.Substring(url.LastIndexOf('/') + 1);
-            return await CallApiAsync<T>(action, data);
+            return CallApiAsync<T>(action, data);
         }
 
         /// <summary>
@@ -566,7 +546,7 @@ namespace Sisters.WudiLib
         /// <exception cref="ArgumentNullException"><c>data</c> was null.</exception>
         private async Task<T> PostAsync<T>(string url, object data)
         {
-            var response = await PostApiAsync<T>(url, data);
+            var response = await PostApiAsync<T>(url, data).ConfigureAwait(false);
             return response.Retcode == CqHttpApiResponse.RetcodeOK ? response.Data : default(T);
         }
 
@@ -576,7 +556,7 @@ namespace Sisters.WudiLib
         {
             try
             {
-                var response = await PostApiAsync<object>(url, data);
+                var response = await PostApiAsync<object>(url, data).ConfigureAwait(false);
                 return response.Retcode == CqHttpApiResponse.RetcodeOK;
             }
             catch (AggregateException e)
@@ -613,7 +593,7 @@ namespace Sisters.WudiLib
 
             try
             {
-                var responseJObject = await CallRawJObjectAsync(action, data);
+                var responseJObject = await CallRawJObjectAsync(action, data).ConfigureAwait(false);
                 var result = responseJObject.ToObject<CqHttpApiResponse<T>>();
                 return result;
             }
@@ -634,7 +614,7 @@ namespace Sisters.WudiLib
         /// <exception cref="ArgumentNullException"><c>data</c> was null -or- <c>action</c> was null.</exception>
         public async Task<T> CallAsync<T>(string action, object data)
         {
-            var response = await CallApiAsync<T>(action, data);
+            var response = await CallApiAsync<T>(action, data).ConfigureAwait(false);
             return response.Retcode == CqHttpApiResponse.RetcodeOK ? response.Data : default;
         }
 
@@ -648,7 +628,7 @@ namespace Sisters.WudiLib
         /// <exception cref="ArgumentNullException"><c>data</c> was null -or- <c>action</c> was null.</exception>
         public async Task<bool> CallAsync(string action, object data)
         {
-            var response = await CallApiAsync<object>(action, data);
+            var response = await CallApiAsync<object>(action, data).ConfigureAwait(false);
             return response.IsAcceptableStatus;
         }
 

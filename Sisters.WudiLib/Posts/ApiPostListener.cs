@@ -150,7 +150,7 @@ namespace Sisters.WudiLib.Posts
                             response.StatusCode = 204;
                         }
                     }
-                });
+                }).ConfigureAwait(false);
             }
             catch (Exception e)
             {
@@ -245,7 +245,7 @@ namespace Sisters.WudiLib.Posts
                     headerValue.CharSet = encoding.WebName;
 
                     byteArrayContent.Headers.ContentType = headerValue;
-                    using (await client.PostAsync(to, byteArrayContent))
+                    using (await client.PostAsync(to, byteArrayContent).ConfigureAwait(false))
                     {
                         // ignored
                     }
