@@ -78,6 +78,13 @@ namespace Sisters.WudiLib.Posts
                 Approve = approve,
             };
         }
+
+        /// <summary>
+        /// 从 <see cref="string"/> 转换 <see cref="GroupRequestResponse"/>。转换为拒绝请求。
+        /// </summary>
+        /// <param name="reason">拒绝理由。</param>
+        public static implicit operator GroupRequestResponse(string reason) => new GroupRequestResponse(reason);
+
     }
 
     /// <summary>
