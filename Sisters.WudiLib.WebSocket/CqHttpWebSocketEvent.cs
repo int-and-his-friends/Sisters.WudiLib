@@ -130,7 +130,7 @@ namespace Sisters.WudiLib.WebSocket
                 ms = new MemoryStream();
                 _ = Task.Run(async () =>
                 {
-                    ForwardAsync(eventContent, null);
+                    ForwardAsync(eventArray, Encoding.UTF8, null);
                     if (string.IsNullOrEmpty(eventContent))
                         return;
 

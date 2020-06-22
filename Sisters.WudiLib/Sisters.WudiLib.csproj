@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net45;net47</TargetFrameworks>
     <LangVersion>8.0</LangVersion>
-    <Version>0.0.5</Version>
+    <Version>0.0.6</Version>
     <Authors>bleatingsheep</Authors>
     <Copyright>bleatingsheep</Copyright>
     <Company>bleatingsheep</Company>
