@@ -264,6 +264,7 @@ namespace Sisters.WudiLib
             Utilities.CheckStringArgument(title, nameof(title));
             var arguments = new List<(string argument, string value)>
                     {
+                        ("type", "custom"),
                         (introductionUrlParamName, introductionUrl),
                         (audioUrlParamName, audioUrl),
                         (titleParamName, title),
