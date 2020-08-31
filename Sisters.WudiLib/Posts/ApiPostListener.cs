@@ -100,15 +100,15 @@ namespace Sisters.WudiLib.Posts
                 string prefix = PostAddress;
                 _listener.Prefixes.Add(prefix);
                 _listener.Start();
-                _listenTask = Task.Run((Action)Listening);
+                _listenTask = ListeningAsync();
             }
         }
 
-        private void Listening()
+        private async Task ListeningAsync()
         {
             while (true)
             {
-                var context = _listener.GetContext();
+                var context = await _listener.GetContextAsync().ConfigureAwait(false);
                 ProcessContext(context);
             }
         }
