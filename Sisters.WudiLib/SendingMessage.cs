@@ -59,7 +59,7 @@ namespace Sisters.WudiLib
         /// <param name="message2">在后面的消息。</param>
         /// <exception cref="InvalidOperationException">有无法连接的消息。</exception>
         private SendingMessage(SendingMessage message1, SendingMessage message2) : this(
-            message1.Sections.Union(message2.Sections))
+            message1.Sections.Concat(message2.Sections))
         {
             if (!message1.CanConcat || !message2.CanConcat)
             {
