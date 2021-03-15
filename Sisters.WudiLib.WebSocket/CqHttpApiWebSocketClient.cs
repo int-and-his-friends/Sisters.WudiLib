@@ -12,15 +12,12 @@ namespace Sisters.WudiLib.WebSocket
 {
     internal class CqHttpApiWebSocketClient : HttpApiClient
     {
-        private static readonly object s_randomLock = new object();
-        private static readonly Random s_random = new Random();
-
         private static int GetRandomInt32()
         {
-            lock (s_randomLock)
-            {
-                return s_random.Next();
-            }
+            Span<int> span = stackalloc int[1];
+            System.Security.Cryptography.RandomNumberGenerator.Fill(
+                System.Runtime.InteropServices.MemoryMarshal.AsBytes(span));
+            return span[0];
         }
 
         public virtual async Task ConnectAsync()
