@@ -165,9 +165,11 @@ namespace Sisters.WudiLib.Posts
         /// <returns>读取到的内容。</returns>
         private string GetContentAndForward(HttpListenerRequest request)
         {
-            var ms = new MemoryStream();
-            request.InputStream.CopyTo(ms);
-            byte[] bytes = ms.ToArray();
+            byte[] bytes = new byte[request.ContentLength64];
+            using (var ms = new MemoryStream(bytes))
+            {
+                request.InputStream.CopyTo(ms);
+            }
             (request.InputStream as IDisposable).Dispose();
 
             // 验证
@@ -307,7 +309,7 @@ namespace Sisters.WudiLib.Posts
         /// <param name="content">收到的 JSON 数据。</param>
         /// <returns>由处理器返回的数据。</returns>
         /// <exception cref="Exception">处理时发生异常。</exception>
-        public Response ProcessPost(string content)
+        public virtual Response ProcessPost(string content)
         {
             /*Post p = GetPost(content);
             if (p is null)
@@ -345,7 +347,7 @@ namespace Sisters.WudiLib.Posts
             return null;
         }
 
-        private void ProcessMessage(JObject contentObject)
+        protected virtual void ProcessMessage(JObject contentObject)
         {
             GroupMessage groupMessage = contentObject.ToObject<GroupMessage>();
             switch (groupMessage.MessageType)
@@ -365,7 +367,7 @@ namespace Sisters.WudiLib.Posts
             }
         }
 
-        private void ProcessGroupMessage(JObject contentObject, GroupMessage groupMessage)
+        protected virtual void ProcessGroupMessage(JObject contentObject, GroupMessage groupMessage)
         {
             switch (groupMessage.SubType)
             {
@@ -419,7 +421,7 @@ namespace Sisters.WudiLib.Posts
 
         #region Notice
 
-        private void ProcessNotice(JObject contentObject)
+        protected virtual void ProcessNotice(JObject contentObject)
         {
             switch (contentObject[Notice.TypeField].ToObject<string>())
             {
