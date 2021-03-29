@@ -8,7 +8,7 @@ namespace Sisters.WudiLib.WebSocket
 {
     internal static class WebSocketUtility
     {
-        private static Uri CreateUri(string url, string accessToken)
+        internal static Uri CreateUri(string url, string accessToken)
         {
             var uriBuilder = new UriBuilder(url);
             if (!string.IsNullOrEmpty(accessToken))
@@ -25,9 +25,8 @@ namespace Sisters.WudiLib.WebSocket
             return uri;
         }
 
-        internal static async Task<ClientWebSocket> CreateWebSocket(string url, string accessToken, CancellationToken cancellationToken)
+        internal static async Task<ClientWebSocket> CreateWebSocket(Uri uri, CancellationToken cancellationToken)
         {
-            var uri = CreateUri(url, accessToken);
             var clientWebSocket = new ClientWebSocket();
             await clientWebSocket.ConnectAsync(uri, cancellationToken).ConfigureAwait(false);
             return clientWebSocket;

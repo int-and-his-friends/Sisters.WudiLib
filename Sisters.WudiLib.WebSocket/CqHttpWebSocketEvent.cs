@@ -168,7 +168,7 @@ namespace Sisters.WudiLib.WebSocket
         private void InitializeWebSocket(CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            ClientWebSocket clientWebSocket = CreateWebSocket(Uri, _accessToken, cancellationToken).GetAwaiter().GetResult();
+            ClientWebSocket clientWebSocket = CreateWebSocket(CreateUri(Uri, _accessToken), cancellationToken).GetAwaiter().GetResult();
             WebSocket = clientWebSocket;
         }
     }
