@@ -89,11 +89,13 @@ namespace Sisters.WudiLib
         public HttpApiClient(string apiAddress, string accessToken) : this(apiAddress)
             => AccessToken = accessToken;
 
+        [Obsolete]
         private int _isReadyToCleanData;
 
         /// <summary>
         /// 是否已设置定期清理图片缓存。
         /// </summary>
+        [Obsolete]
         public bool IsCleaningData => _isReadyToCleanData != 0;
 
         private string _apiAddress;
@@ -101,7 +103,7 @@ namespace Sisters.WudiLib
         /// <summary>
         /// 获取或设置 HTTP API 的监听地址
         /// </summary>
-        public string ApiAddress
+        public virtual string ApiAddress
         {
             get => _apiAddress;
             set
@@ -122,27 +124,35 @@ namespace Sisters.WudiLib
         /// </summary>
         /// <param name="intervalMinutes">间隔的毫秒数。</param>
         /// <returns>成功开始则为 <c>true</c>，如果之前已经开始过，则为 <c>false</c>。</returns>
-        public bool StartClean(int intervalMinutes)
+        [Obsolete]
+        public bool StartClean(int intervalMinutes, CancellationToken cancellationToken)
         {
             if (Interlocked.CompareExchange(ref _isReadyToCleanData, 1, 0) == 0)
             {
-                var task = new Task(async () =>
+                _ = Task.Run(async () =>
                 {
                     while (true)
                     {
                         try
                         {
-                            await this.CleanImageData();
+                            await this.CleanImageData().ConfigureAwait(false);
                         }
+#pragma warning disable RCS1075 // Avoid empty catch clause that catches System.Exception.
                         catch (Exception)
+#pragma warning restore RCS1075 // Avoid empty catch clause that catches System.Exception.
                         {
                             // ignored
                         }
-
-                        await Task.Delay(60000 * intervalMinutes);
+                        try
+                        {
+                            await Task.Delay(60000 * intervalMinutes, cancellationToken).ConfigureAwait(false);
+                        }
+                        catch (TaskCanceledException)
+                        {
+                            break;
+                        }
                     }
-                }, TaskCreationOptions.LongRunning);
-                task.Start();
+                });
                 return true;
             }
 
