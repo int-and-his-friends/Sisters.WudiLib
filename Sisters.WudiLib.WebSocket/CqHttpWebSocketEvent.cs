@@ -4,10 +4,10 @@ using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Web;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Sisters.WudiLib.Posts;
+using static Sisters.WudiLib.WebSocket.WebSocketUtility;
 
 namespace Sisters.WudiLib.WebSocket
 {
@@ -98,15 +98,13 @@ namespace Sisters.WudiLib.WebSocket
             while (true)
             {
                 cancellationToken.ThrowIfCancellationRequested();
-                string eventContent;
-                byte[] eventArray; // 保留以供以后支持转发时计算签名。
+                byte[] eventArray;
                 try
                 {
                     var receiveResult = await WebSocket.ReceiveAsync(buffer, cancellationToken).ConfigureAwait(false);
                     ms.Write(buffer, 0, receiveResult.Count);
                     if (!receiveResult.EndOfMessage) continue;
                     eventArray = ms.ToArray();
-                    eventContent = Encoding.UTF8.GetString(eventArray);
                 }
                 catch (Exception)
                 {
@@ -127,73 +125,51 @@ namespace Sisters.WudiLib.WebSocket
                     continue;
                 }
 
+                _ = Task.Run(() => ProcessWSMessageAsync(eventArray));
                 ms = new MemoryStream();
-                _ = Task.Run(async () =>
-                {
-                    ForwardAsync(eventArray, Encoding.UTF8, null);
-                    if (string.IsNullOrEmpty(eventContent))
-                        return;
+            }
+        }
 
-                    try
+        private async Task ProcessWSMessageAsync(byte[] eventArray)
+        {
+            ForwardAsync(eventArray, Encoding.UTF8, null);
+            string eventContent = Encoding.UTF8.GetString(eventArray);
+            if (string.IsNullOrEmpty(eventContent))
+                return;
+
+            try
+            {
+                var response = ProcessPost(eventContent);
+                var apiClient = ApiClient;
+                if (response is RequestResponse && !(apiClient is null))
+                {
+                    JObject data;
+                    data = JsonConvert.DeserializeObject<JObject>(eventContent);
+                    data.Merge(JObject.FromObject(response));
+                    switch (response)
                     {
-                        var response = ProcessPost(eventContent);
-                        var apiClient = ApiClient;
-                        if (response is RequestResponse && !(apiClient is null))
-                        {
-                            JObject data;
-                            data = JsonConvert.DeserializeObject<JObject>(eventContent);
-                            data.Merge(JObject.FromObject(response));
-                            switch (response)
-                            {
-                                case FriendRequestResponse friend:
-                                    await apiClient.HandleFriendRequestInternalAsync(data);
-                                    break;
-                                case GroupRequestResponse group:
-                                    await apiClient.HandleGroupRequestInternalAsync(data);
-                                    break;
-                                default:
-                                    break;
-                            }
-                        }
+                        case FriendRequestResponse friend:
+                            await apiClient.HandleFriendRequestInternalAsync(data);
+                            break;
+                        case GroupRequestResponse group:
+                            await apiClient.HandleGroupRequestInternalAsync(data);
+                            break;
+                        default:
+                            break;
                     }
-                    catch (Exception e)
-                    {
-                        LogException(e, eventContent);
-                    }
-                });
+                }
+            }
+            catch (Exception e)
+            {
+                LogException(e, eventContent);
             }
         }
 
         private void InitializeWebSocket(CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            Uri uri = CreateUri(Uri, _accessToken);
-            ClientWebSocket clientWebSocket = CreateWebSocket(uri, cancellationToken).GetAwaiter().GetResult();
+            ClientWebSocket clientWebSocket = CreateWebSocket(Uri, _accessToken, cancellationToken).GetAwaiter().GetResult();
             WebSocket = clientWebSocket;
-        }
-
-        private static Uri CreateUri(string url, string accessToken)
-        {
-            var uriBuilder = new UriBuilder(url);
-            if (!string.IsNullOrEmpty(accessToken))
-            {
-                var query = HttpUtility.ParseQueryString(uriBuilder.Query);
-                query["access_token"] = accessToken;
-                /* 在.NET Framework 中，这里的 ToString 会编码成 %uxxxx 的格式，
-                 * 现在已经不用这种格式了。.NET Core 可以正确处理。解决这个问题之后，
-                 * 此类库应该可以用于 .NET Framework。
-                 */
-                uriBuilder.Query = query.ToString();
-            }
-            Uri uri = uriBuilder.Uri;
-            return uri;
-        }
-
-        private static async Task<ClientWebSocket> CreateWebSocket(Uri uri, CancellationToken cancellationToken)
-        {
-            var clientWebSocket = new ClientWebSocket();
-            await clientWebSocket.ConnectAsync(uri, cancellationToken).ConfigureAwait(false);
-            return clientWebSocket;
         }
     }
 }
