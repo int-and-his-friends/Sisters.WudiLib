@@ -12,7 +12,7 @@ using static Sisters.WudiLib.WebSocket.WebSocketUtility;
 
 namespace Sisters.WudiLib.WebSocket
 {
-    internal class CqHttpWebSocketApiClient : HttpApiClient, IDisposable
+    public class CqHttpWebSocketApiClient : HttpApiClient, IDisposable
     {
         private static readonly JsonSerializerSettings s_jsonSerializerSettings = new JsonSerializerSettings();
 
