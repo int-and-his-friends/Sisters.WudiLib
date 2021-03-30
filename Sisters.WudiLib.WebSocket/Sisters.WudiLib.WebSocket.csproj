@@ -3,14 +3,15 @@
   <PropertyGroup>
     <TargetFrameworks>netcoreapp2.1</TargetFrameworks>
     <LangVersion>latest</LangVersion>
-    <Version>0.0.6</Version>
+    <Version>0.0.7-alpha1</Version>
     <Authors>bleatingsheep</Authors>
     <Copyright>bleatingsheep</Copyright>
     <Company>bleatingsheep</Company>
     <PackageTags>cqhttp coolq-http-api coolq qq qqbot qqrobot 酷Q</PackageTags>
     <PackageProjectUrl>https://github.com/int-and-his-friends/Sisters.WudiLib</PackageProjectUrl>
     <Description>酷Q HTTP API .NET</Description>
-    <PackageLicenseUrl>https://github.com/int-and-his-friends/Sisters.WudiLib/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageLicenseUrl></PackageLicenseUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -18,7 +19,7 @@
   </PropertyGroup>
 
   <ItemGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <PackageReference Include="Sisters.WudiLib" Version="0.0.6" />
+    <PackageReference Include="Sisters.WudiLib" Version="0.0.7-alpha1" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
