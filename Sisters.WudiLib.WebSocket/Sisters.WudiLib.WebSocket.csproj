@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFrameworks>netcoreapp2.1</TargetFrameworks>
     <LangVersion>latest</LangVersion>
-    <Version>0.0.7-alpha2</Version>
+    <Version>0.0.7-alpha3</Version>
     <Authors>bleatingsheep</Authors>
     <Copyright>bleatingsheep</Copyright>
     <Company>bleatingsheep</Company>
@@ -19,7 +19,7 @@
   </PropertyGroup>
 
   <ItemGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <PackageReference Include="Sisters.WudiLib" Version="0.0.7-alpha1" />
+    <PackageReference Include="Sisters.WudiLib" Version="0.0.7-alpha2" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

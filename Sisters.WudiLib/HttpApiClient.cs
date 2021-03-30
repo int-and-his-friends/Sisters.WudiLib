@@ -78,10 +78,11 @@ namespace Sisters.WudiLib
         }
 
         /// <summary>
-        /// 构造 <see cref="HttpApiClient"/> 的实例，并指定 <see cref="ApiAddress"/>。
+        /// 构造 <see cref="HttpApiClient"/> 的实例，并指定
+        /// <see cref="ApiAddress"/>。请注意在此指定的值不会受子类重载影响。
         /// </summary>
         /// <param name="apiAddress"></param>
-        public HttpApiClient(string apiAddress) => ApiAddress = apiAddress;
+        public HttpApiClient(string apiAddress) => PApiAddress = apiAddress;
 
         /// <summary>
         /// 构造 <see cref="HttpApiClient"/> 的实例，并指定 <see cref="ApiAddress"/> 和 <see cref="AccessToken"/>。
@@ -100,23 +101,19 @@ namespace Sisters.WudiLib
 
         private string _apiAddress;
 
+        private string PApiAddress
+        {
+            get => _apiAddress;
+            set => _apiAddress = value.EndsWith("/", StringComparison.OrdinalIgnoreCase) ? value : value + "/";
+        }
+
         /// <summary>
         /// 获取或设置 HTTP API 的监听地址
         /// </summary>
         public virtual string ApiAddress
         {
-            get => _apiAddress;
-            set
-            {
-                if (value.EndsWith("/", StringComparison.OrdinalIgnoreCase))
-                {
-                    _apiAddress = value;
-                }
-                else
-                {
-                    _apiAddress = value + "/";
-                }
-            }
+            get => PApiAddress;
+            set => PApiAddress = value;
         }
 
         /// <summary>

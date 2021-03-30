@@ -39,6 +39,7 @@ namespace Sisters.WudiLib.WebSocket
                     var s = Encoding.UTF8.GetString(bytes);
                     OnResponse(s);
                 },
+                AutoReconnect = false,
             };
         }
 
@@ -105,7 +106,7 @@ namespace Sisters.WudiLib.WebSocket
                     return false;
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 return false;
             }
@@ -127,6 +128,7 @@ namespace Sisters.WudiLib.WebSocket
                 throw new ApiAccessException("使用 WebSocket 访问 API 时出现并发错误。", null);
             try
             {
+                await CallRawAsync(action, jObject.ToString(Formatting.None)).ConfigureAwait(false);
                 await l.WaitAsync(TimeOut, response.CancellationToken).ConfigureAwait(false);
                 return response.Data;
             }
