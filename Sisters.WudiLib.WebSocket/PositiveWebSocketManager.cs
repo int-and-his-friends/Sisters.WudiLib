@@ -13,6 +13,7 @@ namespace Sisters.WudiLib.WebSocket
     {
         private CancellationToken _cancellationToken;
         private readonly SemaphoreSlim _connectSemaphore = new(1, 1);
+        private readonly SemaphoreSlim _sendSemaphore = new(1, 1);
         private Task _listenTask;
 
         private Func<Uri> _getUri;
@@ -71,7 +72,7 @@ namespace Sisters.WudiLib.WebSocket
         /// Still throws if connection fails.
         /// </summary>
         /// <param name="cancellationToken">Cancellation token.</param>
-        public async Task<System.Net.WebSockets.WebSocket> GetWebSocket(CancellationToken cancellationToken)
+        private async Task<System.Net.WebSockets.WebSocket> GetWebSocket(CancellationToken cancellationToken)
         {
             if (WebSocket != null && !_cancellationToken.IsCancellationRequested)
             {// ignore
@@ -137,6 +138,20 @@ namespace Sisters.WudiLib.WebSocket
                     // ignored
                 }
                 ms = new MemoryStream();
+            }
+        }
+
+        public async Task SendAsync(ArraySegment<byte> buffer, WebSocketMessageType messageType, bool endOfMessage, CancellationToken cancellationToken)
+        {
+            await _sendSemaphore.WaitAsync().ConfigureAwait(false);
+            try
+            {
+                var ws = await GetWebSocket(cancellationToken).ConfigureAwait(false);
+                await ws.SendAsync(buffer, messageType, endOfMessage, cancellationToken).ConfigureAwait(false);
+            }
+            finally
+            {
+                _sendSemaphore.Release();
             }
         }
 

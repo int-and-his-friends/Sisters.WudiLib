@@ -145,8 +145,7 @@ namespace Sisters.WudiLib.WebSocket
 
         protected override async Task<string> CallRawAsync(string action, string json)
         {
-            var ws = await _manager.GetWebSocket(_disposeSource.Token).ConfigureAwait(false);
-            await ws.SendAsync(Encoding.UTF8.GetBytes(json), WebSocketMessageType.Text, true, _disposeSource.Token).ConfigureAwait(false);
+            await _manager.SendAsync(Encoding.UTF8.GetBytes(json), WebSocketMessageType.Text, true, _disposeSource.Token).ConfigureAwait(false);
             return string.Empty;
         }
 
