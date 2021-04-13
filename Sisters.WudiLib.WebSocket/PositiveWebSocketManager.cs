@@ -180,6 +180,14 @@ namespace Sisters.WudiLib.WebSocket
                 ThrowIfCanceledOrDisposed(cancellationToken);
             }
         }
+
+        internal static async Task<ClientWebSocket> CreateWebSocket(Uri uri, CancellationToken cancellationToken)
+        {
+            var clientWebSocket = new ClientWebSocket();
+            await clientWebSocket.ConnectAsync(uri, cancellationToken).ConfigureAwait(false);
+            return clientWebSocket;
+        }
+
         #endregion
 
         #region utils
