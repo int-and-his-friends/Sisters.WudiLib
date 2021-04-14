@@ -57,13 +57,13 @@ listener.SetSecret("this-is-your-secret");
 设置后，每次收到上报都会验证上报数据的哈希。如果验证失败，将忽略此次上报。
 
 ## WebSocket 和其他通信方式
-### 通过 WebSocket 监听上报
+### 正向 WebSocket
 您可以在此找到 WebSocket 通信的 nuget 包：[Sisters.WudiLib.WebSocket](https://www.nuget.org/packages/Sisters.WudiLib.WebSocket/)。
 
 ### 特性
 使用 WebSocket 监听上报，与 HTTP 方式并没有很大不同。需要注意的一点是，第一次调用 `StartListen` 方法必须成功连接，否则会引发异常。此后如果连接断开，会自动尝试重连。你可以通过传入 `CancellationToken` 进行终止。具体请参见示例。
 
-目前仅支持通过 WebSocket 监听上报（暂不支持通过 WebSocket 进行 API 访问，请使用 HTTP）。请求类事件将通过 API 响应，必须设置了 `ApiClient` 属性才可以。请与 HTTP 方式结合使用。
+目前支持通过 WebSocket 监听上报和访问 API。请求类事件将通过 API 响应，必须设置了 `ApiClient` 属性才可以。
 
 ### 示例
 此示例包含了简单的事件监听和处理，并对
@@ -71,7 +71,9 @@ listener.SetSecret("this-is-your-secret");
 var cqWebSocketEvent = new CqHttpWebSocketEvent(
     "wss://your-ws-address/event",
     "your-access-token"); // 创建 WebSocket 事件监听客户端。
-var httpApiClient = new HttpApiClient(); // 创建 HTTP 通信客户端。
+var httpApiClient = new CqHttpWebSocketApiClient(
+    "wss://your-ws-address/event",
+    "your-access-token"); // 创建 HTTP 通信客户端。
 cqWebSocketEvent.ApiClient = httpApiClient;
 
 // 订阅事件。
@@ -117,7 +119,7 @@ Task.Delay(-1).Wait();
 ```
 
 ### 其他通信方式
-从 0.0.4 版本开始，WudiLib 的某些基础方法已使用 `virtual` 标记，也就是说，您可以继承并重载相关的类，以实现 WebSocket 监听上报和访问 API。
+从 0.0.4 版本开始，WudiLib 的某些基础方法已使用 `virtual` 标记，也就是说，您可以继承并重载相关的类，以实现其他通信方式（如反向 WebSocket）。
 
 ### 与现有代码共同使用
 WudiLib 支持将收到的上报数据转发到另一处，相当于有两个上报地址，使得以前的代码可以继续运行，降低迁移成本。
@@ -143,48 +145,5 @@ using MessageContext = Sisters.WudiLib.Posts.Message;
 
 ## 帮助
 如果您需要帮助，请联系 QQ：962549599，注明“WudiLib”和您的称呼。
-
-## 更新日志（部分）
-### 0.0.2
-- 优化了多次获取 `ReceivedMessage.Sections` 属性时的性能。
-- 增加 `ReceivedMessage.TryGetPlainText(out string text)` 方法
-- 现在转发时将保持头部中的 `X-Signature` 不变。
-
-### 0.0.3
-#### API
-- 将 API 访问网络的方法移到 `HttpApiClient` 类，并提取 `CallRawAsync()` 方法，方便重载。
-- 增加 `HttpApiClient.CallAsync()` 方法，方便调用本类库没提供的 API。可以使用继承或扩展方法的方式封装。
-#### `Section`
-- 为 `Section` 增加 `Raw` 属性，方便查看其字符串形式。
-- 为 `Section` 增加几个构造方法，方便构造自己的消息段。
-- 修复 `Section` 在参数顺序不同时 `GetHashCode()` 返回不同结果的 bug。现在参数顺序不分先后。*潜在可能影响现有代码行为，但目前未找到真正有影响的情况。*
-#### `Message` 及其子类
-- `Message` 类的构造方法改为 `protected`，`Serializing` 属性改为 `protected internal abstract`（原来是 `internal abstract`）。所以你可以继承并实现自己的 Message。
-- 修改了现有的 `Message` 子类 `Serializing` 属性的修饰符，以配合上一项。
-- 为 `SendingMessage` 增加 `Sections` 属性，返回类型为 `IReadOnlyList<Section>`。
-#### `Message` 及其子类不兼容的更改 **(注意：不向后兼容)**
-- 修改了 `SectionMesssage` 的大部分内容。现在 `SectionMessage` 的构造方法均被限制，也就是说，无法从外部继承。可能在以后重新开放。
-#### 框架
-- 支持 .NET Framework 4.5。
-
-### 0.0.4
-- 修改 `HttpApiClient` 类中的部分虚方法，以便更好地支持 WebSocket。主要更改是把 `url` 参数改为了 `action`。*如果您重载过 `CallRawAsync` 方法，您需要修改代码以确保代码正常运行。*
-- `GroupMemberInfo` 中的属性被补齐。
-- 增加禁言匿名成员、禁言发送人（通过 `MessageSource` 自动识别是不是匿名成员）、全体禁言的 API。
-- `ApiPostListener` 的 `StartListen` 方法、`PostAddress` 和 `IsListening` 属性改为 `virtual`，方便实现 WebSocket。
-- `ApiPostListener.RepeatAsync` 方法使用 try-catch 包围，以免发生异常导致程序崩溃。
-- 增加 `SenderInfo` 类。`GroupMessage` 类中增加 `Sender` 字段（需要 CoolQ HTTP API 插件版本 >= 4.7.0）。
-
-### 0.0.4.2
-- 修复使用 `array` 上报类型时，访问 `Content` 出错的问题。
-- 细节特性更新。
-
-### 0.0.5
-- 新增 `get_status`、`get_group_list` 和 `get_friend_list` API。
-- 新增群禁言事件。
-- 处理了加群、好友等请求时，请求消息含有 CQ 码的情况。
-- 增加了 `Endpoint` 和 `MessageSource` 的 `ToString()` 方法重载。
-- `HttpClient` 改为单例模式。
-- 减少了转发时的重新编码损耗。
 
 </div>
