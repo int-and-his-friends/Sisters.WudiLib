@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFrameworks>netcoreapp2.1</TargetFrameworks>
     <LangVersion>latest</LangVersion>
-    <Version>0.0.7-alpha5</Version>
+    <Version>0.0.7</Version>
     <Authors>bleatingsheep</Authors>
     <Copyright>bleatingsheep</Copyright>
     <Company>bleatingsheep</Company>
@@ -18,11 +18,11 @@
     <DocumentationFile>Sisters.WudiLib.WebSocket.xml</DocumentationFile>
   </PropertyGroup>
 
-  <ItemGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <PackageReference Include="Sisters.WudiLib" Version="0.0.7-alpha2" />
+  <ItemGroup Condition="'$(Configuration)'=='Release'">
+    <PackageReference Include="Sisters.WudiLib" Version="0.0.7" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+  <ItemGroup Condition="'$(Configuration)'=='Debug'">
     <ProjectReference Include="..\Sisters.WudiLib\Sisters.WudiLib.csproj" />
   </ItemGroup>
 
