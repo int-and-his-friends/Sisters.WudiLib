@@ -3,6 +3,9 @@
 # 无敌lib
 为方便 C# 调用酷 Q [HTTP API](https://github.com/richardchien/coolq-http-api) 插件而开发的lib。
 
+[![#](https://img.shields.io/nuget/v/Sisters.WudiLib.svg)](https://www.nuget.org/packages/Sisters.WudiLib/)
+[![#](https://img.shields.io/nuget/v/Sisters.WudiLib.WebSocket.svg)](https://www.nuget.org/packages/Sisters.WudiLib.WebSocket/)
+
 - Named by [int100](https://github.com/1004121460)
 
 ## 如何使用
