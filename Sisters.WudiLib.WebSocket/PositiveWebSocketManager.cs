@@ -64,7 +64,7 @@ namespace Sisters.WudiLib.WebSocket
             {
                 _connectSemaphore.Release();
             }
-            _listenTask = Listening(cancellationToken);
+            _listenTask = RunListeningTask(cancellationToken);
         }
 
         /// <summary>
@@ -72,7 +72,7 @@ namespace Sisters.WudiLib.WebSocket
         /// Still throws if connection fails.
         /// </summary>
         /// <param name="cancellationToken">Cancellation token.</param>
-        private async Task<System.Net.WebSockets.WebSocket> GetWebSocket(CancellationToken cancellationToken)
+        private async Task<System.Net.WebSockets.WebSocket> GetWebSocketAsync(CancellationToken cancellationToken)
         {
             // 除了此方法和上面的 ConnectAsync 方法，还有 ReconnectIfNecessaryAsync
             // 方法也调用了 InitializeWebSocketAsync。但是 ReconnectIfNecessaryAsync
@@ -97,11 +97,11 @@ namespace Sisters.WudiLib.WebSocket
             {
                 _connectSemaphore.Release();
             }
-            _listenTask = Listening(cancellationToken);
+            _listenTask = RunListeningTask(cancellationToken);
             return ret;
         }
 
-        private async Task Listening(CancellationToken cancellationToken)
+        private async Task RunListeningTask(CancellationToken cancellationToken)
         {
             byte[] buffer = new byte[1024];
             var ms = new MemoryStream();
@@ -152,7 +152,7 @@ namespace Sisters.WudiLib.WebSocket
             await _sendSemaphore.WaitAsync().ConfigureAwait(false);
             try
             {
-                var ws = await GetWebSocket(cancellationToken).ConfigureAwait(false);
+                var ws = await GetWebSocketAsync(cancellationToken).ConfigureAwait(false);
                 await ws.SendAsync(buffer, messageType, endOfMessage, cancellationToken).ConfigureAwait(false);
             }
             finally
@@ -165,7 +165,7 @@ namespace Sisters.WudiLib.WebSocket
         private async Task<ClientWebSocket> InitializeWebSocketAsync(CancellationToken cancellationToken)
         {
             ThrowIfCanceledOrDisposed(cancellationToken);
-            ClientWebSocket clientWebSocket = await CreateWebSocket(GetUri(), cancellationToken).ConfigureAwait(false);
+            ClientWebSocket clientWebSocket = await CreateWebSocketAsync(GetUri(), cancellationToken).ConfigureAwait(false);
             WebSocket = clientWebSocket;
             return clientWebSocket;
         }
@@ -187,7 +187,7 @@ namespace Sisters.WudiLib.WebSocket
             }
         }
 
-        internal static async Task<ClientWebSocket> CreateWebSocket(Uri uri, CancellationToken cancellationToken)
+        internal static async Task<ClientWebSocket> CreateWebSocketAsync(Uri uri, CancellationToken cancellationToken)
         {
             var clientWebSocket = new ClientWebSocket();
             await clientWebSocket.ConnectAsync(uri, cancellationToken).ConfigureAwait(false);
