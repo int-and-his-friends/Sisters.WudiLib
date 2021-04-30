@@ -74,6 +74,10 @@ namespace Sisters.WudiLib.WebSocket
         /// <param name="cancellationToken">Cancellation token.</param>
         private async Task<System.Net.WebSockets.WebSocket> GetWebSocket(CancellationToken cancellationToken)
         {
+            // 除了此方法和上面的 ConnectAsync 方法，还有 ReconnectIfNecessaryAsync
+            // 方法也调用了 InitializeWebSocketAsync。但是 ReconnectIfNecessaryAsync
+            // 没有使用 _connectSemaphore 控制并发。这是因为 ReconnectIfNecessaryAsync 只会在重连时调用，
+            // 而重连全过程不会满足此处的进入条件，故不会破坏线程安全。
             if (WebSocket != null && !_cancellationToken.IsCancellationRequested)
             {// ignore
                 return WebSocket;
@@ -116,6 +120,8 @@ namespace Sisters.WudiLib.WebSocket
                 {
                     if (!AutoReconnect && !IsAvailable)
                     {
+                        // 当出现异常后确认了不可用，并且不需要自动重连时，回收资源，
+                        // 然后退出。
                         var ws = WebSocket;
                         WebSocket = null;
                         (ws as IDisposable)?.Dispose();
@@ -169,7 +175,7 @@ namespace Sisters.WudiLib.WebSocket
             ThrowIfCanceledOrDisposed(cancellationToken);
             try
             {
-                if (WebSocket?.State != WebSocketState.Open)
+                if (!IsAvailable)
                 {
                     (WebSocket as IDisposable)?.Dispose();
                     await InitializeWebSocketAsync(cancellationToken).ConfigureAwait(false);
