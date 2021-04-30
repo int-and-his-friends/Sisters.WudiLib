@@ -1,21 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Net.WebSockets;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using static Sisters.WudiLib.WebSocket.WebSocketUtility;
 
 namespace Sisters.WudiLib.WebSocket
 {
-    internal class PositiveWebSocketManager : IDisposable
+    internal class PositiveWebSocketManager : WebSocketManager, IDisposable
     {
         private CancellationToken _cancellationToken;
         private readonly SemaphoreSlim _connectSemaphore = new(1, 1);
-        private readonly SemaphoreSlim _sendSemaphore = new(1, 1);
-        private Task _listenTask;
-
         private Func<Uri> _getUri;
 
         internal Func<Uri> GetUri
@@ -31,22 +26,7 @@ namespace Sisters.WudiLib.WebSocket
             : this(() => CreateUri(url, accessToken))
         { }
 
-        internal Action<byte[]> OnMessage { get; set; }
-        internal Action OnSocketDisconnected { get; set; }
         internal bool AutoReconnect { get; set; } = true;
-
-        internal System.Net.WebSockets.WebSocket WebSocket { get; private set; }
-
-        /// <summary>
-        /// 指示当前是否已启动。若要检查当前是否可用，请使用 <see cref="IsAvailable"/> 属性。
-        /// </summary>
-        public bool IsRunning => _listenTask?.IsCompleted == false;
-
-        /// <summary>
-        /// 获取当前 WebSocket 是否可用。注意自动重连过程中此项为
-        /// <c>false</c>，但无法再次通过 <see cref="ConnectAsync(CancellationToken)"/> 连接。
-        /// </summary>
-        public bool IsAvailable => WebSocket?.State == WebSocketState.Open;
 
         public async Task ConnectAsync(CancellationToken cancellationToken)
         {
@@ -71,8 +51,11 @@ namespace Sisters.WudiLib.WebSocket
         /// Trys to connect to WS server. Does not throw an exception if has connected.
         /// Still throws if connection fails.
         /// </summary>
-        /// <param name="cancellationToken">Cancellation token.</param>
-        private async Task<System.Net.WebSockets.WebSocket> GetWebSocketAsync(CancellationToken cancellationToken)
+        /// <param name="cancellationToken">
+        /// Cancellation token. Will be saved and used only when creating new instance of
+        /// <see cref="System.Net.WebSockets.WebSocket"/>.
+        /// </param>
+        protected override async Task<System.Net.WebSockets.WebSocket> GetWebSocketAsync(CancellationToken cancellationToken)
         {
             // 除了此方法和上面的 ConnectAsync 方法，还有 ReconnectIfNecessaryAsync
             // 方法也调用了 InitializeWebSocketAsync。但是 ReconnectIfNecessaryAsync
@@ -101,7 +84,7 @@ namespace Sisters.WudiLib.WebSocket
             return ret;
         }
 
-        private async Task RunListeningTask(CancellationToken cancellationToken)
+        protected override async Task RunListeningTask(CancellationToken cancellationToken)
         {
             byte[] buffer = new byte[1024];
             var ms = new MemoryStream();
@@ -144,20 +127,6 @@ namespace Sisters.WudiLib.WebSocket
                     // ignored
                 }
                 ms = new MemoryStream();
-            }
-        }
-
-        public async Task SendAsync(ArraySegment<byte> buffer, WebSocketMessageType messageType, bool endOfMessage, CancellationToken cancellationToken)
-        {
-            await _sendSemaphore.WaitAsync().ConfigureAwait(false);
-            try
-            {
-                var ws = await GetWebSocketAsync(cancellationToken).ConfigureAwait(false);
-                await ws.SendAsync(buffer, messageType, endOfMessage, cancellationToken).ConfigureAwait(false);
-            }
-            finally
-            {
-                _sendSemaphore.Release();
             }
         }
 

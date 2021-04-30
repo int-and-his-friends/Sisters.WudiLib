@@ -44,7 +44,7 @@ namespace Sisters.WudiLib.WebSocket
         /// <summary>
         /// 获取当前是否能收到上报事件。注意自动重连过程中此项为 <c>false</c>，但无法再次通过 <see cref="StartListen()"/> 或 <see cref="StartListen(CancellationToken)"/> 连接。
         /// </summary>
-        public virtual bool IsAvailable => _manager.IsAvailable;
+        public virtual bool IsAvailable => _manager.IsRunning && _manager.IsAvailable;
 
         /// <summary>
         /// 构造通过 WebSocket 获取上报的监听客户端。
