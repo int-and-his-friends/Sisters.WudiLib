@@ -328,6 +328,11 @@ namespace Sisters.WudiLib.Posts
                 return null;
 
             JObject contentObject = JsonConvert.DeserializeObject<JObject>(content);
+            return ProcessPost(contentObject);
+        }
+
+        public virtual Response ProcessPost(JObject contentObject)
+        {
             if (contentObject is null)
                 return null;
 
