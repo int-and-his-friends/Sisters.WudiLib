@@ -118,7 +118,7 @@ namespace Sisters.WudiLib.WebSocket
 
                 try
                 {
-                    OnMessage?.Invoke(eventArray);
+                    Dispatch(eventArray);
                 }
 #pragma warning disable RCS1075 // Avoid empty catch clause that catches System.Exception.
                 catch (Exception)

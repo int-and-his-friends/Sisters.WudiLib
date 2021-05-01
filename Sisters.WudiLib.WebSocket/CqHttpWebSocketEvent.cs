@@ -1,13 +1,9 @@
 ﻿using System;
-using System.IO;
-using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Sisters.WudiLib.Posts;
-using static Sisters.WudiLib.WebSocket.WebSocketUtility;
 
 namespace Sisters.WudiLib.WebSocket
 {
@@ -62,7 +58,7 @@ namespace Sisters.WudiLib.WebSocket
         {
             _manager = new PositiveWebSocketManager(uri, accessToken)
             {
-                OnMessage = bytes => Task.Run(() => ProcessWSMessageAsync(bytes)),
+                OnEvent = (bytes, jObject) => Task.Run(() => ProcessWSMessageAsync(bytes, jObject)),
                 AutoReconnect = true,
             };
         }
@@ -82,21 +78,17 @@ namespace Sisters.WudiLib.WebSocket
         public async Task StartListen(CancellationToken cancellationToken)
             => await _manager.ConnectAsync(cancellationToken).ConfigureAwait(false);
 
-        private async Task ProcessWSMessageAsync(byte[] eventArray)
+        private async Task ProcessWSMessageAsync(byte[] eventArray, JObject eventObject)
         {
             ForwardAsync(eventArray, Encoding.UTF8, null);
-            string eventContent = Encoding.UTF8.GetString(eventArray);
-            if (string.IsNullOrEmpty(eventContent))
-                return;
 
             try
             {
-                var response = ProcessPost(eventContent);
+                var response = ProcessPost(eventObject);
                 var apiClient = ApiClient;
                 if (response is RequestResponse && !(apiClient is null))
                 {
-                    JObject data;
-                    data = JsonConvert.DeserializeObject<JObject>(eventContent);
+                    JObject data = eventObject;
                     data.Merge(JObject.FromObject(response));
                     switch (response)
                     {
@@ -113,7 +105,7 @@ namespace Sisters.WudiLib.WebSocket
             }
             catch (Exception e)
             {
-                LogException(e, eventContent);
+                LogException(e, Encoding.UTF8.GetString(eventArray));
             }
         }
 

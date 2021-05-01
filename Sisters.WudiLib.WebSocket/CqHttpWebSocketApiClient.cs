@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Net.Http;
-using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -40,11 +37,7 @@ namespace Sisters.WudiLib.WebSocket
                     var oldSource = Interlocked.Exchange(ref _failedSource, nSource);
                     oldSource.Cancel();
                 },
-                OnMessage = bytes =>
-                {
-                    var s = Encoding.UTF8.GetString(bytes);
-                    OnResponse(s);
-                },
+                OnResponse = (_, jObject) => OnResponse(jObject),
                 AutoReconnect = false,
             };
         }
@@ -114,11 +107,10 @@ namespace Sisters.WudiLib.WebSocket
         /// </summary>
         /// <param name="response"></param>
         /// <returns>Success.</returns>
-        protected virtual bool OnResponse(string response)
+        protected virtual bool OnResponse(JObject r)
         {
             try
             {
-                var r = JsonConvert.DeserializeObject<JObject>(response, s_jsonSerializerSettings);
                 var echo = r["echo"].ToObject<int>();
                 if (_responses.TryGetValue(echo, out var wsResponse))
                 {
@@ -172,7 +164,7 @@ namespace Sisters.WudiLib.WebSocket
 
         #region Send request and manage WebSocket
         private readonly CancellationTokenSource _disposeSource = new();
-        private readonly PositiveWebSocketManager _manager;
+        private readonly WebSocketManager _manager;
 
         /// <summary>
         /// 发送调用消息，被 <see cref="CallRawJObjectAsync(string, object)"/> 调用
@@ -182,7 +174,7 @@ namespace Sisters.WudiLib.WebSocket
         /// <returns>由于无法直接获取响应，始终为空字符串。</returns>
         protected override async Task<string> CallRawAsync(string action, string json)
         {
-            await _manager.SendAsync(Encoding.UTF8.GetBytes(json), WebSocketMessageType.Text, true, _disposeSource.Token).ConfigureAwait(false);
+            await _manager.SendAsync(Encoding.UTF8.GetBytes(json), _disposeSource.Token).ConfigureAwait(false);
             return string.Empty;
         }
 
@@ -192,7 +184,7 @@ namespace Sisters.WudiLib.WebSocket
         public void Dispose()
         {
             _disposeSource.Cancel();
-            _manager.Dispose();
+            (_manager as IDisposable)?.Dispose();
         }
         #endregion
 

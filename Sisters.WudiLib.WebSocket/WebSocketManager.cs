@@ -1,12 +1,16 @@
 ﻿using System;
+using System.IO;
 using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Sisters.WudiLib.WebSocket
 {
-    internal abstract class WebSocketManager
+    internal abstract class WebSocketManager : IRequestSender, IEventReceiver
     {
+        private static readonly JsonLoadSettings s_jsonLoadSeetings = new();
         private readonly SemaphoreSlim _sendSemaphore = new(1, 1);
         protected Task _listenTask;
 
@@ -22,10 +26,11 @@ namespace Sisters.WudiLib.WebSocket
         /// </summary>
         public virtual bool IsAvailable => WebSocket?.State == WebSocketState.Open;
 
-        internal Action<byte[]> OnMessage { get; set; }
-        internal Action OnSocketDisconnected { get; set; }
+        public Action OnSocketDisconnected { get; set; }
+        public Action<byte[], JObject> OnResponse { get; set; }
+        public Action<byte[], JObject> OnEvent { get; set; }
 
-        internal System.Net.WebSockets.WebSocket WebSocket { get; protected private set; }
+        internal System.Net.WebSockets.WebSocket WebSocket { get; private protected set; }
 
 
         /// <summary>
@@ -37,7 +42,7 @@ namespace Sisters.WudiLib.WebSocket
         /// <param name="cancellationToken">
         /// Will be saved when creating new instance of WebSocket.
         /// </param>
-        public async Task SendAsync(ArraySegment<byte> buffer, WebSocketMessageType messageType, bool endOfMessage, CancellationToken cancellationToken)
+        private async Task SendAsync(ArraySegment<byte> buffer, WebSocketMessageType messageType, bool endOfMessage, CancellationToken cancellationToken)
         {
             await _sendSemaphore.WaitAsync().ConfigureAwait(false);
             try
@@ -48,6 +53,37 @@ namespace Sisters.WudiLib.WebSocket
             finally
             {
                 _sendSemaphore.Release();
+            }
+        }
+
+        /// <summary>
+        /// Send message through connected WebSocket.
+        /// </summary>
+        /// <param name="buffer"></param>
+        /// <param name="cancellationToken">
+        /// Will be saved when creating new instance of WebSocket.
+        /// </param>
+        public Task SendAsync(ArraySegment<byte> buffer, CancellationToken cancellationToken = default)
+            => SendAsync(buffer, WebSocketMessageType.Text, true, cancellationToken);
+
+        protected void Dispatch(byte[] data)
+        {
+            var jObject = JObject.Load(new JsonTextReader(new StreamReader(new MemoryStream(data))), s_jsonLoadSeetings);
+            var isResponse = jObject.ContainsKey("status") && jObject.ContainsKey("retcode");
+            var isEvent = jObject.ContainsKey("post_type");
+            if (!isResponse ^ isEvent)
+            {
+                // Must be either response or event.
+                // Ignore.
+                return;
+            }
+            if (isResponse)
+            {
+                OnResponse?.Invoke(data, jObject);
+            }
+            else
+            {// Event
+                OnEvent?.Invoke(data, jObject);
             }
         }
 
