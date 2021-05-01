@@ -71,7 +71,7 @@ namespace Sisters.WudiLib.WebSocket
             var jObject = JObject.Load(new JsonTextReader(new StreamReader(new MemoryStream(data))), s_jsonLoadSeetings);
             var isResponse = jObject.ContainsKey("status") && jObject.ContainsKey("retcode");
             var isEvent = jObject.ContainsKey("post_type");
-            if (!isResponse ^ isEvent)
+            if (isResponse == isEvent)
             {
                 // Must be either response or event.
                 // Ignore.
