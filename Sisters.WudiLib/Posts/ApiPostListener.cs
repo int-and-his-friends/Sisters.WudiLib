@@ -309,7 +309,7 @@ namespace Sisters.WudiLib.Posts
         /// <param name="content">收到的 JSON 数据。</param>
         /// <returns>由处理器返回的数据。</returns>
         /// <exception cref="Exception">处理时发生异常。</exception>
-        public virtual Response ProcessPost(string content)
+        public Response ProcessPost(string content)
         {
             /*Post p = GetPost(content);
             if (p is null)
