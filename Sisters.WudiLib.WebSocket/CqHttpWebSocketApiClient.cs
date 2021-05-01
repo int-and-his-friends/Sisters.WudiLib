@@ -24,6 +24,18 @@ namespace Sisters.WudiLib.WebSocket
             return span[0];
         }
 
+        internal CqHttpWebSocketApiClient(IRequestSender requestSender)
+        {
+            requestSender.OnSocketDisconnected = () =>
+            {
+                var nSource = new CancellationTokenSource();
+                var oldSource = Interlocked.Exchange(ref _failedSource, nSource);
+                oldSource.Cancel();
+            };
+            requestSender.OnResponse = (_, jObject) => OnResponse(jObject);
+            _manager = requestSender;
+        }
+
         /// <summary>
         /// 初始化实例，可以被子类调用。
         /// </summary>
@@ -164,7 +176,7 @@ namespace Sisters.WudiLib.WebSocket
 
         #region Send request and manage WebSocket
         private readonly CancellationTokenSource _disposeSource = new();
-        private readonly WebSocketManager _manager;
+        private readonly IRequestSender _manager;
 
         /// <summary>
         /// 发送调用消息，被 <see cref="CallRawJObjectAsync(string, object)"/> 调用
