@@ -50,9 +50,7 @@ namespace Sisters.WudiLib.WebSocket.Reverse
                     {
                         // 当出现异常后确认了不可用，被动管理无法重连。
                         // 回收资源，然后退出。
-                        var ws = WebSocket;
-                        WebSocket = null;
-                        (ws as IDisposable)?.Dispose();
+                        (WebSocket as IDisposable)?.Dispose();
                         OnSocketDisconnected?.Invoke();
                         break;
                     }
@@ -62,7 +60,7 @@ namespace Sisters.WudiLib.WebSocket.Reverse
 
                 try
                 {
-                    OnMessage?.Invoke(eventArray);
+                    Dispatch(eventArray);
                 }
 #pragma warning disable RCS1075 // Avoid empty catch clause that catches System.Exception.
                 catch (Exception)
