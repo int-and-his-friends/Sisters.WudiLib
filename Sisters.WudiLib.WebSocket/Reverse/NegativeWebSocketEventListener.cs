@@ -4,6 +4,9 @@ using Sisters.WudiLib.Posts;
 
 namespace Sisters.WudiLib.WebSocket.Reverse
 {
+    /// <summary>
+    /// 反向 WebSocket 连接的事件监听器。
+    /// </summary>
     public class NegativeWebSocketEventListener : ApiPostListener
     {
         private NegativeWebSocketManager _negativeWebSocketManager;
@@ -33,10 +36,13 @@ namespace Sisters.WudiLib.WebSocket.Reverse
         /// </summary>
         public sealed override bool IsListening => _negativeWebSocketManager?.IsRunning == true;
 
+        /// <summary>
+        /// 指示当前是否还可以收到事件上报。
+        /// </summary>
         public bool IsAvailable => IsListening && _negativeWebSocketManager?.IsAvailable == true;
 
         /// <summary>
-        /// 引发 <see cref="NotSupportedException"/>
+        /// 引发 <see cref="NotSupportedException"/>。
         /// </summary>
         /// <exception cref="NotSupportedException"></exception>
         public sealed override void StartListen()

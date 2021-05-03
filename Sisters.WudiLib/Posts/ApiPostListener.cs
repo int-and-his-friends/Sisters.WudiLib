@@ -331,6 +331,12 @@ namespace Sisters.WudiLib.Posts
             return ProcessPost(contentObject);
         }
 
+        /// <summary>
+        /// 传入上报事件的 <see cref="JObject"/>，调用处理器处理。
+        /// </summary>
+        /// <param name="contentObject">上报事件对应的 <see cref="JObject"/>。</param>
+        /// <returns>响应。</returns>
+        /// <exception cref="Exception">处理时发生异常。</exception>
         public virtual Response ProcessPost(JObject contentObject)
         {
             if (contentObject is null)

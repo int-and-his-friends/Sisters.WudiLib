@@ -15,6 +15,11 @@ namespace Sisters.WudiLib.WebSocket.Reverse
         public NegativeWebSocketManager(System.Net.WebSockets.WebSocket webSocket)
             => WebSocket = webSocket;
 
+        /// <summary>
+        /// 开始处理反向 WS 连接消息。
+        /// </summary>
+        /// <param name="cancellationToken">取消令牌。</param>
+        /// <exception cref="InvalidOperationException">已经开始执行，无法再次开始。</exception>
         public void Start(CancellationToken cancellationToken)
         {
             lock (_startLock)

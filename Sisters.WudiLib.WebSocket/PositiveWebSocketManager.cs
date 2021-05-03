@@ -28,6 +28,12 @@ namespace Sisters.WudiLib.WebSocket
 
         internal bool AutoReconnect { get; set; } = true;
 
+        /// <summary>
+        /// 连接远程正向 WebSocket 服务器。
+        /// </summary>
+        /// <param name="cancellationToken">取消令牌。</param>
+        /// <returns>连接任务。连接成功后结束。</returns>
+        /// <exception cref="InvalidOperationException">已经建立了 WebSocket 连接，无法再次建立。</exception>
         public async Task ConnectAsync(CancellationToken cancellationToken)
         {
             await _connectSemaphore.WaitAsync().ConfigureAwait(false);
@@ -35,7 +41,8 @@ namespace Sisters.WudiLib.WebSocket
             {
                 if (WebSocket != null && !_cancellationToken.IsCancellationRequested)
                 {
-                    throw new InvalidOperationException("已经有监听任务在执行！");
+                    // TODO: 当前抛出的异常会被包裹在 Task 中，应尽可能直接抛出。
+                    throw new InvalidOperationException("已经建立了 WebSocket 连接，无法再次建立。");
                 }
                 _cancellationToken = cancellationToken;
                 await InitializeWebSocketAsync(cancellationToken).ConfigureAwait(false);

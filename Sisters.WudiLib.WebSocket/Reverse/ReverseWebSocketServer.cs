@@ -7,22 +7,38 @@ using Sisters.WudiLib.Posts;
 
 namespace Sisters.WudiLib.WebSocket.Reverse
 {
+    /// <summary>
+    /// 反向 WebSocket 服务器。
+    /// </summary>
     public sealed class ReverseWebSocketServer
     {
-        private HttpListener _httpListener;
+        private HttpListener _httpListener = new();
         private readonly SemaphoreSlim _listeningSemaphore = new SemaphoreSlim(1, 1);
 
         private Func<HttpListenerRequest, Task<bool>> _authentication = _ => Task.FromResult(true);
         private Func<long, NegativeWebSocketEventListener> _createListener = _ => new NegativeWebSocketEventListener();
         private readonly Action<HttpListener> _configHttpListener;
 
+        /// <summary>
+        /// 通过端口号初始化反向 WebSocket 服务器。
+        /// </summary>
+        /// <param name="port">端口号。</param>
+        /// <exception cref="ArgumentOutOfRangeException">端口号不合法。</exception>
         public ReverseWebSocketServer(int port)
         {
             if (port is < IPEndPoint.MinPort or > IPEndPoint.MaxPort)
                 throw new ArgumentOutOfRangeException(nameof(port), "Port 必须是 0-65535 的数。");
-            _configHttpListener = httpListener => httpListener.Prefixes.Add($"http://+:{port}");
+            _configHttpListener = httpListener => httpListener.Prefixes.Add($"http://+:{port}/");
+            _configHttpListener(_httpListener);
         }
 
+        /// <summary>
+        /// 通过前缀初始化反向 WebSocket 服务器。
+        /// </summary>
+        /// <param name="prefix">监听前缀。</param>
+        /// <exception cref="ArgumentNullException"><c>prefix</c> 为 <c>null</c>。</exception>
+        /// <exception cref="UriFormatException">传入的不是合法的 URI 格式。</exception>
+        /// <exception cref="ArgumentException">传入的前缀不合法。</exception>
         public ReverseWebSocketServer(string prefix)
         {
             var uriBuilder = new UriBuilder(prefix);
@@ -40,6 +56,7 @@ namespace Sisters.WudiLib.WebSocket.Reverse
                 prefix += "/";
             }
             _configHttpListener = httpListener => httpListener.Prefixes.Add(prefix);
+            _configHttpListener(_httpListener);
         }
 
         ///// <summary>
@@ -53,7 +70,7 @@ namespace Sisters.WudiLib.WebSocket.Reverse
         ///// </summary>
         //public ApiPostListener DefaultListener { get; }
 
-        private Task StartListenAsync(CancellationToken cancellationToken)
+        private Task RunListeningTask(CancellationToken cancellationToken)
         {
             // 此方法返回 Task，但是不能标记为 async。
             // 如果标记为 async，抛出的异常将被包裹在 Task 中，而不会直接被抛出。
@@ -67,8 +84,14 @@ namespace Sisters.WudiLib.WebSocket.Reverse
             {
                 try
                 {
-                    _httpListener = new HttpListener();
-                    _configHttpListener(_httpListener);
+                    if (_httpListener is null)
+                    {
+                        // 为了检查前缀格式，此类的构造函数中会默认初始化一个 HttpListener。
+                        // 如果检测到已初始化，则直接使用。
+                        // 否则，重新初始化 HttpListener。
+                        _httpListener = new HttpListener();
+                        _configHttpListener(_httpListener);
+                    }
                     _httpListener.Start();
                     cancellationToken.Register(() => _httpListener.Stop());
                     while (true)
@@ -83,8 +106,9 @@ namespace Sisters.WudiLib.WebSocket.Reverse
                 }
                 finally
                 {
+                    var oldListener = Interlocked.Exchange(ref _httpListener, null);
                     _listeningSemaphore.Release();
-                    (_httpListener as IDisposable)?.Dispose();
+                    (oldListener as IDisposable)?.Dispose();
                 }
             }
         }
@@ -142,15 +166,19 @@ namespace Sisters.WudiLib.WebSocket.Reverse
         /// </summary>
         /// <param name="cancellationToken">取消令牌。</param>
         /// <exception cref="InvalidOperationException">正在监听，不能重复启动。</exception>
-        public void Start(CancellationToken cancellationToken = default) => _ = StartListenAsync(cancellationToken);
+        public void Start(CancellationToken cancellationToken = default) => _ = RunListeningTask(cancellationToken);
 
+        /// <summary>
+        /// 设置手动鉴权。
+        /// </summary>
+        /// <param name="authenticationFunction"></param>
         public void SetAuthentication(Func<HttpListenerRequest, Task<bool>> authenticationFunction)
         {
             _authentication = authenticationFunction;
         }
 
         /// <summary>
-        /// 根据 Access Token 和连接的 QQ 号验证。
+        /// 根据 Access Token 和连接的 QQ 号鉴权验证。
         /// </summary>
         /// <param name="accessToken">Access Token，如果为 <c>null</c>，则跳过此认证。注意仅验证 QQ 号并不安全，因为请求可能是伪造的。</param>
         /// <param name="selfId">连接的 QQ 号，如果为 <c>null</c>，则跳过 QQ 号验证。注意仅验证 QQ 号并不安全，因为请求可能是伪造的。</param>
