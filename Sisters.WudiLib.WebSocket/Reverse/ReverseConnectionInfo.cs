@@ -6,7 +6,7 @@ namespace Sisters.WudiLib.WebSocket.Reverse
     /// <summary>
     /// 反向 WebSocket 连接信息。
     /// </summary>
-    public class ReverseConnectionInfo : IDisposable
+    internal class ReverseConnectionInfo : IDisposable
     {
         internal ReverseConnectionInfo(HttpListenerWebSocketContext webSocketContext, long selfId, NegativeWebSocketEventListener listener)
         {
@@ -15,6 +15,7 @@ namespace Sisters.WudiLib.WebSocket.Reverse
             HttpApiClient = new CqHttpWebSocketApiClient(WebSocketManager);
             ApiPostListener = listener;
             ApiPostListener.ApiClient = HttpApiClient;
+            ApiPostListener.SetManager(WebSocketManager);
         }
 
         internal NegativeWebSocketManager WebSocketManager { get; set; }
