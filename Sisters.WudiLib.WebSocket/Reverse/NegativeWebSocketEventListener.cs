@@ -31,9 +31,9 @@ namespace Sisters.WudiLib.WebSocket.Reverse
         /// <summary>
         /// 指示当前是否已启动监听。若要检查当前是否可用，请使用 <see cref="IsAvailable"/> 属性。
         /// </summary>
-        public sealed override bool IsListening => _negativeWebSocketManager.IsRunning;
+        public sealed override bool IsListening => _negativeWebSocketManager?.IsRunning == true;
 
-        public bool IsAvailable => _negativeWebSocketManager.IsRunning && _negativeWebSocketManager.IsAvailable;
+        public bool IsAvailable => IsListening && _negativeWebSocketManager?.IsAvailable == true;
 
         /// <summary>
         /// 引发 <see cref="NotSupportedException"/>
