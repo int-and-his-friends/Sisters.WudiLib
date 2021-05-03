@@ -26,7 +26,7 @@ namespace Sisters.WudiLib.WebSocket
 
         internal CqHttpWebSocketApiClient(IRequestSender requestSender)
         {
-            requestSender.OnSocketDisconnected = () =>
+            requestSender.SocketDisconnected += () =>
             {
                 var nSource = new CancellationTokenSource();
                 var oldSource = Interlocked.Exchange(ref _failedSource, nSource);
@@ -43,14 +43,14 @@ namespace Sisters.WudiLib.WebSocket
         {
             _manager = new PositiveWebSocketManager(() => CreateUri(Uri, AccessToken))
             {
-                OnSocketDisconnected = () =>
-                {
-                    var nSource = new CancellationTokenSource();
-                    var oldSource = Interlocked.Exchange(ref _failedSource, nSource);
-                    oldSource.Cancel();
-                },
                 OnResponse = (_, jObject) => OnResponse(jObject),
                 AutoReconnect = false,
+            };
+            _manager.SocketDisconnected += () =>
+            {
+                var nSource = new CancellationTokenSource();
+                var oldSource = Interlocked.Exchange(ref _failedSource, nSource);
+                oldSource.Cancel();
             };
         }
 

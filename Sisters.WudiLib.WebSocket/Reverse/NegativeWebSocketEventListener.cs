@@ -19,7 +19,10 @@ namespace Sisters.WudiLib.WebSocket.Reverse
                 ProcessPost(jObject);
             };
             _negativeWebSocketManager = negativeWebSocketManager;
+            _negativeWebSocketManager.SocketDisconnected += () => SocketDisconnected?.Invoke();
         }
+
+        public event Action SocketDisconnected;
 
         /// <summary>
         /// 引发 <see cref="NotSupportedException"/>。

@@ -17,7 +17,7 @@ namespace Sisters.WudiLib.WebSocket
         /// <summary>
         /// Used for cleanup.
         /// </summary>
-        Action OnSocketDisconnected { get; set; }
+        event Action SocketDisconnected;
 
         /// <summary>
         /// 发送请求。

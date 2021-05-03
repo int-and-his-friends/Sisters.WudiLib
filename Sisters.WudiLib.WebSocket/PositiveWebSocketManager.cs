@@ -115,7 +115,7 @@ namespace Sisters.WudiLib.WebSocket
                         var ws = WebSocket;
                         WebSocket = null;
                         (ws as IDisposable)?.Dispose();
-                        OnSocketDisconnected?.Invoke();
+                        OnSocketDisconnected();
                         break;
                     }
                     await ReconnectIfNecessaryAsync(cancellationToken).ConfigureAwait(false);

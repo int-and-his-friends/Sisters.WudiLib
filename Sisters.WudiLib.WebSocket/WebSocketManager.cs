@@ -26,7 +26,7 @@ namespace Sisters.WudiLib.WebSocket
         /// </summary>
         public virtual bool IsAvailable => WebSocket?.State == WebSocketState.Open;
 
-        public Action OnSocketDisconnected { get; set; }
+        public event Action SocketDisconnected;
         public Action<byte[], JObject> OnResponse { get; set; }
         public Action<byte[], JObject> OnEvent { get; set; }
 
@@ -86,6 +86,8 @@ namespace Sisters.WudiLib.WebSocket
                 OnEvent?.Invoke(data, jObject);
             }
         }
+
+        protected void OnSocketDisconnected() => SocketDisconnected?.Invoke();
 
         protected abstract Task<System.Net.WebSockets.WebSocket> GetWebSocketAsync(CancellationToken cancellationToken);
         protected abstract Task RunListeningTask(CancellationToken cancellationToken);

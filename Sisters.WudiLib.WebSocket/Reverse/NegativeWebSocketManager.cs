@@ -56,7 +56,7 @@ namespace Sisters.WudiLib.WebSocket.Reverse
                         // 当出现异常后确认了不可用，被动管理无法重连。
                         // 回收资源，然后退出。
                         (WebSocket as IDisposable)?.Dispose();
-                        OnSocketDisconnected?.Invoke();
+                        OnSocketDisconnected();
                         break;
                     }
                     ms = new MemoryStream();
