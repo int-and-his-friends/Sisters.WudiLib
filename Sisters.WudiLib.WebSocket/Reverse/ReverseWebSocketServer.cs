@@ -17,6 +17,7 @@ namespace Sisters.WudiLib.WebSocket.Reverse
 
         private Func<HttpListenerRequest, Task<bool>> _authentication = _ => Task.FromResult(true);
         private Func<long, NegativeWebSocketEventListener> _createListener = _ => new NegativeWebSocketEventListener();
+        private Action<NegativeWebSocketEventListener, long> _configListener;
         private readonly Action<HttpListener> _configHttpListener;
 
         /// <summary>
@@ -147,6 +148,7 @@ namespace Sisters.WudiLib.WebSocket.Reverse
 
             var wsContext = await context.AcceptWebSocketAsync(null).ConfigureAwait(false);
             var info = new ReverseConnectionInfo(wsContext, selfId, _createListener(selfId));
+            _configListener(info.ApiPostListener, info.SelfId);
             info.WebSocketManager.Start(cancellationToken);
 
             // TODO: 把建立的连接存起来
@@ -213,7 +215,7 @@ namespace Sisters.WudiLib.WebSocket.Reverse
         /// </summary>
         /// <param name="config">配置委托。第二个参数是自己的 QQ 号。</param>
         /// <exception cref="ArgumentNullException"><c>config</c> 为 <c>null</c>。</exception>
-        public void ConfigureListener(Action<ApiPostListener, long> config)
+        public void ConfigureListener(Action<NegativeWebSocketEventListener, long> config)
         {
             ConfigureListener<NegativeWebSocketEventListener>(config);
         }
@@ -224,17 +226,13 @@ namespace Sisters.WudiLib.WebSocket.Reverse
         /// <typeparam name="T">派生的类。</typeparam>
         /// <param name="config">配置委托。第二个参数是自己的 QQ 号。</param>
         /// <exception cref="ArgumentNullException"><c>config</c> 为 <c>null</c>。</exception>
-        public void ConfigureListener<T>(Action<ApiPostListener, long> config) where T : NegativeWebSocketEventListener, new()
+        public void ConfigureListener<T>(Action<T, long> config) where T : NegativeWebSocketEventListener, new()
         {
             if (config == null)
                 throw new ArgumentNullException(nameof(config));
 
-            _createListener = selfId =>
-            {
-                var result = new T();
-                config(result, selfId);
-                return result;
-            };
+            _createListener = _ => new T();
+            _configListener = (l, selfId) => config((T)l, selfId);
         }
     }
 }
