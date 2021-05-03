@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFrameworks>netcoreapp2.1</TargetFrameworks>
     <LangVersion>latest</LangVersion>
-    <Version>0.0.7</Version>
+    <Version>0.1.0</Version>
     <Authors>bleatingsheep</Authors>
     <Copyright>bleatingsheep</Copyright>
     <Company>bleatingsheep</Company>
