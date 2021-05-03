@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using Sisters.WudiLib.Posts;
 
@@ -8,21 +9,37 @@ namespace Sisters.WudiLib.WebSocket.Reverse
 {
     public sealed class ReverseWebSocketServer
     {
-        private readonly HttpListener _httpListener = new();
+        private HttpListener _httpListener;
+        private readonly SemaphoreSlim _listeningSemaphore = new SemaphoreSlim(1, 1);
 
         private Func<HttpListenerRequest, Task<bool>> _authentication = _ => Task.FromResult(true);
         private Func<long, NegativeWebSocketEventListener> _createListener = _ => new NegativeWebSocketEventListener();
+        private readonly Action<HttpListener> _configHttpListener;
 
         public ReverseWebSocketServer(int port)
         {
             if (port is < IPEndPoint.MinPort or > IPEndPoint.MaxPort)
                 throw new ArgumentOutOfRangeException(nameof(port), "Port 必须是 0-65535 的数。");
-            _httpListener.Prefixes.Add($"http://+:{port}");
+            _configHttpListener = httpListener => httpListener.Prefixes.Add($"http://+:{port}");
         }
 
         public ReverseWebSocketServer(string prefix)
         {
-            _httpListener.Prefixes.Add(prefix);
+            var uriBuilder = new UriBuilder(prefix);
+            if ("ws".Equals(uriBuilder.Scheme, StringComparison.OrdinalIgnoreCase))
+            {
+                uriBuilder.Scheme = "http";
+            }
+            else if ("wss".Equals(uriBuilder.Scheme, StringComparison.OrdinalIgnoreCase))
+            {
+                uriBuilder.Scheme = "https";
+            }
+            prefix = uriBuilder.Uri.AbsoluteUri;
+            if (!prefix.EndsWith('/'))
+            {
+                prefix += "/";
+            }
+            _configHttpListener = httpListener => httpListener.Prefixes.Add(prefix);
         }
 
         ///// <summary>
@@ -36,17 +53,43 @@ namespace Sisters.WudiLib.WebSocket.Reverse
         ///// </summary>
         //public ApiPostListener DefaultListener { get; }
 
-        private async Task StartListenAsync()
+        private Task StartListenAsync(CancellationToken cancellationToken)
         {
-            _httpListener.Start();
-            while (true)
+            // 此方法返回 Task，但是不能标记为 async。
+            // 如果标记为 async，抛出的异常将被包裹在 Task 中，而不会直接被抛出。
+            if (!_listeningSemaphore.Wait(0))
             {
-                var context = await _httpListener.GetContextAsync().ConfigureAwait(false);
-                _ = Process(context);
+                throw new InvalidOperationException("反向 WebSocket 服务器已经在监听中。");
+            }
+            return RunInternalAsync(cancellationToken);
+
+            async Task RunInternalAsync(CancellationToken cancellationToken)
+            {
+                try
+                {
+                    _httpListener = new HttpListener();
+                    _configHttpListener(_httpListener);
+                    _httpListener.Start();
+                    cancellationToken.Register(() => _httpListener.Stop());
+                    while (true)
+                    {
+                        var context = await _httpListener.GetContextAsync().ConfigureAwait(false);
+                        _ = Process(context, cancellationToken);
+                    }
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                }
+                finally
+                {
+                    _listeningSemaphore.Release();
+                    (_httpListener as IDisposable)?.Dispose();
+                }
             }
         }
 
-        private async Task Process(HttpListenerContext context)
+        private async Task Process(HttpListenerContext context, CancellationToken cancellationToken)
         {
             // Check ws request
             if (!context.Request.IsWebSocketRequest)
@@ -80,7 +123,7 @@ namespace Sisters.WudiLib.WebSocket.Reverse
 
             var wsContext = await context.AcceptWebSocketAsync(null).ConfigureAwait(false);
             var info = new ReverseConnectionInfo(wsContext, selfId, _createListener(selfId));
-            info.WebSocketManager.Start(default);
+            info.WebSocketManager.Start(cancellationToken);
 
             // TODO: 把建立的连接存起来
             // TODO: 检测连接是否断开。当断开时回收资源，并从连接列表中清除。
@@ -94,7 +137,12 @@ namespace Sisters.WudiLib.WebSocket.Reverse
             await writer.WriteLineAsync(responseText).ConfigureAwait(false);
         }
 
-        public void Start() => _ = StartListenAsync();
+        /// <summary>
+        /// 开始监听反向 WebSocket 请求。
+        /// </summary>
+        /// <param name="cancellationToken">取消令牌。</param>
+        /// <exception cref="InvalidOperationException">正在监听，不能重复启动。</exception>
+        public void Start(CancellationToken cancellationToken = default) => _ = StartListenAsync(cancellationToken);
 
         public void SetAuthentication(Func<HttpListenerRequest, Task<bool>> authenticationFunction)
         {
