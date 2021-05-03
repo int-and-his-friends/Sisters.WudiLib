@@ -209,19 +209,21 @@ namespace Sisters.WudiLib.WebSocket.Reverse
         }
 
         /// <summary>
-        /// 配置 Listener。
+        /// 配置 Listener。传入的方法将在每次建立连接时调用。
         /// </summary>
         /// <param name="config">配置委托。第二个参数是自己的 QQ 号。</param>
+        /// <exception cref="ArgumentNullException"><c>config</c> 为 <c>null</c>。</exception>
         public void ConfigureListener(Action<ApiPostListener, long> config)
         {
             ConfigureListener<NegativeWebSocketEventListener>(config);
         }
 
         /// <summary>
-        /// 用派生类配置 Listener。
+        /// 用派生类配置 Listener。传入的方法将在每次建立连接时调用。
         /// </summary>
         /// <typeparam name="T">派生的类。</typeparam>
         /// <param name="config">配置委托。第二个参数是自己的 QQ 号。</param>
+        /// <exception cref="ArgumentNullException"><c>config</c> 为 <c>null</c>。</exception>
         public void ConfigureListener<T>(Action<ApiPostListener, long> config) where T : NegativeWebSocketEventListener, new()
         {
             if (config == null)
