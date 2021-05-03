@@ -117,7 +117,7 @@ namespace Sisters.WudiLib.WebSocket
         /// <summary>
         /// Note: swallows exceptions.
         /// </summary>
-        /// <param name="response"></param>
+        /// <param name="r"></param>
         /// <returns>Success.</returns>
         protected virtual bool OnResponse(JObject r)
         {
