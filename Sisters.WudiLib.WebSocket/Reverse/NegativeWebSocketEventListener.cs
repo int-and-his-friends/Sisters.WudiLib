@@ -13,9 +13,10 @@ namespace Sisters.WudiLib.WebSocket.Reverse
 
         internal void SetManager(NegativeWebSocketManager negativeWebSocketManager)
         {
-            negativeWebSocketManager.OnEvent = (data, jObject) =>
+            negativeWebSocketManager.OnEvent = (bytesLazy, jObject) =>
             {
-                ForwardAsync(data, Encoding.UTF8, null);
+                if (NeedForward)
+                    ForwardAsync(bytesLazy.Value, Encoding.UTF8, null);
                 ProcessPost(jObject);
             };
             _negativeWebSocketManager = negativeWebSocketManager;

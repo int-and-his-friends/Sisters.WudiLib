@@ -11,6 +11,6 @@ namespace Sisters.WudiLib.WebSocket
         /// <summary>
         /// 获取或设置事件处理器。
         /// </summary>
-        Action<byte[], JObject> OnEvent { get; set; }
+        Action<Lazy<byte[]>, JObject> OnEvent { get; set; }
     }
 }

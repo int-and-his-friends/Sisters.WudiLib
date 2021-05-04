@@ -13,7 +13,7 @@ namespace Sisters.WudiLib.WebSocket
         /// <summary>
         /// 收到响应时的处理器。
         /// </summary>
-        Action<byte[], JObject> OnResponse { get; set; }
+        Action<JObject> OnResponse { get; set; }
         /// <summary>
         /// Used for cleanup.
         /// </summary>

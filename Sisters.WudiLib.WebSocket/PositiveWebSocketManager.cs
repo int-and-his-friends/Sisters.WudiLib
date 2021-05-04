@@ -29,7 +29,7 @@ namespace Sisters.WudiLib.WebSocket
         internal bool AutoReconnect { get; set; } = true;
 
         /// <summary>
-        /// 连接远程正向 WebSocket 服务器。
+        /// 连接远程正向 WebSocket 服务器。用于 Listener 等不会主动发送请求的场合。HTTP API Client 应该调动 <see cref="GetWebSocketAsync(CancellationToken)"/>
         /// </summary>
         /// <param name="cancellationToken">取消令牌。</param>
         /// <returns>连接任务。连接成功后结束。</returns>
@@ -98,13 +98,13 @@ namespace Sisters.WudiLib.WebSocket
             while (true)
             {
                 ThrowIfCanceledOrDisposed(cancellationToken);
-                byte[] eventArray;
                 try
                 {
                     var receiveResult = await WebSocket.ReceiveAsync(buffer, cancellationToken).ConfigureAwait(false);
                     ms.Write(buffer, 0, receiveResult.Count);
-                    if (!receiveResult.EndOfMessage) continue;
-                    eventArray = ms.ToArray();
+                    if (!receiveResult.EndOfMessage)
+                        continue;
+                    ms.Seek(0, SeekOrigin.Begin);
                 }
                 catch (Exception)
                 {
@@ -125,7 +125,7 @@ namespace Sisters.WudiLib.WebSocket
 
                 try
                 {
-                    Dispatch(eventArray);
+                    Dispatch(ms);
                 }
 #pragma warning disable RCS1075 // Avoid empty catch clause that catches System.Exception.
                 catch (Exception)

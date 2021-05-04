@@ -27,8 +27,8 @@ namespace Sisters.WudiLib.WebSocket
         public virtual bool IsAvailable => WebSocket?.State == WebSocketState.Open;
 
         public event Action SocketDisconnected;
-        public Action<byte[], JObject> OnResponse { get; set; }
-        public Action<byte[], JObject> OnEvent { get; set; }
+        public Action<JObject> OnResponse { get; set; }
+        public Action<Lazy<byte[]>, JObject> OnEvent { get; set; }
 
         internal System.Net.WebSockets.WebSocket WebSocket { get; private protected set; }
 
@@ -66,9 +66,9 @@ namespace Sisters.WudiLib.WebSocket
         public Task SendAsync(ArraySegment<byte> buffer, CancellationToken cancellationToken = default)
             => SendAsync(buffer, WebSocketMessageType.Text, true, cancellationToken);
 
-        protected void Dispatch(byte[] data)
+        protected void Dispatch(MemoryStream dataStream)
         {
-            var jObject = JObject.Load(new JsonTextReader(new StreamReader(new MemoryStream(data))), s_jsonLoadSeetings);
+            var jObject = JObject.Load(new JsonTextReader(new StreamReader(dataStream)), s_jsonLoadSeetings);
             var isResponse = jObject.ContainsKey("status") && jObject.ContainsKey("retcode");
             var isEvent = jObject.ContainsKey("post_type");
             if (isResponse == isEvent)
@@ -79,11 +79,11 @@ namespace Sisters.WudiLib.WebSocket
             }
             if (isResponse)
             {
-                OnResponse?.Invoke(data, jObject);
+                OnResponse?.Invoke(jObject);
             }
             else
             {// Event
-                OnEvent?.Invoke(data, jObject);
+                OnEvent?.Invoke(new Lazy<byte[]>(() => dataStream.ToArray(), true), jObject);
             }
         }
 
