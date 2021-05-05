@@ -134,9 +134,7 @@ listener.ForwardTo = "http://[::1]:10202"; // 转发路径，监听到的事件�
 *注意：转发功能将传递头部中的 `X-Signature` 字段，也就是相当于使用相同的 Secret。不支持直接通过上报数据进行响应（请访问 API 以响应上报）。*
 
 ## 开发现状
-WudiLib 实现了访问 CQHTTP 所有主要接口，监听除心跳外的事件。WudiLib 使用简单、运行稳定、效率尚可，只是部分类名有待商榷，使用略有不便。请见下面的“小建议”。
-
-尽管我没有精力把 WudiLib 制作成完整的框架，但我会追踪 CQHTTP 的更新，在 API 变化时尽快更新，并尽管满足用户的需求。
+积极开发中
 
 ### 小建议
 由于 `Sisters.WudiLib.Message` 和 `Sisters.WudiLib.Posts.Message` 类的类名相同，使用起来有诸多不便，建议您在每个**新**代码文件开头添加下列 `using`：
