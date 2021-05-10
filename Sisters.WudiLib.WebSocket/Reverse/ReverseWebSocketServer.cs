@@ -180,13 +180,24 @@ namespace Sisters.WudiLib.WebSocket.Reverse
         }
 
         /// <summary>
-        /// 根据 Access Token 和连接的 QQ 号鉴权验证。
+        /// 把鉴权设置为在 <see cref="CreateAuthenticationFunction(string, long?)"/> 创建的鉴权方法。
         /// </summary>
         /// <param name="accessToken">Access Token，如果为 <c>null</c>，则跳过此认证。注意仅验证 QQ 号并不安全，因为请求可能是伪造的。</param>
         /// <param name="selfId">连接的 QQ 号，如果为 <c>null</c>，则跳过 QQ 号验证。注意仅验证 QQ 号并不安全，因为请求可能是伪造的。</param>
         public void SetAuthenticationFromAccessTokenAndUserId(string accessToken, long? selfId)
         {
-            _authentication = r =>
+            _authentication = CreateAuthenticationFunction(accessToken, selfId);
+        }
+
+        /// <summary>
+        /// 创建根据 Access Token 和连接的 QQ 号鉴权验证的方法。
+        /// </summary>
+        /// <param name="accessToken">Access Token，如果为 <c>null</c>，则跳过此认证。注意仅验证 QQ 号并不安全，因为请求可能是伪造的。</param>
+        /// <param name="selfId">连接的 QQ 号，如果为 <c>null</c>，则跳过 QQ 号验证。注意仅验证 QQ 号并不安全，因为请求可能是伪造的。</param>
+        /// <returns>创建的鉴权方法。</returns>
+        public static Func<HttpListenerRequest, Task<bool>> CreateAuthenticationFunction(string accessToken, long? selfId)
+        {
+            return r =>
             {
                 if (!string.IsNullOrEmpty(accessToken))
                 {
