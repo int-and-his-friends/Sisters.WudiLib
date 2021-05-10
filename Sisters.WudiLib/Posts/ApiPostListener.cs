@@ -208,11 +208,6 @@ namespace Sisters.WudiLib.Posts
         }
 
         /// <summary>
-        /// 检查是否需要转发上报消息到别处，如果不需要则可不用复制字节数组，节约资源。
-        /// </summary>
-        protected bool NeedForward => !string.IsNullOrEmpty(ForwardTo);
-
-        /// <summary>
         /// 异步通过 HTTP 转发上报事件。转发失败时不会有任何提示。
         /// </summary>
         /// <param name="content">转发内容。</param>

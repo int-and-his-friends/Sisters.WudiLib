@@ -58,7 +58,7 @@ namespace Sisters.WudiLib.WebSocket
         {
             _manager = new PositiveWebSocketManager(uri, accessToken)
             {
-                OnEvent = (bytesLazy, jObject) => Task.Run(() => ProcessWSMessageAsync(bytesLazy, jObject)),
+                OnEvent = (bytes, jObject) => Task.Run(() => ProcessWSMessageAsync(bytes, jObject)),
                 AutoReconnect = true,
             };
         }
@@ -78,10 +78,9 @@ namespace Sisters.WudiLib.WebSocket
         public async Task StartListen(CancellationToken cancellationToken)
             => await _manager.ConnectAsync(cancellationToken).ConfigureAwait(false);
 
-        private async Task ProcessWSMessageAsync(Lazy<byte[]> eventArray, JObject eventObject)
+        private async Task ProcessWSMessageAsync(byte[] eventArray, JObject eventObject)
         {
-            if (NeedForward)
-                ForwardAsync(eventArray.Value, Encoding.UTF8, null);
+            ForwardAsync(eventArray, Encoding.UTF8, null);
 
             try
             {
@@ -106,7 +105,7 @@ namespace Sisters.WudiLib.WebSocket
             }
             catch (Exception e)
             {
-                LogException(e, Encoding.UTF8.GetString(eventArray.Value));
+                LogException(e, Encoding.UTF8.GetString(eventArray));
             }
         }
 

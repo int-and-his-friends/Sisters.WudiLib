@@ -40,13 +40,14 @@ namespace Sisters.WudiLib.WebSocket.Reverse
             while (true)
             {
                 cancellationToken.ThrowIfCancellationRequested();
+                byte[] eventArray;
                 try
                 {
                     var receiveResult = await WebSocket.ReceiveAsync(buffer, cancellationToken).ConfigureAwait(false);
                     ms.Write(buffer, 0, receiveResult.Count);
                     if (!receiveResult.EndOfMessage)
                         continue;
-                    ms.Seek(0, SeekOrigin.Begin);
+                    eventArray = ms.ToArray();
                 }
                 catch (Exception)
                 {
@@ -64,7 +65,7 @@ namespace Sisters.WudiLib.WebSocket.Reverse
 
                 try
                 {
-                    Dispatch(ms);
+                    Dispatch(eventArray);
                 }
 #pragma warning disable RCS1075 // Avoid empty catch clause that catches System.Exception.
                 catch (Exception)

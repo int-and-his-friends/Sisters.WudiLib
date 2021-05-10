@@ -32,7 +32,7 @@ namespace Sisters.WudiLib.WebSocket
                 var oldSource = Interlocked.Exchange(ref _failedSource, nSource);
                 oldSource.Cancel();
             };
-            requestSender.OnResponse = jObject => OnResponse(jObject);
+            requestSender.OnResponse = (_, jObject) => OnResponse(jObject);
             _manager = requestSender;
         }
 
@@ -43,7 +43,7 @@ namespace Sisters.WudiLib.WebSocket
         {
             _manager = new PositiveWebSocketManager(() => CreateUri(Uri, AccessToken))
             {
-                OnResponse = jObject => OnResponse(jObject),
+                OnResponse = (_, jObject) => OnResponse(jObject),
                 AutoReconnect = false,
             };
             _manager.SocketDisconnected += () =>
