@@ -39,7 +39,6 @@ namespace Sisters.WudiLib.WebSocket.Reverse
         private async Task OnEventAsync(byte[] data, JObject jObject)
         {
             ForwardAsync(data, Encoding.UTF8, null);
-            ProcessPost(jObject);
             try
             {
                 await this.ProcessWSMessageAsync(jObject).ConfigureAwait(false);
