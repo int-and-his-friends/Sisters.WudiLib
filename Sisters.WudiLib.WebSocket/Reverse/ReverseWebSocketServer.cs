@@ -247,7 +247,7 @@ namespace Sisters.WudiLib.WebSocket.Reverse
             else
             {
                 var authFunc = CreateAuthenticationFunction(accessToken, selfId);
-                _authentication = r => authFunc(r).Result ? convertedAuth(r) : Task.FromResult<Action<NegativeWebSocketEventListener, long>>(null);
+                _authentication = r => authFunc(r) ? convertedAuth(r) : Task.FromResult<Action<NegativeWebSocketEventListener, long>>(null);
             }
         }
 
@@ -272,7 +272,7 @@ namespace Sisters.WudiLib.WebSocket.Reverse
         /// <param name="accessToken">Access Token，如果为 <c>null</c>，则跳过此认证。注意仅验证 QQ 号并不安全，因为请求可能是伪造的。</param>
         /// <param name="selfId">连接的 QQ 号，如果为 <c>null</c>，则跳过 QQ 号验证。注意仅验证 QQ 号并不安全，因为请求可能是伪造的。</param>
         /// <returns>创建的鉴权方法。</returns>
-        private static Func<HttpListenerRequest, Task<bool>> CreateAuthenticationFunction(string accessToken, long? selfId)
+        public static Func<HttpListenerRequest, bool> CreateAuthenticationFunction(string accessToken, long? selfId)
         {
             return r =>
             {
@@ -280,11 +280,11 @@ namespace Sisters.WudiLib.WebSocket.Reverse
                 {
                     var headValue = r.Headers["Authorization"];
                     if (string.IsNullOrWhiteSpace(headValue))
-                        return Task.FromResult(false);
+                        return false;
                     int spaceIndex = headValue.IndexOf(' ');
                     if (!headValue.AsSpan().Slice(spaceIndex + 1).SequenceEqual(accessToken))
                     {
-                        return Task.FromResult(false);
+                        return false;
                     }
                 }
                 if (selfId != null)
@@ -292,9 +292,9 @@ namespace Sisters.WudiLib.WebSocket.Reverse
                     var idString = selfId.ToString();
                     var selfIdValue = r.Headers["X-Self-ID"];
                     if (selfIdValue != idString)
-                        return Task.FromResult(false);
+                        return false;
                 }
-                return Task.FromResult(true);
+                return true;
             };
         }
     }
