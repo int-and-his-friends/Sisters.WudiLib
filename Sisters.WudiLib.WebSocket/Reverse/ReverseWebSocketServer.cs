@@ -3,7 +3,6 @@ using System.IO;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using Sisters.WudiLib.Posts;
 
 namespace Sisters.WudiLib.WebSocket.Reverse
 {
@@ -15,9 +14,8 @@ namespace Sisters.WudiLib.WebSocket.Reverse
         private HttpListener _httpListener = new();
         private readonly SemaphoreSlim _listeningSemaphore = new SemaphoreSlim(1, 1);
 
-        private Func<HttpListenerRequest, Task<bool>> _authentication = _ => Task.FromResult(true);
+        private Func<HttpListenerRequest, Task<Action<NegativeWebSocketEventListener, long>>> _authentication = _ => Task.FromResult<Action<NegativeWebSocketEventListener, long>>((_, _) => { });
         private Func<long, NegativeWebSocketEventListener> _createListener = _ => new NegativeWebSocketEventListener();
-        private Action<NegativeWebSocketEventListener, long> _configListener;
         private readonly Action<HttpListener> _configHttpListener;
 
         /// <summary>
@@ -138,8 +136,8 @@ namespace Sisters.WudiLib.WebSocket.Reverse
                 return;
             }
 
-            var authPass = await _authentication(context.Request).ConfigureAwait(false);
-            if (!authPass)
+            var configAction = await _authentication(context.Request).ConfigureAwait(false);
+            if (configAction is null)
             {
                 using var response = context.Response;
                 response.StatusCode = (int)HttpStatusCode.Unauthorized;
@@ -147,9 +145,10 @@ namespace Sisters.WudiLib.WebSocket.Reverse
             }
 
             var wsContext = await context.AcceptWebSocketAsync(null).ConfigureAwait(false);
-            var info = new ReverseConnectionInfo(wsContext, selfId, _createListener(selfId));
-            _configListener(info.ApiPostListener, info.SelfId);
+            var info = new ReverseConnectionInfo(wsContext, context.Request, selfId, _createListener(selfId));
             info.WebSocketManager.Start(cancellationToken);
+            configAction(info.ApiPostListener, info.SelfId);
+            info.ApiPostListener.StartProcessEventInternal();
 
             // TODO: 把建立的连接存起来
             // TODO: 检测连接是否断开。当断开时回收资源，并从连接列表中清除。
@@ -171,23 +170,101 @@ namespace Sisters.WudiLib.WebSocket.Reverse
         public void Start(CancellationToken cancellationToken = default) => _ = RunListeningTask(cancellationToken);
 
         /// <summary>
-        /// 设置手动鉴权。
+        /// 配置 Listener，并按 Access Token 及连接的 bot
+        /// 账号鉴权。传入的方法将在每次建立连接并鉴权成功时调用。
         /// </summary>
-        /// <param name="authenticationFunction"></param>
-        public void SetAuthentication(Func<HttpListenerRequest, Task<bool>> authenticationFunction)
+        /// <param name="config">配置 Listener 的方法。</param>
+        /// <param name="accessToken">Access Token，如果为 <c>null</c>，则跳过此认证。注意仅验证 QQ 号并不安全，因为请求可能是伪造的。</param>
+        /// <param name="selfId">连接的 QQ 号，如果为 <c>null</c>，则跳过 QQ 号验证。注意仅验证 QQ 号并不安全，因为请求可能是伪造的。</param>
+        /// <exception cref="ArgumentNullException"><c>config</c> 为 <c>null</c>.</exception>
+        public void SetListenerAuthenticationAndConfiguration(Action<NegativeWebSocketEventListener, long> config,
+            string accessToken = null,
+            long? selfId = null)
+            => SetListenerAuthenticationAndConfiguration<NegativeWebSocketEventListener>(config, accessToken, selfId);
+
+        /// <summary>
+        /// 用自定义的派生类配置 Listener，并按 Access Token 及连接的 bot
+        /// 账号鉴权。传入的方法将在每次建立连接并鉴权成功时调用。
+        /// </summary>
+        /// <typeparam name="T">Listener 的派生类。</typeparam>
+        /// <param name="config">配置 Listener 的方法。</param>
+        /// <param name="accessToken">Access Token，如果为 <c>null</c>，则跳过此认证。注意仅验证 QQ 号并不安全，因为请求可能是伪造的。</param>
+        /// <param name="selfId">连接的 QQ 号，如果为 <c>null</c>，则跳过 QQ 号验证。注意仅验证 QQ 号并不安全，因为请求可能是伪造的。</param>
+        /// <exception cref="ArgumentNullException"><c>config</c> 为 <c>null</c>.</exception>
+        public void SetListenerAuthenticationAndConfiguration<T>(Action<T, long> config,
+            string accessToken = null,
+            long? selfId = null)
+            where T : NegativeWebSocketEventListener, new()
         {
-            _authentication = authenticationFunction;
+            if (config is null)
+            {
+                throw new ArgumentNullException(nameof(config));
+            }
+
+            SetListenerAuthenticationAndConfiguration(_ => Task.FromResult(config), accessToken, selfId);
         }
 
         /// <summary>
-        /// 把鉴权设置为在 <see cref="CreateAuthenticationFunction(string, long?)"/> 创建的鉴权方法。
+        /// 配置认证和配置。
         /// </summary>
+        /// <param name="authentication">认证方法。此方法应返回配置方法。</param>
         /// <param name="accessToken">Access Token，如果为 <c>null</c>，则跳过此认证。注意仅验证 QQ 号并不安全，因为请求可能是伪造的。</param>
         /// <param name="selfId">连接的 QQ 号，如果为 <c>null</c>，则跳过 QQ 号验证。注意仅验证 QQ 号并不安全，因为请求可能是伪造的。</param>
-        public void SetAuthenticationFromAccessTokenAndUserId(string accessToken, long? selfId)
+        /// <exception cref="ArgumentNullException"><c>authentication</c> 为 <c>null</c>.</exception>
+        public void SetListenerAuthenticationAndConfiguration(
+            Func<HttpListenerRequest, Task<Action<NegativeWebSocketEventListener, long>>> authentication,
+            string accessToken = null,
+            long? selfId = null)
+            => SetListenerAuthenticationAndConfiguration<NegativeWebSocketEventListener>(authentication, accessToken, selfId);
+
+        /// <summary>
+        /// 用派生类配置认证和配置。
+        /// </summary>
+        /// <typeparam name="T">Listener 的派生类。</typeparam>
+        /// <param name="authentication">认证方法。此方法应返回配置方法。</param>
+        /// <param name="accessToken">Access Token，如果为 <c>null</c>，则跳过此认证。注意仅验证 QQ 号并不安全，因为请求可能是伪造的。</param>
+        /// <param name="selfId">连接的 QQ 号，如果为 <c>null</c>，则跳过 QQ 号验证。注意仅验证 QQ 号并不安全，因为请求可能是伪造的。</param>
+        /// <exception cref="ArgumentNullException"><c>authentication</c> 为 <c>null</c>.</exception>
+        public void SetListenerAuthenticationAndConfiguration<T>(
+            Func<HttpListenerRequest, Task<Action<T, long>>> authentication,
+            string accessToken = null,
+            long? selfId = null)
+            where T : NegativeWebSocketEventListener, new()
         {
-            _authentication = CreateAuthenticationFunction(accessToken, selfId);
+            if (authentication is null)
+            {
+                throw new ArgumentNullException(nameof(authentication));
+            }
+
+            _createListener = _ => new T();
+            var convertedAuth = typeof(T) == typeof(NegativeWebSocketEventListener)
+                ? authentication as Func<HttpListenerRequest, Task<Action<NegativeWebSocketEventListener, long>>>
+                : ConvertAuthentication(authentication);
+            if (accessToken is null && selfId is null)
+            {
+                _authentication = convertedAuth;
+            }
+            else
+            {
+                var authFunc = CreateAuthenticationFunction(accessToken, selfId);
+                _authentication = r => authFunc(r).Result ? convertedAuth(r) : Task.FromResult<Action<NegativeWebSocketEventListener, long>>(null);
+            }
         }
+
+        /// <summary>
+        /// 把泛型的认证方法转换成非泛型的。在其他代码中保证类型正确。
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="authentication"></param>
+        /// <returns>转换后的认证方法。</returns>
+        private static Func<HttpListenerRequest, Task<Action<NegativeWebSocketEventListener, long>>> ConvertAuthentication<T>(
+            Func<HttpListenerRequest, Task<Action<T, long>>> authentication)
+            where T : NegativeWebSocketEventListener, new()
+            => async r => ConvertConfiguration(await authentication(r));
+
+        private static Action<NegativeWebSocketEventListener, long> ConvertConfiguration<T>(Action<T, long> config)
+            where T : NegativeWebSocketEventListener, new()
+            => (l, selfId) => config((T)l, selfId);
 
         /// <summary>
         /// 创建根据 Access Token 和连接的 QQ 号鉴权验证的方法。
@@ -195,7 +272,7 @@ namespace Sisters.WudiLib.WebSocket.Reverse
         /// <param name="accessToken">Access Token，如果为 <c>null</c>，则跳过此认证。注意仅验证 QQ 号并不安全，因为请求可能是伪造的。</param>
         /// <param name="selfId">连接的 QQ 号，如果为 <c>null</c>，则跳过 QQ 号验证。注意仅验证 QQ 号并不安全，因为请求可能是伪造的。</param>
         /// <returns>创建的鉴权方法。</returns>
-        public static Func<HttpListenerRequest, Task<bool>> CreateAuthenticationFunction(string accessToken, long? selfId)
+        private static Func<HttpListenerRequest, Task<bool>> CreateAuthenticationFunction(string accessToken, long? selfId)
         {
             return r =>
             {
@@ -219,31 +296,6 @@ namespace Sisters.WudiLib.WebSocket.Reverse
                 }
                 return Task.FromResult(true);
             };
-        }
-
-        /// <summary>
-        /// 配置 Listener。传入的方法将在每次建立连接时调用。
-        /// </summary>
-        /// <param name="config">配置委托。第二个参数是自己的 QQ 号。</param>
-        /// <exception cref="ArgumentNullException"><c>config</c> 为 <c>null</c>。</exception>
-        public void ConfigureListener(Action<NegativeWebSocketEventListener, long> config)
-        {
-            ConfigureListener<NegativeWebSocketEventListener>(config);
-        }
-
-        /// <summary>
-        /// 用派生类配置 Listener。传入的方法将在每次建立连接时调用。
-        /// </summary>
-        /// <typeparam name="T">派生的类。</typeparam>
-        /// <param name="config">配置委托。第二个参数是自己的 QQ 号。</param>
-        /// <exception cref="ArgumentNullException"><c>config</c> 为 <c>null</c>。</exception>
-        public void ConfigureListener<T>(Action<T, long> config) where T : NegativeWebSocketEventListener, new()
-        {
-            if (config == null)
-                throw new ArgumentNullException(nameof(config));
-
-            _createListener = _ => new T();
-            _configListener = (l, selfId) => config((T)l, selfId);
         }
     }
 }

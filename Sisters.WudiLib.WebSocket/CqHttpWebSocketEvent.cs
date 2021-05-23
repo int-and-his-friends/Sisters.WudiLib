@@ -58,7 +58,7 @@ namespace Sisters.WudiLib.WebSocket
         {
             _manager = new PositiveWebSocketManager(uri, accessToken)
             {
-                OnEvent = (bytes, jObject) => Task.Run(() => ProcessWSMessageAsync(bytes, jObject)),
+                OnEvent = (bytes, jObject) => Task.Run(() => OnEventAsync(bytes, jObject)),
                 AutoReconnect = true,
             };
         }
@@ -78,30 +78,13 @@ namespace Sisters.WudiLib.WebSocket
         public async Task StartListen(CancellationToken cancellationToken)
             => await _manager.ConnectAsync(cancellationToken).ConfigureAwait(false);
 
-        private async Task ProcessWSMessageAsync(byte[] eventArray, JObject eventObject)
+        private async Task OnEventAsync(byte[] eventArray, JObject eventObject)
         {
             ForwardAsync(eventArray, Encoding.UTF8, null);
 
             try
             {
-                var response = ProcessPost(eventObject);
-                var apiClient = ApiClient;
-                if (response is RequestResponse && !(apiClient is null))
-                {
-                    JObject data = eventObject;
-                    data.Merge(JObject.FromObject(response));
-                    switch (response)
-                    {
-                        case FriendRequestResponse friend:
-                            await apiClient.HandleFriendRequestInternalAsync(data);
-                            break;
-                        case GroupRequestResponse group:
-                            await apiClient.HandleGroupRequestInternalAsync(data);
-                            break;
-                        default:
-                            break;
-                    }
-                }
+                await this.ProcessWSMessageAsync(eventObject).ConfigureAwait(false);
             }
             catch (Exception e)
             {
