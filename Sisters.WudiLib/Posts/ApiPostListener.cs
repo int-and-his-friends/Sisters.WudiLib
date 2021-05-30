@@ -342,6 +342,15 @@ namespace Sisters.WudiLib.Posts
             if (contentObject is null)
                 return null;
 
+            try
+            {
+                EventPosted?.Invoke(contentObject);
+            }
+            catch (Exception e)
+            {
+                OnException?.Invoke(e);
+            }
+
             switch (contentObject[Post.TypeField].ToObject<string>())
             {
                 case Post.Message:
@@ -427,6 +436,15 @@ namespace Sisters.WudiLib.Posts
 
             return null;
         }
+
+        #endregion
+
+        #region Event
+
+        /// <summary>
+        /// 当有任意的事件上报到达时触发。此事件只应该被 SDK 注册，用于扩展，并且此事件执行时不应阻塞。
+        /// </summary>
+        public event Action<JObject> EventPosted;
 
         #endregion
 
