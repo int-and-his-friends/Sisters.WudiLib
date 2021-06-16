@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Web;
 using Newtonsoft.Json;
 
 namespace Sisters.WudiLib
@@ -213,7 +216,23 @@ namespace Sisters.WudiLib
         /// </summary>
         /// <param name="file"></param>
         /// <returns></returns>
-        internal static Section LocalImage(string file) => new Section(ImageType, ("file", "file://" + file));
+        internal static Section LocalImage(string file)
+        {
+            try
+            {
+                return new Section(ImageType, ("file", (file.StartsWith("/", StringComparison.Ordinal), Path.IsPathRooted(file), RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) switch
+                {
+                    (_, false, _) => file,
+                    (_, true, false) => new Uri(file).AbsoluteUri,
+                    (false, true, true) => new Uri(file).AbsoluteUri,
+                    (true, true, true) => new Uri("file://" + file).AbsoluteUri,
+                }));
+            }
+            catch (UriFormatException e)
+            {
+                throw new FormatException("file 不是合法的路径", e);
+            }
+        }
 
         internal static Section ByteArrayImage(byte[] bytes) => new Section(ImageType, ("file", $"base64://{Convert.ToBase64String(bytes)}"));
 
