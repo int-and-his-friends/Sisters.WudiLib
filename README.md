@@ -6,7 +6,7 @@
 [![#](https://img.shields.io/nuget/v/Sisters.WudiLib.svg)](https://www.nuget.org/packages/Sisters.WudiLib/)
 [![#](https://img.shields.io/nuget/v/Sisters.WudiLib.WebSocket.svg)](https://www.nuget.org/packages/Sisters.WudiLib.WebSocket/)
 
-[查看文档](https://wudilib.b11p.com/)
+[查看文档](https://wudilib.b11p.com/)　｜　[文档仓库](https://github.com/b11p/Sisters.WudiLib-docs)
 
 - Named by [int100](https://github.com/1004121460)
 
