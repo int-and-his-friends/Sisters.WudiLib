@@ -193,5 +193,11 @@ namespace Sisters.WudiLib
         /// <returns></returns>
         public static SendingMessage operator +(SendingMessage left, SendingMessage right) =>
             new SendingMessage(left, right);
+
+        /// <summary>
+        /// 从字符串转换为消息。
+        /// </summary>
+        /// <param name="s">要转换的字符串。</param>
+        public static implicit operator SendingMessage(string s) => new SendingMessage(s);
     }
 }

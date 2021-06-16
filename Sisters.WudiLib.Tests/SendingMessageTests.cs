@@ -32,5 +32,15 @@ namespace Sisters.WudiLib.Tests
             var image = SendingMessage.LocalImage(path);
             Assert.Equal(new KeyValuePair<string, string>("file", expected), image.Sections.Single().Data.Single());
         }
+
+        [Fact]
+        public void Concat()
+        {
+            var msg1 = new SendingMessage("1");
+            var msg2 = msg1 + "2";
+            var msg3 = "3" + msg2;
+            Assert.IsType<SendingMessage>(msg2);
+            Assert.IsType<SendingMessage>(msg3);
+        }
     }
 }
