@@ -11,13 +11,9 @@ namespace Sisters.WudiLib
     /// <summary>
     /// Dispatches posts.
     /// </summary>
-    public class Dispatcher
+    internal class Dispatcher
     {
-#if NET45
-        private readonly ILogger _logger;
-#else
         private readonly ILogger<Dispatcher> _logger;
-#endif
         private readonly HttpApiClient _onebotApi;
         private readonly ApiPostListener _onebotPost;
         /// <summary>
@@ -28,11 +24,7 @@ namespace Sisters.WudiLib
         /// <param name="logger">Logger。</param>
         public Dispatcher(HttpApiClient onebotApi, ApiPostListener onebotPost, ILogger<Dispatcher>? logger = null)
         {
-#if NET45
-            _logger = logger as ILogger ?? NullLogger.Instance;
-#else
             _logger = logger ?? NullLogger<Dispatcher>.Instance;
-#endif
             _onebotApi = onebotApi;
             _onebotPost = onebotPost;
         }

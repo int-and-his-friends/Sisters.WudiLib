@@ -15,22 +15,15 @@ namespace Sisters.WudiLib.Builders
     /// </summary>
     internal class DispatcherBuilder
     {
-#if NET45
-        private readonly ILogger _logger;
-#else
         private readonly ILogger<Dispatcher> _logger;
-#endif
+
         /// <summary>
         /// 初始化一个 Dispatcher Builder。
         /// </summary>
         /// <param name="logger">Logger。</param>
         public DispatcherBuilder(ILogger<Dispatcher>? logger = null)
         {
-#if NET45
-            _logger = logger as ILogger ?? NullLogger.Instance;
-#else
             _logger = logger ?? NullLogger<Dispatcher>.Instance;
-#endif
         }
 
         /// <summary>
