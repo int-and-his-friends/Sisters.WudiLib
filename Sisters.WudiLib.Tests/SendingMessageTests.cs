@@ -27,6 +27,7 @@ namespace Sisters.WudiLib.Tests
         [InlineData("a.jpg", "a.jpg")]
         [InlineData("/a b.jpg", "file:///a%20b.jpg")]
         [InlineData(@"c:\a.jpg", "file:///c:/a.jpg")]
+        [InlineData("/dir name%20/file?ww=33", "file:///dir%20name%2520/file%3Fww=33")]
         public void LocalImageTests(string path, string expected)
         {
             var image = SendingMessage.LocalImage(path);

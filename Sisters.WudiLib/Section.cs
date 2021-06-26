@@ -225,7 +225,7 @@ namespace Sisters.WudiLib
                     (_, false, _) => file,
                     (_, true, false) => new Uri(file).AbsoluteUri,
                     (false, true, true) => new Uri(file).AbsoluteUri,
-                    (true, true, true) => new Uri("file://" + file).AbsoluteUri,
+                    (true, true, true) => "file://" + Uri.EscapeUriString(file).Replace("?", Uri.HexEscape('?')),
                 }));
             }
             catch (UriFormatException e)
