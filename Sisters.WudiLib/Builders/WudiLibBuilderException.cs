@@ -2,8 +2,9 @@
 
 namespace Sisters.WudiLib.Builders
 {
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
     [Serializable]
-    internal class WudiLibBuilderException : Exception
+    public class WudiLibBuilderException : Exception
     {
         public WudiLibBuilderException() { }
         public WudiLibBuilderException(string message) : base(message) { }
@@ -12,4 +13,5 @@ namespace Sisters.WudiLib.Builders
           System.Runtime.Serialization.SerializationInfo info,
           System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
     }
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 }

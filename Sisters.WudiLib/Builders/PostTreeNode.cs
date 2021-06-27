@@ -18,16 +18,21 @@ namespace Sisters.WudiLib.Builders
         private bool _isSpecified;
 
         /// <summary>
-        /// 构造。
+        /// 从上报数据类型构造 <see cref="PostTreeNode"/>。
         /// </summary>
-        /// <param name="type"></param>
-        /// <param name="isSpecified"></param>
-        /// <exception cref="DuplicatedFieldNameException"></exception>
+        /// <param name="type">上报数据类型。</param>
+        /// <param name="isSpecified">是否要初始化此类型。</param>
+        /// <exception cref="WudiLibBuilderException">构造时出现异常。</exception>
+        /// <exception cref="ArgumentException"><c>type</c> 不是 <see cref="Post"/> 的子类。</exception>
         public PostTreeNode(Type type, bool isSpecified = true)
         {
             if (!typeof(Post).IsAssignableFrom(type))
             {
-                throw new ArgumentException($"传入的类型必须是{typeof(Post).FullName}的子类。", nameof(type));
+                throw new ArgumentException($"传入的类型必须是 {typeof(Post).FullName} 的子类。", nameof(type));
+            }
+            if (isSpecified && type.IsAbstract)
+            {
+                throw new ArgumentException($"无法接受抽象类型 {type.FullName}。", nameof(type));
             }
             _type = type;
             var attributes = type.GetCustomAttributes<PostAttribute>(false);
@@ -37,7 +42,7 @@ namespace Sisters.WudiLib.Builders
             {
                 if (!_definedKeys.Add(fieldName))
                 {
-                    throw new DuplicatedFieldNameException(type, fieldName, $"Field {fieldName} is duplicated in type {type.FullName}.");
+                    throw new WudiLibBuilderException($"在上报类型 {type.FullName} 中重复出现了字段 {fieldName} 的约束。");
                 }
             }
             _fields = attributes.ToDictionary(a => a.Field, a => a.Value);
