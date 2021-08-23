@@ -43,5 +43,17 @@ namespace Sisters.WudiLib.Tests
             Assert.IsType<SendingMessage>(msg2);
             Assert.IsType<SendingMessage>(msg3);
         }
+
+        [Fact]
+        public void ConcatNull()
+        {
+            SendingMessage message1 = null, message2 = null;
+            Assert.NotNull(message1 + message2);
+            Assert.False((message1 + message2)?.Sections.Count > 0);
+
+            SendingMessage text = "hello";
+            Assert.Equal(text.Sections, (message1 + text).Sections);
+            Assert.Equal(text.Sections, (text + message1).Sections);
+        }
     }
 }

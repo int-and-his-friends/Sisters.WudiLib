@@ -36,6 +36,7 @@ namespace Sisters.WudiLib
             // ignored
         }
 
+#nullable enable
         /// <summary>
         /// 从 <see cref="IEnumerable{Section}"/> 创建消息。
         /// </summary>
@@ -44,6 +45,7 @@ namespace Sisters.WudiLib
         {
             // ignored
         }
+#nullable restore
 
         /// <summary>
         /// 从文本构造新的消息实例。
@@ -52,20 +54,22 @@ namespace Sisters.WudiLib
         public SendingMessage(string text) : base(Section.Text(text))
         { }
 
+#nullable enable
         /// <summary>
         /// 从两个 <see cref="SendingMessage"/> 实例创建消息。
         /// </summary>
         /// <param name="message1">在前面的消息。</param>
         /// <param name="message2">在后面的消息。</param>
         /// <exception cref="InvalidOperationException">有无法连接的消息。</exception>
-        private SendingMessage(SendingMessage message1, SendingMessage message2) : this(
-            message1.Sections.Concat(message2.Sections))
+        private SendingMessage(SendingMessage? message1, SendingMessage? message2) : this(
+            message1?.Sections.Concat(message2?.Sections ?? Enumerable.Empty<Section>()) ?? message2?.Sections ?? Enumerable.Empty<Section>())
         {
-            if (!message1.CanConcat || !message2.CanConcat)
+            if (message1?.CanConcat == false || message2?.CanConcat == false)
             {
                 throw new InvalidOperationException("有一个或多个消息不能被连接。");
             }
         }
+#nullable restore
 
         /// <summary>
         /// 从 <see cref="Section"/> 实例创建消息。
@@ -184,6 +188,7 @@ namespace Sisters.WudiLib
         /// </summary>
         public static SendingMessage Shake() => new SendingMessage(Section.Shake());
 
+#nullable enable
         /// <summary>
         /// 使用 <c>+</c> 连接两条消息。
         /// </summary>
@@ -191,8 +196,9 @@ namespace Sisters.WudiLib
         /// <param name="right"></param>
         /// <exception cref="InvalidOperationException">一个或多个消息不可连接。</exception>
         /// <returns></returns>
-        public static SendingMessage operator +(SendingMessage left, SendingMessage right) =>
+        public static SendingMessage operator +(SendingMessage? left, SendingMessage? right) =>
             new SendingMessage(left, right);
+#nullable restore
 
         /// <summary>
         /// 从字符串转换为消息。
