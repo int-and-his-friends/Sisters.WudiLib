@@ -78,6 +78,16 @@ namespace Sisters.WudiLib
         public SendingMessage(Section section) : base(section)
         { }
 
+#nullable enable
+        public SendingMessage(params Section[] sections) : base(sections)
+        {
+            if (SectionsBase.Contains(null!))
+            {
+                throw new ArgumentException("传入的消息段数组不能含有 null 值。");
+            }
+        }
+#nullable restore
+
         /// <summary>
         /// 构造 At 群、讨论组成员消息。
         /// </summary>
