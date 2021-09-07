@@ -220,13 +220,7 @@ namespace Sisters.WudiLib
         {
             try
             {
-                return new Section(ImageType, ("file", (file.StartsWith("/", StringComparison.Ordinal), Path.IsPathRooted(file), RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) switch
-                {
-                    (_, false, _) => file,
-                    (_, true, false) => new Uri(file).AbsoluteUri,
-                    (false, true, true) => new Uri(file).AbsoluteUri,
-                    (true, true, true) => "file://" + Uri.EscapeUriString(file).Replace("?", Uri.HexEscape('?')),
-                }));
+                return new Section(ImageType, ("file", CreateFileUri(file)));
             }
             catch (UriFormatException e)
             {
@@ -251,6 +245,12 @@ namespace Sisters.WudiLib
         /// <returns></returns>
         internal static Section NetImage(string url, bool noCache)
             => noCache ? new Section(ImageType, ("cache", "0"), ("file", url)) : NetImage(url);
+
+#nullable enable
+        internal static Section LocalRecord(string file) => new Section(RecordType, ("file", CreateFileUri(file)));
+
+        internal static Section ByteArrayRecord(byte[] bytes) => new Section(RecordType, ("file", $"base64://{Convert.ToBase64String(bytes)}"));
+#nullable restore
 
         internal static Section NetRecord(string url) => new Section(RecordType, ("file", url));
 
@@ -296,6 +296,19 @@ namespace Sisters.WudiLib
         }
 
         internal static Section Shake() => new Section("shake");
+
+#nullable enable
+        private static string CreateFileUri(string file)
+        {
+            return (file.StartsWith("/", StringComparison.Ordinal), Path.IsPathRooted(file), RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) switch
+            {
+                (_, false, _) => file,
+                (_, true, false) => new Uri(file).AbsoluteUri,
+                (false, true, true) => new Uri(file).AbsoluteUri,
+                (true, true, true) => "file://" + Uri.EscapeUriString(file).Replace("?", Uri.HexEscape('?')),
+            };
+        }
+#nullable restore
 
         public static bool operator ==(Section left, Section right)
             => left is null ? right is null : left.Equals(right);

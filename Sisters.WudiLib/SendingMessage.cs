@@ -150,6 +150,17 @@ namespace Sisters.WudiLib
         public static SendingMessage NetImage(string url, bool noCache) =>
             new SendingMessage(Section.NetImage(url, noCache));
 
+#nullable enable
+        /// <summary>
+        /// 构造包含本地语音的消息。
+        /// </summary>
+        /// <param name="path">本地语音的路径或文件 URI。</param>
+        /// <returns>构造的消息。</returns>
+        public static SendingMessage LocalRecord(string path) => new SendingMessage(Section.LocalRecord(path ?? throw new ArgumentNullException(nameof(path))));
+
+        public static SendingMessage ByteArrayRecord(byte[] bytes) => new SendingMessage(Section.ByteArrayRecord(bytes ?? throw new ArgumentNullException(nameof(bytes))));
+#nullable restore
+
         /// <summary>
         /// 网络语音。
         /// </summary>
