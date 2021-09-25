@@ -15,6 +15,16 @@ namespace Sisters.WudiLib
 
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ApiAccessException"/> class with a specified error message.
+        /// </summary>
+        /// <param name="message">The message that describes the error.</param>
+        public ApiAccessException(string message)
+            : base(message)
+        {
+
+        }
+
         /// 
         public ApiAccessException(string message, Exception innerException)
             : base(message, innerException)

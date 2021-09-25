@@ -164,7 +164,8 @@ namespace Sisters.WudiLib.WebSocket
             try
             {
                 await CallRawAsync(action, jObject.ToString(Formatting.None)).ConfigureAwait(false);
-                await l.WaitAsync(TimeOut, response.CancellationToken).ConfigureAwait(false);
+                if (!await l.WaitAsync(TimeOut, response.CancellationToken).ConfigureAwait(false))
+                    throw new ApiAccessException("等待 WebSocket 响应超时。");
                 return response.Data;
             }
             finally
