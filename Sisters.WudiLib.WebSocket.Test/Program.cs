@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Sisters.WudiLib.Posts;
+using Sisters.WudiLib.WebSocket.Reverse;
 
 namespace Sisters.WudiLib.WebSocket.Test
 {
@@ -17,10 +18,16 @@ namespace Sisters.WudiLib.WebSocket.Test
                     Console.WriteLine("Available: {0}, Listening {1}", (cqWebSocketEvent as dynamic).IsAvailable, (cqWebSocketEvent as dynamic).IsListening);
                 }
             });
-            cqWebSocketEvent.MessageEvent += (api, e) =>
+            cqWebSocketEvent.MessageEvent += async (api, e) =>
             {
                 Console.WriteLine(e.Content.Raw);
                 Console.WriteLine(api is null);
+                await api.SendMessageAsync(e.Endpoint, "Response 1" + SendingMessage.LocalImage(@"C:\Users\yinmi\Pictures\bad(Y)(auto_scale)(Level3)(width 2000).jpg"));
+                if (e is GroupMessage groupMessage)
+                {
+                    await api.GetGroupMemberInfoAsync(groupMessage.GroupId, e.UserId);
+                }
+                await api.SendMessageAsync(e.Endpoint, "Response 2" + SendingMessage.LocalImage(@"C:\Users\yinmi\Pictures\karen.jpg"));
             };
             cqWebSocketEvent.FriendRequestEvent += (api, e) => true;
             cqWebSocketEvent.GroupInviteEvent += (api, e) => true;
@@ -53,7 +60,7 @@ namespace Sisters.WudiLib.WebSocket.Test
         private static async Task TestNegative()
         {
             var server = new Reverse.ReverseWebSocketServer("http://localhost:9191");
-            server.ConfigureListener((l, _) => ConfigListener(l));
+            server.SetListenerAuthenticationAndConfiguration(r => Task.FromResult<Action<NegativeWebSocketEventListener, long>>((l, _) => ConfigListener(l)));
 
             var cancellationTokenSource = new CancellationTokenSource();
             server.Start(cancellationTokenSource.Token);
