@@ -8,8 +8,7 @@ namespace Sisters.WudiLib.WebSocket
     {
         internal static async Task ProcessWSMessageAsync(this ApiPostListener listener, JObject eventObject)
         {
-            await Task.Yield();
-            var response = listener.ProcessPost(eventObject);
+            var response = await Task.Run(() => listener.ProcessPost(eventObject)).ConfigureAwait(false);
             var apiClient = listener.ApiClient;
             if (response is RequestResponse && !(apiClient is null))
             {
