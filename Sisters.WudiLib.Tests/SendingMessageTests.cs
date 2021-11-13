@@ -67,7 +67,7 @@ namespace Sisters.WudiLib.Tests
                 yield return new object[] { SendingMessage.FromInterpolated($"{cqCodeMessage}，你好"), cqCodeMessage + "，你好" };
                 yield return new object[] { SendingMessage.FromInterpolated($"{multipleSegmentMessage}，你好"), multipleSegmentMessage + "，你好" };
                 yield return new object[] { SendingMessage.FromInterpolated($"{cqCodeMessage}{textMessage}"), cqCodeMessage + textMessage };
-                yield return new object[] { SendingMessage.FromInterpolated($"{textMessage}{cqCodeMessage} {23}"), textMessage + cqCodeMessage + " " + 23.ToString() };
+                yield return new object[] { SendingMessage.FromInterpolated($"{textMessage}{cqCodeMessage},[]& {23}"), textMessage + cqCodeMessage + ",[]& " + 23.ToString() };
             }
         }
 
