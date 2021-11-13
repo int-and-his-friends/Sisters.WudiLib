@@ -55,5 +55,32 @@ namespace Sisters.WudiLib.Tests
             Assert.Equal(text.Sections, (message1 + text).Sections);
             Assert.Equal(text.Sections, (text + message1).Sections);
         }
+
+        public static IEnumerable<object[]> Interpolated_TestData()
+        {
+            var cqCodeMessage = SendingMessage.At(123456789);
+            var textMessage = "hello";
+            var imageMessage = SendingMessage.LocalImage("/a.jpg");
+            var multipleSegmentMessage = SendingMessage.At(123456789) + "hello" + SendingMessage.LocalImage("/a.jpg");
+            {
+                yield return new object[] { SendingMessage.FromInterpolated($"{1}"), "1" };
+                yield return new object[] { SendingMessage.FromInterpolated($"{cqCodeMessage}，你好"), cqCodeMessage + "，你好" };
+                yield return new object[] { SendingMessage.FromInterpolated($"{multipleSegmentMessage}，你好"), multipleSegmentMessage + "，你好" };
+                yield return new object[] { SendingMessage.FromInterpolated($"{cqCodeMessage}{textMessage}"), cqCodeMessage + textMessage };
+                yield return new object[] { SendingMessage.FromInterpolated($"{textMessage}{cqCodeMessage} {23}"), textMessage + cqCodeMessage + " " + 23.ToString() };
+            }
+        }
+
+        [Theory]
+        [MemberData(nameof(Interpolated_TestData))]
+        public void Interpolated(SendingMessage expected, SendingMessage actual)
+        {
+            Assert.Equal(expected.Raw, actual.Raw);
+            Assert.Equal(expected.Sections.Count, actual.Sections.Count);
+            for (int i = 0; i < expected.Sections.Count; i++)
+            {
+                Assert.Equal(expected.Sections[i], actual.Sections[i]);
+            }
+        }
     }
 }

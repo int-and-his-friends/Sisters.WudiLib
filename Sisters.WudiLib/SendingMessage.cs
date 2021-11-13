@@ -86,6 +86,13 @@ namespace Sisters.WudiLib
                 throw new ArgumentException("传入的消息段数组不能含有 null 值。");
             }
         }
+
+#if NET6_0_OR_GREATER
+        public static SendingMessage FromInterpolated(MessageInterpolatedStringHandler builder)
+        {
+            return builder.GetFormattedMessage();
+        }
+#endif
 #nullable restore
 
         /// <summary>

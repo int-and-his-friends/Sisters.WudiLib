@@ -4,6 +4,7 @@
 
 namespace System.Collections.Generic
 {
+#if NETSTANDARD2_0
     internal static class CollectionExtensions
     {
         public static TValue GetValueOrDefault<TKey, TValue>(this IReadOnlyDictionary<TKey, TValue> dictionary, TKey key)
@@ -55,4 +56,5 @@ namespace System.Collections.Generic
             return false;
         }
     }
+#endif
 }
