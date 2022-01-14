@@ -25,7 +25,8 @@ namespace Sisters.WudiLib.Posts
             => _messageLazy = new Lazy<ReceivedMessage>(() => new ReceivedMessage(ObjMessage));
 
         /// <summary>
-        /// 消息类型（群、私聊、讨论组）。不建议使用本属性判断类型，请使用 <c>is</c> 运算符进行判断。
+        /// 消息类型（群、私聊、讨论组）。不建议使用本属性判断类型，请使用 <c>is</c> 运算符进行判断。<br/>
+        /// 如：<c>msg is <see cref="GroupMessage"/> g</c>。
         /// </summary>
         [JsonProperty(TypeField)]
         public string MessageType { get; private set; }
