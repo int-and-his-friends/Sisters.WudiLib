@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Linq;
 
 namespace Sisters.WudiLib.Posts
 {
@@ -33,6 +35,9 @@ namespace Sisters.WudiLib.Posts
         public long UserId { get; private set; }
 
         public abstract Endpoint Endpoint { get; }
+
+        [JsonExtensionData]
+        public IDictionary<string, JToken> ExtensionData { get; private set; }
     }
 
     [JsonObject(MemberSerialization.OptIn)]
