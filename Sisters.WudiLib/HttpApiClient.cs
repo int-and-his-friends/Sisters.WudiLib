@@ -317,6 +317,19 @@ namespace Sisters.WudiLib
             return PostAsync(RecallUrl, data);
         }
 
+#nullable enable
+        /// <summary>
+        /// 获取消息
+        /// </summary>
+        /// <param name="messageId">消息 ID</param>
+        /// <returns></returns>
+        public Task<GetMessageResponseData> GetMessage(int messageId)
+        {
+            var data = new { message_id = messageId };
+            return CallAsync<GetMessageResponseData>("get_msg", data);
+        }
+#nullable restore
+
         /// <summary>
         /// 群组单人禁言。
         /// </summary>
@@ -422,6 +435,53 @@ namespace Sisters.WudiLib
                 card,
             };
             return PostAsync(SetGroupCardUrl, data);
+        }
+
+        // set_group_name
+        public Task<bool> SetGroupName(long groupId, string groupName)
+        {
+            var data = new
+            {
+                group_id = groupId,
+                group_name = groupName,
+            };
+            return CallAsync("set_group_name", data);
+        }
+
+        // set_group_leave
+        public Task<bool> LeaveGroup(long groupId, bool isDismiss = false)
+        {
+            var data = new
+            {
+                group_id = groupId,
+                is_dismiss = isDismiss,
+            };
+            return CallAsync("set_group_leave", data);
+        }
+
+        // set_group_special_title
+        public Task<bool> SetGroupSpecialTitle(long groupId, long userId, string specialTitle = "", int duration = -1)
+        {
+            var data = new
+            {
+                group_id = groupId,
+                user_id = userId,
+                special_title = specialTitle,
+                duration,
+            };
+            return CallAsync("set_group_special_title", data);
+        }
+
+        // set_friend_add_request
+        public Task<bool> SetFriendAddRequest(string flag, bool approve = true, string remark = "")
+        {
+            var data = new
+            {
+                flag,
+                approve,
+                remark,
+            };
+            return CallAsync("set_friend_add_request", data);
         }
 
         /// <summary>
