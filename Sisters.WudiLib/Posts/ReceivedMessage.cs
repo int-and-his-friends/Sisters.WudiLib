@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
@@ -12,7 +13,7 @@ namespace Sisters.WudiLib.Posts
     /// <summary>
     /// 从上报中收到的消息。
     /// </summary>
-    public class ReceivedMessage : WudiLib.Message
+    public sealed class ReceivedMessage : WudiLib.Message
     {
         /// <summary>
         /// 也在 <see cref="Section.CqCodeTypePattern"/> 中提到。
@@ -92,6 +93,12 @@ namespace Sisters.WudiLib.Posts
             {
                 throw new InvalidOperationException("用于构造消息的对象即不是字符，也不是数组。可能是上报数据有错误。");
             }
+        }
+
+        internal ReceivedMessage(IReadOnlyList<Section> sections)
+        {
+            _sections = sections;
+            _sectionListLazy = new Lazy<IReadOnlyList<Section>>(() => _sections);
         }
 
         /// <summary>
@@ -218,6 +225,44 @@ namespace Sisters.WudiLib.Posts
                 ? (_isString ? Raw.AfterReceive() : Text)
                 : null;
             return !(text is null);
+        }
+
+        /// <summary>
+        /// Merge continuous text sections.
+        /// </summary>
+        /// <returns>A <see cref="ReceivedMessage"/> that continuous text sections are merged.</returns>
+        public ReceivedMessage MergeContinuousTextSections()
+        {
+            if (_isString)
+            {
+                // if the message is string format, the text is always merged.
+                return this;
+            }
+            var mergedSections = _sections.Aggregate((list: new List<Section>(), current: default(string)),
+                (t, s) =>
+                {
+                    var (list, current) = t;
+                    if (s.Type != Section.TextType)
+                    {
+                        if (current is not null)
+                        {
+                            list.Add(Section.Text(t.current));
+                        }
+                        list.Add(s);
+                        return (list, null);
+                    }
+                    return (list, current + s.Data[Section.TextParamName]);
+                },
+                t =>
+                {
+                    var (list, current) = t;
+                    if (current is not null)
+                    {
+                        list.Add(Section.Text(t.current));
+                    }
+                    return list;
+                });
+            return new ReceivedMessage(mergedSections.ToImmutableArray());
         }
 
         /// <summary>
