@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp2.1</TargetFrameworks>
+    <TargetFrameworks>net8.0;netstandard2.1</TargetFrameworks>
     <LangVersion>latest</LangVersion>
     <Version>0.2.1</Version>
     <Authors>bleatingsheep</Authors>
@@ -22,19 +22,11 @@
   </PropertyGroup>
 
   <ItemGroup Condition="'$(Configuration)'=='Release'">
-    <PackageReference Include="Sisters.WudiLib" Version="0.2.0" />
+    <PackageReference Include="Sisters.WudiLib" Version="0.4.2-alpha2" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)'=='Debug'">
     <ProjectReference Include="..\Sisters.WudiLib\Sisters.WudiLib.csproj" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' == 'net45'">
-    <Reference Include="System.Web" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' == 'net47'">
-    <Reference Include="System.Web" />
   </ItemGroup>
 
   <ItemGroup>
